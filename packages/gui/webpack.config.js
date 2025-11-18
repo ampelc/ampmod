@@ -303,6 +303,7 @@ module.exports = [
                 './src/website/design.css'
             ],
             'editor': './src/playground/editor.jsx',
+            'editor-desktop': './src/desktop/render-editor.jsx',
             'fullscreen': './src/playground/fullscreen.jsx',
             'embed': './src/playground/embed.jsx',
             'addon-settings': './src/playground/addon-settings.jsx',
@@ -315,7 +316,7 @@ module.exports = [
         },
         output: {
             hashFunction: 'sha256',
-            path: path.resolve(__dirname, 'build')
+            path: process.env.BUILD_TARGET === 'desktop' ? path.resolve(__dirname, 'src/desktop/dist-rendered') : path.resolve(__dirname, 'build')
         },
         optimization: {
             runtimeChunk: 'single',
@@ -382,6 +383,17 @@ module.exports = [
                       colors: true
                   },
         plugins: base.plugins.concat([
+            ...process.env.BUILD_TARGET === "desktop" ? [
+                new HtmlWebpackPlugin({
+                    chunks: ["editor-desktop"],
+                    template: "src/playground/index.ejs",
+                    filename:
+                        'editor-desktop.html',
+                    title: `${APP_NAME}`,
+                    isEditor: true,
+                    ...htmlWebpackPluginCommon
+                }),
+            ] : [],
             new HtmlWebpackPlugin({
                 chunks: ['info', 'minorpages'],
                 title: `Privacy Policy - ${APP_NAME}`,

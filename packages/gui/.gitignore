@@ -29,3 +29,6 @@ npm-*
 
 # amp: For standalone builder.
 standalone
+
+# amp: For desktop.
+src/desktop/dist-rendered
