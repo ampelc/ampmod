@@ -107,6 +107,7 @@
         "@electron-forge/cli": "^7.10.2",
         "@formatjs/cli": "^6.7.4",
         "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
+        "@types/electron": "^1.6.12",
         "@typescript-eslint/eslint-plugin": "^8.46.4",
         "@typescript-eslint/parser": "^8.46.4",
         "babel-core": "7.0.0-bridge.0",

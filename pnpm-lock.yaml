@@ -339,6 +339,9 @@ importers:
       '@pmmmwh/react-refresh-webpack-plugin':
         specifier: ^0.6.1
         version: 0.6.1(react-refresh@0.18.0)(sockjs-client@1.6.1)(type-fest@1.4.0)(webpack-dev-server@5.2.2(webpack-cli@6.0.1)(webpack@5.103.0(@swc/core@1.15.2)(webpack-cli@6.0.1)))(webpack@5.103.0(@swc/core@1.15.2)(webpack-cli@6.0.1))
+      '@types/electron':
+        specifier: ^1.6.12
+        version: 1.6.12
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.46.4
         version: 8.47.0(@typescript-eslint/parser@8.47.0(eslint@9.38.0(jiti@2.6.1))(typescript@5.4.5))(eslint@9.38.0(jiti@2.6.1))(typescript@5.4.5)
@@ -3058,6 +3061,10 @@ packages:
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
+
+  '@types/electron@1.6.12':
+    resolution: {integrity: sha512-NIJokDkGv9h+MStCL1IuiL1FOHYVkszoWeNxJtSI5dcEKRGbX83JcVYNAgk019qOQgJkHtz9WdP0CDXvrArrGg==}
+    deprecated: This is a stub types definition. electron provides its own type definitions, so you do not need this installed.
 
   '@types/eslint-scope@3.7.7':
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
@@ -15432,6 +15439,12 @@ snapshots:
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 24.10.1
+
+  '@types/electron@1.6.12':
+    dependencies:
+      electron: 39.2.2
+    transitivePeerDependencies:
+      - supports-color
 
   '@types/eslint-scope@3.7.7':
     dependencies:
