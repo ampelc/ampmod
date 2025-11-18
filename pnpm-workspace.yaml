@@ -1,5 +1,11 @@
 packages:
-    - packages/*
+    - packages/gui
+    - packages/branding
+    - packages/vm
+    - packages/blocks
+    - packages/render
+    - packages/render-fonts
+    - packages/paint
 
 ignoredBuiltDependencies:
     - core-js
