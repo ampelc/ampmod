@@ -383,10 +383,10 @@ module.exports = [
                       colors: true
                   },
         plugins: base.plugins.concat([
-            ...process.env.BUILD_TARGET === "desktop" ? [
+            ...process.env.BUILD_TARGET === "desktop" || process.env.NODE_ENV !== "production" ? [
                 new HtmlWebpackPlugin({
                     chunks: ["editor-desktop"],
-                    template: "src/playground/index.ejs",
+                    template: "src/playground/simple.ejs",
                     filename:
                         'editor-desktop.html',
                     title: `${APP_NAME}`,

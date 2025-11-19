@@ -380,7 +380,7 @@ const TWStateManager = function (WrappedComponent) {
             }
         }
         componentDidUpdate(prevProps) {
-            if (isStandalone) return;
+            if (isStandalone || window.isElectron || false) return;
 
             if (this.props.username !== prevProps.username && this.props.username !== this.doNotPersistUsername) {
                 // TODO: this always restores the current username once at startup, which is unnecessary

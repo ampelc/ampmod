@@ -1,0 +1,1 @@
+Some code is taken from https://github.com/TurboWarp/desktop

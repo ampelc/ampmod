@@ -41,6 +41,9 @@ import {APP_NAME} from '@ampmod/branding';
 
 runAddons();
 
+// Terrible hack
+window.isElectron = true;
+
 if (AddonChannels.reloadChannel) {
     AddonChannels.reloadChannel.addEventListener('message', () => {
         location.reload();
@@ -54,32 +57,11 @@ if (AddonChannels.changeChannel) {
 }
 
 const handleClickAddonSettings = addonId => {
-    if (process.env.ampmod_mode === "standalone") {
-        const url = new URL(window.location.href);
-        url.searchParams.set('addon-settings', '');
-
-        if (typeof addonId === 'string' && addonId.length > 0) {
-            url.hash = `#${addonId}`;
-        } else {
-            url.hash = '';
-        }
-
-        window.open(url.toString(), '_blank');
-        return;
-    }
     // addonId might be a string of the addon to focus on, undefined, or an event (treat like undefined)
     const path = process.env.ROUTING_STYLE === 'wildcard' ? 'addons' : 'addons.html';
     const url = `${process.env.ROOT}${path}${typeof addonId === 'string' ? `#${addonId}` : ''}`;
     window.open(url);
 };
-
-const messages = defineMessages({
-    defaultTitle: {
-        defaultMessage: 'Run Scratch projects faster',
-        description: 'Default title of editor',
-        id: 'tw.guiDefaultTitle'
-    }
-});
 
 class Interface extends React.Component {
     constructor(props) {
@@ -104,6 +86,9 @@ class Interface extends React.Component {
                     <GUI
                         onClickAddonSettings={handleClickAddonSettings}
                         onUpdateProjectTitle={this.handleUpdateProjectTitle}
+                        onClickDesktopSettings={() => {
+                            window.electronAPI.openDesktopSettings();
+                        }}
                         backpackVisible
                         backpackHost="_local_"
                         isScratchDesktop
