@@ -1,7 +1,12 @@
 import electron from 'electron';
 const { ipcMain, app, dialog, BrowserWindow } = electron;
 import path from 'path';
+import { fileURLToPath } from 'node:url';
 import { APP_NAME } from '@ampmod/branding';
+import { setupProtocols } from './protocols.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -9,21 +14,36 @@ const createWindow = () => {
     height: 900,
     show: false,
     webPreferences: {
-      preload: path.join(process.cwd(), "preload.js"),
-      webSecurity: false,
+      preload: path.join(__dirname, "preload.cjs"),
+      contextIsolation: true
     }
   });
 
   win.setMenu(null);
 
+  win.webContents.session.webRequest.onBeforeRequest(
+    {
+      urls: [
+        "https://extensions.turbowarp.org/*",
+        "https://ampmod.codeberg.page/extensions/*"
+      ]
+    },
+    (details, callback) => {
+      const url = new URL(details.url);
+      const segments = url.pathname.split('/').filter(Boolean);
+
+      const localPath = `ampmod-extension-gallery://./${segments.slice(segments.length > 1 ? 1 : 0).join('/')}`;
+
+      callback({ redirectURL: localPath });
+    }
+  );
+
   win.webContents.on('before-input-event', (event, input) => {
-    // Ctrl+Shift+I or F12 = dev tools
     if ((input.control && input.shift && input.key.toLowerCase() === 'i') || input.key === 'F12') {
       event.preventDefault();
       win.webContents.toggleDevTools();
     }
 
-    // Ctrl+R or Ctrl+F5 = reload
     if (input.control && (input.key === "F5" || input.key.toLowerCase() === "r")) {
       event.preventDefault();
       win.webContents.reload();
@@ -54,31 +74,26 @@ const createWindow = () => {
       const choice = dialog.showMessageBoxSync(win, {
         title: APP_NAME,
         type: 'info',
-        buttons: [
-          "Stay",
-          "Leave"
-        ],
+        buttons: ["Stay", "Leave"],
         cancelId: 0,
         defaultId: 0,
         message: "Are you sure you want to exit?",
         detail: "Changes you made may be lost.",
         noLink: true
       });
-      if (choice === 1) {
-        win.destroy();
-      }
+
+      if (choice === 1) win.destroy();
       processingWillPreventUnload = false;
     });
   });
 
-  if (process.argv.includes('--dev')) {
-    win.loadURL('http://localhost:8601/editor-desktop.html');
-  } else {
-    win.loadFile('./dist-rendered/editor-desktop.html');
-  }
+  win.loadURL('amp-gui://./editor-desktop.html');
 };
 
-app.whenReady().finally(createWindow);
+app.whenReady().then(() => {
+  setupProtocols();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
@@ -89,15 +104,15 @@ app.on('activate', () => {
 });
 
 ipcMain.on('open-desktop-settings', () => {
-    const win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        show: true,
-        webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true
-        }
-    });
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    show: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
 
-    win.loadFile('./settings/settings.html');
+  win.loadURL('amp-gui://settings/settings.html');
 });

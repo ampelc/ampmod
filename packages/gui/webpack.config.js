@@ -71,6 +71,7 @@ const base = {
         static: { directory: path.resolve(__dirname, "build") },
         host: "0.0.0.0",
         compress: true,
+        allowedHosts: "all",
         port: process.env.PORT || 8601,
         // allows ROUTING_STYLE=wildcard to work properly
         historyApiFallback: {
@@ -389,8 +390,7 @@ module.exports = [
                     template: "src/playground/simple.ejs",
                     filename:
                         'editor-desktop.html',
-                    title: `${APP_NAME}`,
-                    isEditor: true,
+                    title: APP_NAME,
                     ...htmlWebpackPluginCommon
                 }),
             ] : [],
