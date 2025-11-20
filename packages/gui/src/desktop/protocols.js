@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'amp-gui', privileges: { standard: true, supportFetchAPI: true } },
+  { scheme: 'amp-gui', privileges: { standard: true, supportFetchAPI: true, secure: true } },
   { scheme: 'ampmod-extension-gallery', privileges: { standard: true, supportFetchAPI: true, secure: true } },
 ]);
 
@@ -63,7 +63,6 @@ export const setupProtocols = () => {
       let urlPath = request.url.replace('ampmod-extension-gallery://', '');
 
       const filePath = path.join(__dirname, 'extensions', urlPath);
-      console.log(filePath);
 
       const stat = await fs.stat(filePath);
 
