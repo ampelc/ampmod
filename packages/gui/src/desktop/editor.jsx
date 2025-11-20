@@ -41,9 +41,6 @@ import {APP_NAME} from '@ampmod/branding';
 
 runAddons();
 
-// Terrible hack
-window.isElectron = true;
-
 if (AddonChannels.reloadChannel) {
     AddonChannels.reloadChannel.addEventListener('message', () => {
         location.reload();

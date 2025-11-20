@@ -1,5 +1,5 @@
 import electron from 'electron';
-const { ipcMain, app, dialog, BrowserWindow } = electron;
+const { shell, ipcMain, app, dialog, BrowserWindow } = electron;
 import path from 'path';
 import { fileURLToPath } from 'node:url';
 import { APP_NAME } from '@ampmod/branding';
@@ -85,6 +85,79 @@ const createWindow = () => {
       if (choice === 1) win.destroy();
       processingWillPreventUnload = false;
     });
+  });
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    const u = new URL(url);
+
+    if (u.hostname === "ampmod.codeberg.page") {
+      const segments = u.pathname.split('/').filter(Boolean);
+
+      const newWin = new BrowserWindow({
+        width: 1400,
+        height: 900,
+        show: true,
+        title: APP_NAME,
+        webPreferences: {
+          preload: path.join(__dirname, "preload.cjs"),
+          contextIsolation: true
+        }
+      });
+
+      newWin.setMenu(null);
+
+      if (segments[0] === "extensions") {
+        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}`;
+        newWin.loadURL(galleryURL);
+      } else {
+        const localURL = `amp-gui://./${segments.join('/')}`;
+        newWin.loadURL(localURL);
+      }
+
+      return { action: "deny" };
+    }
+
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  win.webContents.on('will-navigate', (event, url) => {
+    const u = new URL(url);
+
+    if (u.hostname === "ampmod.codeberg.page") {
+      event.preventDefault();
+
+      const segments = u.pathname.split('/').filter(Boolean);
+
+      const newWin = new BrowserWindow({
+        width: 1400,
+        height: 900,
+        show: true,
+        title: APP_NAME,
+        webPreferences: {
+          preload: path.join(__dirname, "preload.cjs"),
+          contextIsolation: true
+        }
+      });
+
+      newWin.setMenu(null);
+
+      if (segments[0] === "extensions") {
+        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}`;
+        newWin.loadURL(galleryURL);
+      } else {
+        const localURL = `amp-gui://./${segments.join('/')}`;
+        newWin.loadURL(localURL);
+      }
+
+      return;
+    }
+
+    const sameOrigin = new URL(win.webContents.getURL()).origin === u.origin;
+    if (!sameOrigin) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
   });
 
   win.loadURL('amp-gui://./editor-desktop.html');

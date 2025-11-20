@@ -13,6 +13,7 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 const MIME_TYPES = {
+  '.txt': 'text/plain',
   '.html': 'text/html',
   '.js': 'text/javascript',
   '.css': 'text/css',
@@ -61,10 +62,27 @@ export const setupProtocols = () => {
   protocol.handle('ampmod-extension-gallery', async (request) => {
     try {
       let urlPath = request.url.replace('ampmod-extension-gallery://', '');
+      urlPath = urlPath.replace(/^\/+|\/+$/g, '');
 
-      const filePath = path.join(__dirname, 'extensions', urlPath);
+      let filePath = path.join(__dirname, 'extensions', urlPath);
 
-      const stat = await fs.stat(filePath);
+      // Auto-append .html if missing AND the raw path does not exist
+      let stat;
+      try {
+        stat = await fs.stat(filePath);
+      } catch {
+        if (!path.extname(filePath)) {
+          const htmlPath = filePath + '.html';
+          try {
+            stat = await fs.stat(htmlPath);
+            filePath = htmlPath;
+          } catch {
+            throw new Error(`Not found: ${filePath}`);
+          }
+        } else {
+          return;
+        }
+      }
 
       const content = await fs.readFile(filePath);
       const ext = path.extname(filePath).toLowerCase();
@@ -75,10 +93,13 @@ export const setupProtocols = () => {
       });
 
     } catch (err) {
-      return new Response(`alert('Please report on https://ampmod.flarum.cloud/t/bugs-and-glitches: ' + ${JSON.stringify(err.message)})`, {
-        status: 200,
-        headers: { 'content-type': 'application/javascript' }
-      });
+      return new Response(
+        `alert('Please report on https://ampmod.flarum.cloud/t/bugs-and-glitches: ' + ${JSON.stringify(err.message)})`,
+        {
+          status: 200,
+          headers: { 'content-type': 'application/javascript' }
+        }
+      );
     }
   });
 };
