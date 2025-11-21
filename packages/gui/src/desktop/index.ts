@@ -90,6 +90,12 @@ const createWindow = () => {
   win.webContents.setWindowOpenHandler(({ url }) => {
     const u = new URL(url);
 
+    // hack so the tile on the extension library linking to our gallery online works
+    if (u.pathname === "/extensions/" || u.pathname === "/extensions") {
+      shell.openExternal(url);
+      return { action: "deny" };
+    }
+
     if (u.hostname === "ampmod.codeberg.page") {
       const segments = u.pathname.split('/').filter(Boolean);
 
@@ -141,7 +147,15 @@ const createWindow = () => {
       });
 
       newWin.setMenu(null);
-
+      newWin.webContents.setWindowOpenHandler(({ url }) => {
+        shell.openExternal(url);
+        return { action: "deny" };
+      });
+      newWin.webContents.on('will-navigate', (event, url) => {
+        event.preventDefault();
+        shell.openExternal(url);
+      });
+  
       if (segments[0] === "extensions") {
         const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}`;
         newWin.loadURL(galleryURL);
