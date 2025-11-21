@@ -21,6 +21,23 @@ const createWindow = () => {
 
   win.setMenu(null);
 
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    const { responseHeaders, url } = details;
+    const parsed = new URL(url);
+
+    if (parsed.origin === "ampmod.codeberg.page" || parsed.origin === "https://ampmod.codeberg.page") {
+      // @ts-ignore
+      responseHeaders['Access-Control-Allow-Origin'] = ['*'];
+      // @ts-ignore
+      responseHeaders['Access-Control-Allow-Headers'] = ['*'];
+      // @ts-ignore
+      responseHeaders['Access-Control-Allow-Methods'] = ['GET, POST, PUT, DELETE, OPTIONS'];
+    }
+
+    callback({ responseHeaders });
+  });
+
+
   win.webContents.session.webRequest.onBeforeRequest(
     {
       urls: [
