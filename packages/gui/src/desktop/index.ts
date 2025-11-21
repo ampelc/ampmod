@@ -94,13 +94,13 @@ const createWindow = () => {
       const segments = u.pathname.split('/').filter(Boolean);
 
       const newWin = new BrowserWindow({
-        width: 1400,
-        height: 900,
+        width: 700,
+        height: 800,
         show: true,
         title: APP_NAME,
         webPreferences: {
-          preload: path.join(__dirname, "preload.cjs"),
-          contextIsolation: true
+          preload: path.join(__dirname, "preload-infoPages.cjs"),
+          contextIsolation: true,
         }
       });
 
@@ -130,8 +130,8 @@ const createWindow = () => {
       const segments = u.pathname.split('/').filter(Boolean);
 
       const newWin = new BrowserWindow({
-        width: 1400,
-        height: 900,
+        width: 450,
+        height: 700,
         show: true,
         title: APP_NAME,
         webPreferences: {
