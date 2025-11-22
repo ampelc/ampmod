@@ -1,4 +1,0 @@
-[submodule "packages/gui/src/desktop/extensions"]
-	path = packages/gui/src/desktop/extensions
-	url = https://codeberg.org/ampmod/extensions
-	branch = pages
