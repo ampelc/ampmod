@@ -78,7 +78,7 @@ export default () => (
                 <h2>My project broke!</h2>
                 <p>
                     Don't worry. You can report bugs with the new compiler on{' '}
-                    <a href="https://ampmod.flarum.cloud/t/bugs-and-glitches">the forums</a>. We'll fix it as soon as
+                    <a href="https://codeberg.org/ampmod/ampmod/issues">Codeberg</a>. We'll fix it as soon as
                     possible.
                 </p>
             </section>

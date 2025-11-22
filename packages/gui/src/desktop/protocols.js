@@ -53,7 +53,7 @@ export const setupProtocols = () => {
       });
 
     } catch (err) {
-      return new Response(`<h1>Failed to load</h1><p>Please report on <a href="https://ampmod.flarum.cloud/t/bugs-and-glitches">the forums</a>.</p><pre>${err.message}</pre>`, {
+      return new Response(`<h1>Failed to load</h1><p>Please report on <a href="https://codeberg.org/ampmod/ampmod/issues">the issue tracker</a>.</p><pre>${err.message}</pre>`, {
         status: 500,
         headers: { 'content-type': 'text/html' }
       });
@@ -94,7 +94,7 @@ export const setupProtocols = () => {
 
     } catch (err) {
       return new Response(
-        `alert('Please report on https://ampmod.flarum.cloud/t/bugs-and-glitches: ' + ${JSON.stringify(err.message)})`,
+        `alert('Please report on https://codeberg.org/ampmod/ampmod/issues: ' + ${JSON.stringify(err.message)})`,
         {
           status: 200,
           headers: { 'content-type': 'application/javascript' }

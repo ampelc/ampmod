@@ -6,7 +6,7 @@
     "codebergStatus": "Codeberg's status page",
     "error": "Loading error",
     "reload": "Reload",
-    "errorText": "Please provide the above backtrace and send it to the {forums} or {issueTracker}. Click {copy} to copy the backtrace.",
+    "errorText": "Please provide the above backtrace and send it to the {issueTracker}. Click {copy} to copy the backtrace.",
     "errorTips": "Try {nocache} or {eraseData}, which may fix some issues.",
     "nocache": "bypassing the cache",
     "eraseData": "erasing the data",

@@ -92,9 +92,6 @@ const Footer = () => {
                         </h3>
                         {APP_FORUMS && (
                             <>
-                                <a href="https://scratch.mit.edu/discuss/topic/806311/">
-                                    <Localise id="amp.onScratch" values={{APP_NAME}} />
-                                </a>
                                 <a href={APP_FORUMS}>
                                     <Localise id="tw.topicButton" values={{APP_NAME}} />
                                 </a>

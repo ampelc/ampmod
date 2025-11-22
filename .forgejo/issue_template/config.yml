@@ -2,6 +2,3 @@ contact_links:
     - name: Security vulnerabilities
       url: mailto:ampelectrecuted@gmail.com
       about: 'Please do not report security vulnerabilities publicly!'
-    - name: Help with AmpMod
-      url: https://ampmod.flarum.cloud/t/help-with-ampmod
-      about: 'Ask questions about AmpMod on the Help with AmpMod forum tag.'

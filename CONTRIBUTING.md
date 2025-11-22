@@ -1,7 +1,7 @@
 # Contributing guidelines
 
 If you don't want to use this repository but still found a bug or want to add a feature, we recommend
-posting on the [forums](https://ampmod.flarum.cloud) about it.
+making an issue about it.
 
 We used to have a style guide, but it is no longer enforced since it conflicts with
 Scratch's eslint configuration.
@@ -99,8 +99,8 @@ to be the same as your Scratch username.
 If you do not have a Scratch account, you can set `userID` to `0` and `username` to a nickname
 you go by. You can optionally set `img` if you want to use another image instead of the default
 Apple Cat; note that the image should be a perfect square else it will be squashed. You can also
-optionally set `href` to a personal website, forge profile, etc. that complies with [our \
-guidelines](https://ampmod.flarum.cloud/p/1).
+optionally set `href` to a personal website, forge profile, etc. that complies with the
+[Scratch Community Guidelines](https://scratch.mit.edu/community_guidelines).
 
 Example:
 

@@ -3,13 +3,6 @@ description: If you found a bug in AmpMod, use this form to report it.
 title: 'Bug: '
 labels: 'Kind/Bug'
 body:
-    - type: markdown
-      attributes:
-          value: |
-              > [!CAUTION]
-              > **If you are reporting a vulnerability, please email ampelectrecuted@gmail.com instead of posting here. Thank you.**
-
-              Welcome to the issue tracker! If you do not have detailed information about this bug, we recommend posting on https://ampmod.flarum.cloud/t/bugs-and-glitches instead.
     - type: textarea
       id: expected
       attributes:

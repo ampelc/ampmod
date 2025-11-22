@@ -21,7 +21,7 @@ function migrateLocalStorageKeys(oldPrefix, newPrefix) {
     }
     keysToMigrate.forEach(oldKey => {
         window.SetCustomSplashInfo(
-            `Migrating key name ${oldKey}... If this fails, <a href="https://ampmod.flarum.cloud/t/bugs-and-glitches">please report as a bug</a>.`
+            `Migrating key name ${oldKey}... If this fails, <a href="https://codeberg.org/ampmod/ampmod/issues">please report as a bug</a>.`
         );
         const newKey = newPrefix + oldKey.substring(oldPrefix.length);
         const value = localStorage.getItem(oldKey);
@@ -166,7 +166,7 @@ export async function runAllMigrations() {
             const newDbName = newPrefix + oldDbName.substring(oldPrefix.length);
             try {
                 window.SetCustomSplashInfo(
-                    `Migrating database ${oldDbName}... If this fails, <a href="https://ampmod.flarum.cloud/t/bugs-and-glitches">please report as a bug</a>.`
+                    `Migrating database ${oldDbName}... If this fails, <a href="https://codeberg.org/ampmod/ampmod/issues">please report as a bug</a>.`
                 );
                 await migrateIndexedDB(oldDbName, newDbName);
                 migrationOccurred = true;

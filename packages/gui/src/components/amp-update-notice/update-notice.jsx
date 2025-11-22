@@ -54,7 +54,7 @@ export default props => (
         This compiler has been ported to AmpMod to make projects made in it run
         faster as well. If any errors occur with AmpMod-only functionality,
         report them{' '}
-        <a href="https://ampmod.flarum.cloud/t/bugs-and-glitches" target="_blank" rel="noopener noreferrer">here</a>. For
+        <a href="https://codeberg.org/ampmod/ampmod/issues" target="_blank" rel="noopener noreferrer">here</a>. For
         functionality from TurboWarp or vanilla Scratch, report the issue{' '}
         <a href="https://scratch.mit.edu/users/GarboMuffin" target="_blank" rel="noopener noreferrer">here</a>.
       </p>

@@ -91,20 +91,6 @@ const Credits = () => (
                     </h2>
                     <p><Localise id="faq.performance.a" values={{APP_NAME}} /></p>
                 </section>
-
-                {/* Community */}
-                <section>
-                    <h2>
-                        <Localise id="faq.contribute.q" values={{APP_NAME}} />
-                    </h2>
-                    <p>
-                        <Localise id="faq.contribute.a" values={{
-                            applicationsTagOnForums: (
-                                <a href="https://ampmod.flarum.cloud/t/applications"><Localise id="faq.applicationsTagOnForums" /></a>
-                            )
-                        }} />
-                    </p>
-                </section>
             </div>
 
             <Footer />

@@ -74,11 +74,11 @@ const Welcome = ({intl, isRtl, onContinue}) => {
                                                 APP_NAME,
                                                 forumsLink: (
                                                     <a
-                                                        href="https://ampmod.flarum.cloud"
+                                                        href="https://codeberg.org/ampmod/ampmod/issues"
                                                         target="_blank"
                                                         rel="noreferrer noopener"
                                                     >
-                                                        AmpMod Forums
+                                                        Codeberg
                                                     </a>
                                                 )
                                             }}
@@ -135,7 +135,7 @@ const Welcome = ({intl, isRtl, onContinue}) => {
                                 <p>
                                     <FormattedMessage
                                         id="amp.welcome.help"
-                                        defaultMessage="Check out the {wikiLink} or join the conversation on the {forumsLink}."
+                                        defaultMessage="Check out the {wikiLink}."
                                         description="Welcome modal help links"
                                         values={{
                                             wikiLink: (
@@ -145,15 +145,6 @@ const Welcome = ({intl, isRtl, onContinue}) => {
                                                     rel="noreferrer noopener"
                                                 >
                                                     AmpMod Wiki
-                                                </a>
-                                            ),
-                                            forumsLink: (
-                                                <a
-                                                    href="https://ampmod.flarum.cloud"
-                                                    target="_blank"
-                                                    rel="noreferrer noopener"
-                                                >
-                                                    AmpMod Forums
                                                 </a>
                                             )
                                         }}
