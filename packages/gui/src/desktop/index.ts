@@ -130,7 +130,7 @@ const createWindow = () => {
       newWin.setMenu(null);
 
       if (segments[0] === "extensions") {
-        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}`;
+        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}.html`;
         newWin.loadURL(galleryURL);
       } else {
         const localURL = `amp-gui://./${segments.join('/')}`;
