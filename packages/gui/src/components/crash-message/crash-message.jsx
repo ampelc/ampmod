@@ -38,20 +38,11 @@ const CrashMessage = props => {
                             'This page has crashed.' +
                             ' Please refresh your page to try' +
                             ' again. If this continues, please report the error to' +
-                            ' the {forumLink} or {issueTracker}.'
+                            ' the {issueTracker}.'
                         }
                         description="Message to inform the user that page has crashed."
                         id="tw.gui.crashMessage.description"
                         values={{
-                            forumLink: (
-                                <a href={APP_FORUMS_BUGS} rel="noreferrer noopener" target="_blank">
-                                    <FormattedMessage
-                                        defaultMessage="forums"
-                                        description="Link text to the AmpMod forums"
-                                        id="gui.crashMessage.forumLinkText"
-                                    />
-                                </a>
-                            ),
                             issueTracker: (
                                 <a href={APP_CONTACT} rel="noreferrer noopener" target="_blank">
                                     <FormattedMessage

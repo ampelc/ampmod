@@ -30,5 +30,5 @@ module.exports.APP_DESCRIPTION = `${module.exports.APP_NAME} is a block-based pr
 module.exports.APP_CONTACT = 'https://codeberg.org/ampmod/ampmod/issues';
 module.exports.APP_WIKI = 'https://ampmod.miraheze.org';
 // module.exports.APP_FORUMS = 'https://ampmod.flarum.cloud';
-module.exports.APP_BLOG = 'https://ampmod.flarum.cloud/blog';
+// module.exports.APP_BLOG = 'https://ampmod.flarum.cloud/blog';
 // module.exports.APP_FORUMS_BUGS = 'https://ampmod.flarum.cloud/t/bugs-and-glitches';

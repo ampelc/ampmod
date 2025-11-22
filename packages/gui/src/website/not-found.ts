@@ -21,10 +21,6 @@ root.innerHTML = `
                 Are you looking for the <a href="editor">${APP_NAME} editor</a> or 
                 <a href="player">player</a>?
             </p>
-            <p>
-                If you have any questions or concerns, you can post on the 
-                <a href="${APP_FORUMS}">forums</a>.
-            </p>
         </section>
     </main>
 `;

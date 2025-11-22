@@ -49,9 +49,6 @@ const Home = () => (
                             <Localise id="needHelp" />
                         </h2>
                         <div className={styles.buttonRow}>
-                            <a href={APP_FORUMS} className={styles.button}>
-                                <Localise id="visitForums" />
-                            </a>
                             <a href={APP_WIKI} className={styles.button}>
                                 <Localise id="visitWiki" />
                             </a>
