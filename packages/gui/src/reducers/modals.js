@@ -44,6 +44,7 @@ const initialState = {
     [MODAL_RESTORE_POINTS]: false,
     [MODAL_FONTS]: false,
     [MODAL_UNKNOWN_PLATFORM]: false,
+    [MODAL_UNKNOWN_VERSION]: false,
     [MODAL_INVALID_PROJECT]: false,
     [MODAL_UPDATE_NOTICE]: false
 };
@@ -128,6 +129,9 @@ const openFontsModal = function () {
 };
 const openUnknownPlatformModal = function () {
     return openModal(MODAL_UNKNOWN_PLATFORM);
+};
+const openUnknownVersionModal = function () {
+    return openModal(MODAL_UNKNOWN_VERSION);
 };
 const openInvalidProjectModal = function () {
     return openModal(MODAL_INVALID_PROJECT);

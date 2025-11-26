@@ -838,6 +838,12 @@ class Runtime extends EventEmitter {
         return 'PLATFORM_MISMATCH';
     }
     /**
+     * Event name when platform version inside a project is older than the runtime.
+     */
+    static get VERSION_OUTDATED () {
+        return 'VERSION_OUTDATED';
+    }
+    /**
      * How rapidly we try to step threads by default, in ms.
      */
     static get THREAD_STEP_INTERVAL () {

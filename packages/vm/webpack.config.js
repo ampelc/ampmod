@@ -2,6 +2,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const defaultsDeep = require('lodash.defaultsdeep');
 const webpack = require('webpack');
 const path = require('path');
+const {version} = require('../../package.json');
 
 const base = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -15,6 +16,11 @@ const base = {
         library: 'VirtualMachine',
         filename: '[name].js'
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env.ampmod_version': JSON.stringify(version)
+        })
+    ],
     module: {
         rules: [
             {

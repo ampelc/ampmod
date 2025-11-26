@@ -1412,6 +1412,41 @@ const checkPlatformCompatibility = (json, runtime) => {
     });
 };
 /**
+ * @param {object} json
+ * @param {Runtime} runtime
+ * @returns {void|Promise<void>} Resolves when the user has acknowledged any compatibilities, if any exist.
+ */
+const checkVersionCompatibility = (json, runtime) => {
+    if (!json.meta || !json.meta.platform || !json.meta.platform.version) {
+        return;
+    }
+    const projectVersion = json.meta.platform.version
+        .split('.')
+        .map(part => parseInt(part, 10));
+    const currentVersion = process.env.ampmod_version
+        .split('.')
+        .map(part => parseInt(part, 10));
+    if (projectVersion[0] < currentVersion[0]) {
+        return;
+    }
+    if (projectVersion[1] < currentVersion[1]) {
+        return;
+    }
+    // Minor versions are usually just bugfixes, so don't check
+    let pending = runtime.listenerCount(Runtime.VERSION_OUTDATED);
+    if (pending === 0) {
+        return;
+    }
+    return new Promise(resolve => {
+        runtime.emit(Runtime.VERSION_OUTDATED, json.meta.platform, () => {
+            pending--;
+            if (pending === 0) {
+                resolve();
+            }
+        });
+    });
+};
+/**
  * Deserialize the specified representation of a VM runtime and loads it into the provided runtime instance.
  * @param  {object} json - JSON representation of a VM runtime.
  * @param  {Runtime} runtime - Runtime instance
@@ -1421,6 +1456,7 @@ const checkPlatformCompatibility = (json, runtime) => {
  */
 const deserialize = async function (json, runtime, zip, isSingleSprite) {
     await checkPlatformCompatibility(json, runtime);
+    await checkVersionCompatibility(json, runtime);
     const extensions = {
         extensionIDs: new Set(),
         extensionURLs: new Map()

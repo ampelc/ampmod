@@ -36,6 +36,7 @@ import TWCustomExtensionModal from '../../containers/tw-custom-extension-modal.j
 import TWRestorePointManager from '../../containers/tw-restore-point-manager.jsx';
 import TWFontsModal from '../../containers/tw-fonts-modal.jsx';
 import TWUnknownPlatformModal from '../../containers/tw-unknown-platform-modal.jsx';
+import AmpUnknownVersionModal from '../../containers/amp-unknown-version-modal.jsx';
 import TWInvalidProjectModal from '../../containers/tw-invalid-project-modal.jsx';
 import UpdateNoticeModal from '../amp-update-notice/update-notice';
 
@@ -168,6 +169,7 @@ const GUIComponent = props => {
         invalidProjectModalVisible,
         vm,
         updateNoticeModalVisible,
+        unknownVersionModalVisible,
         ...componentProps
     } = omit(props, 'dispatch');
 
@@ -205,6 +207,7 @@ const GUIComponent = props => {
                         {customExtensionModalVisible && <TWCustomExtensionModal />}
                         {fontsModalVisible && <TWFontsModal />}
                         {unknownPlatformModalVisible && <TWUnknownPlatformModal />}
+                        {unknownVersionModalVisible && <AmpUnknownVersionModal />}
                         {invalidProjectModalVisible && <TWInvalidProjectModal />}
                     </React.Fragment>
                 );
@@ -532,6 +535,7 @@ GUIComponent.propTypes = {
     customExtensionModalVisible: PropTypes.bool,
     fontsModalVisible: PropTypes.bool,
     unknownPlatformModalVisible: PropTypes.bool,
+    unknownVersionModalVisible: PropTypes.bool,
     invalidProjectModalVisible: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
 };
