@@ -92,6 +92,7 @@ class SettingsMenu extends React.Component {
             canChangeTheme,
             isRtl,
             onClickDesktopSettings,
+            onClickAddonSettings,
             onOpenCustomSettings,
             onOpenAltCustomSettings,
             onRequestClose,
@@ -137,10 +138,10 @@ class SettingsMenu extends React.Component {
                                     <TWGuiThemeMenu onOpenCustomSettings={onOpenAltCustomSettings} />
                                     <TWBlocksThemeMenu onOpenCustomSettings={onOpenCustomSettings} />
                                     <TWAccentThemeMenu />
-                                    <AmpAddonSettings />
                                 </>
                             )}
                             {onClickDesktopSettings && <TWDesktopSettings onClick={onClickDesktopSettings} />}
+                            <AmpAddonSettings handleClickAddonSettings={onClickAddonSettings} />
                             <AmpInstallPWA />
                             {/* <AmpShowWelcome /> */}
 

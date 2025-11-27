@@ -1,22 +1,19 @@
-const ArgumentType = require('../../extension-support/argument-type');
-const BlockType = require('../../extension-support/block-type');
-const TargetType = require('../../extension-support/target-type');
-const Cast = require('../../util/cast');
-const Clone = require('../../util/clone');
-const Color = require('../../util/color');
-const formatMessage = require('format-message');
-const MathUtil = require('../../util/math-util');
-const log = require('../../util/log');
-const StageLayering = require('../../engine/stage-layering');
-
+import ArgumentType from '../../extension-support/argument-type.js';
+import BlockType from '../../extension-support/block-type.js';
+import TargetType from '../../extension-support/target-type.js';
+import Cast from '../../util/cast.js';
+import Clone from '../../util/clone.js';
+import Color from '../../util/color.js';
+import * as formatMessage from 'format-message';
+import MathUtil from '../../util/math-util.js';
+import log from '../../util/log.js';
+import StageLayering from '../../engine/stage-layering.js';
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const blockIconURI =
-    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+cGVuLWljb248L3RpdGxlPjxnIHN0cm9rZT0iIzU3NUU3NSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik04Ljc1MyAzNC42MDJsLTQuMjUgMS43OCAxLjc4My00LjIzN2MxLjIxOC0yLjg5MiAyLjkwNy01LjQyMyA1LjAzLTcuNTM4TDMxLjA2NiA0LjkzYy44NDYtLjg0MiAyLjY1LS40MSA0LjAzMi45NjcgMS4zOCAxLjM3NSAxLjgxNiAzLjE3My45NyA0LjAxNUwxNi4zMTggMjkuNTljLTIuMTIzIDIuMTE2LTQuNjY0IDMuOC03LjU2NSA1LjAxMiIgZmlsbD0iI0ZGRiIvPjxwYXRoIGQ9Ik0yOS40MSA2LjExcy00LjQ1LTIuMzc4LTguMjAyIDUuNzcyYy0xLjczNCAzLjc2Ni00LjM1IDEuNTQ2LTQuMzUgMS41NDYiLz48cGF0aCBkPSJNMzYuNDIgOC44MjVjMCAuNDYzLS4xNC44NzMtLjQzMiAxLjE2NGwtOS4zMzUgOS4zYy4yODItLjI5LjQxLS42NjguNDEtMS4xMiAwLS44NzQtLjUwNy0xLjk2My0xLjQwNi0yLjg2OC0xLjM2Mi0xLjM1OC0zLjE0Ny0xLjgtNC4wMDItLjk5TDMwLjk5IDUuMDFjLjg0NC0uODQgMi42NS0uNDEgNC4wMzUuOTYuODk4LjkwNCAxLjM5NiAxLjk4MiAxLjM5NiAyLjg1NU0xMC41MTUgMzMuNzc0Yy0uNTczLjMwMi0xLjE1Ny41Ny0xLjc2NC44M0w0LjUgMzYuMzgybDEuNzg2LTQuMjM1Yy4yNTgtLjYwNC41My0xLjE4Ni44MzMtMS43NTcuNjkuMTgzIDEuNDQ4LjYyNSAyLjEwOCAxLjI4Mi42Ni42NTggMS4xMDIgMS40MTIgMS4yODcgMi4xMDIiIGZpbGw9IiM0Qzk3RkYiLz48cGF0aCBkPSJNMzYuNDk4IDguNzQ4YzAgLjQ2NC0uMTQuODc0LS40MzMgMS4xNjVsLTE5Ljc0MiAxOS42OGMtMi4xMyAyLjExLTQuNjczIDMuNzkzLTcuNTcyIDUuMDFMNC41IDM2LjM4bC45NzQtMi4zMTYgMS45MjUtLjgwOGMyLjg5OC0xLjIxOCA1LjQ0LTIuOSA3LjU3LTUuMDFsMTkuNzQzLTE5LjY4Yy4yOTItLjI5Mi40MzItLjcwMi40MzItMS4xNjUgMC0uNjQ2LS4yNy0xLjQtLjc4LTIuMTIyLjI1LjE3Mi41LjM3Ny43MzcuNjE0Ljg5OC45MDUgMS4zOTYgMS45ODMgMS4zOTYgMi44NTYiIGZpbGw9IiM1NzVFNzUiIG9wYWNpdHk9Ii4xNSIvPjxwYXRoIGQ9Ik0xOC40NSAxMi44M2MwIC41LS40MDQuOTA1LS45MDQuOTA1cy0uOTA1LS40MDUtLjkwNS0uOTA0YzAtLjUuNDA3LS45MDMuOTA2LS45MDMuNSAwIC45MDQuNDA0LjkwNC45MDR6IiBmaWxsPSIjNTc1RTc1Ii8+PC9nPjwvc3ZnPg==';
-
+const blockIconURI = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+cGVuLWljb248L3RpdGxlPjxnIHN0cm9rZT0iIzU3NUU3NSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik04Ljc1MyAzNC42MDJsLTQuMjUgMS43OCAxLjc4My00LjIzN2MxLjIxOC0yLjg5MiAyLjkwNy01LjQyMyA1LjAzLTcuNTM4TDMxLjA2NiA0LjkzYy44NDYtLjg0MiAyLjY1LS40MSA0LjAzMi45NjcgMS4zOCAxLjM3NSAxLjgxNiAzLjE3My45NyA0LjAxNUwxNi4zMTggMjkuNTljLTIuMTIzIDIuMTE2LTQuNjY0IDMuOC03LjU2NSA1LjAxMiIgZmlsbD0iI0ZGRiIvPjxwYXRoIGQ9Ik0yOS40MSA2LjExcy00LjQ1LTIuMzc4LTguMjAyIDUuNzcyYy0xLjczNCAzLjc2Ni00LjM1IDEuNTQ2LTQuMzUgMS41NDYiLz48cGF0aCBkPSJNMzYuNDIgOC44MjVjMCAuNDYzLS4xNC44NzMtLjQzMiAxLjE2NGwtOS4zMzUgOS4zYy4yODItLjI5LjQxLS42NjguNDEtMS4xMiAwLS44NzQtLjUwNy0xLjk2My0xLjQwNi0yLjg2OC0xLjM2Mi0xLjM1OC0zLjE0Ny0xLjgtNC4wMDItLjk5TDMwLjk5IDUuMDFjLjg0NC0uODQgMi42NS0uNDEgNC4wMzUuOTYuODk4LjkwNCAxLjM5NiAxLjk4MiAxLjM5NiAyLjg1NU0xMC41MTUgMzMuNzc0Yy0uNTczLjMwMi0xLjE1Ny41Ny0xLjc2NC44M0w0LjUgMzYuMzgybDEuNzg2LTQuMjM1Yy4yNTgtLjYwNC41My0xLjE4Ni44MzMtMS43NTcuNjkuMTgzIDEuNDQ4LjYyNSAyLjEwOCAxLjI4Mi42Ni42NTggMS4xMDIgMS40MTIgMS4yODcgMi4xMDIiIGZpbGw9IiM0Qzk3RkYiLz48cGF0aCBkPSJNMzYuNDk4IDguNzQ4YzAgLjQ2NC0uMTQuODc0LS40MzMgMS4xNjVsLTE5Ljc0MiAxOS42OGMtMi4xMyAyLjExLTQuNjczIDMuNzkzLTcuNTcyIDUuMDFMNC41IDM2LjM4bC45NzQtMi4zMTYgMS45MjUtLjgwOGMyLjg5OC0xLjIxOCA1LjQ0LTIuOSA3LjU3LTUuMDFsMTkuNzQzLTE5LjY4Yy4yOTItLjI5Mi40MzItLjcwMi40MzItMS4xNjUgMC0uNjQ2LS4yNy0xLjQtLjc4LTIuMTIyLjI1LjE3Mi41LjM3Ny43MzcuNjE0Ljg5OC45MDUgMS4zOTYgMS45ODMgMS4zOTYgMi44NTYiIGZpbGw9IiM1NzVFNzUiIG9wYWNpdHk9Ii4xNSIvPjxwYXRoIGQ9Ik0xOC40NSAxMi44M2MwIC41LS40MDQuOTA1LS45MDQuOTA1cy0uOTA1LS40MDUtLjkwNS0uOTA0YzAtLjUuNDA3LS45MDMuOTA2LS45MDMuNSAwIC45MDQuNDA0LjkwNC45MDR6IiBmaWxsPSIjNTc1RTc1Ii8+PC9nPjwvc3ZnPg==';
 /**
  * Enum for pen color parameter values.
  * @readonly
@@ -28,7 +25,6 @@ const ColorParam = {
     BRIGHTNESS: 'brightness',
     TRANSPARENCY: 'transparency'
 };
-
 /**
  * @typedef {object} PenState - the pen state associated with a particular target.
  * @property {Boolean} penDown - tracks whether the pen should draw for this target.
@@ -36,7 +32,6 @@ const ColorParam = {
  * @property {PenAttributes} penAttributes - cached pen attributes for the renderer. This is the authoritative value for
  *   diameter but not for pen color.
  */
-
 /**
  * Host for the Pen-related blocks in Scratch 3.0
  * @param {Runtime} runtime - the runtime instantiating this block package.
@@ -49,28 +44,23 @@ class Scratch3PenBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
-
         /**
          * The ID of the renderer Drawable corresponding to the pen layer.
          * @type {int}
          * @private
          */
         this._penDrawableId = -1;
-
         /**
          * The ID of the renderer Skin corresponding to the pen layer.
          * @type {int}
          * @private
          */
         this._penSkinId = -1;
-
         this._onTargetCreated = this._onTargetCreated.bind(this);
         this._onTargetMoved = this._onTargetMoved.bind(this);
-
         runtime.on('targetWasCreated', this._onTargetCreated);
         runtime.on('RUNTIME_DISPOSED', this.clear.bind(this));
     }
-
     /**
      * The default pen state, to be used when a target has no existing pen state.
      * @type {PenState}
@@ -89,7 +79,6 @@ class Scratch3PenBlocks {
             }
         };
     }
-
     /**
      * The minimum and maximum allowed pen size.
      * The maximum is twice the diagonal of the stage, so that even an
@@ -99,7 +88,6 @@ class Scratch3PenBlocks {
     static get PEN_SIZE_RANGE () {
         return {min: 1, max: 1200};
     }
-
     /**
      * The key to load & store a target's pen-related state.
      * @type {string}
@@ -109,7 +97,6 @@ class Scratch3PenBlocks {
         // Make sure to update those if this changes.
         return 'Scratch.pen';
     }
-
     /**
      * Clamp a pen size value to the range allowed by the pen.
      * @param {number} requestedSize - the requested pen size.
@@ -117,19 +104,12 @@ class Scratch3PenBlocks {
      * @private
      */
     _clampPenSize (requestedSize) {
-        if (
-            (this.runtime.renderer && this.runtime.renderer.useHighQualityRender) ||
-            !this.runtime.runtimeOptions.miscLimits
-        ) {
+        if ((this.runtime.renderer && this.runtime.renderer.useHighQualityRender) ||
+            !this.runtime.runtimeOptions.miscLimits) {
             return Math.max(0, requestedSize);
         }
-        return MathUtil.clamp(
-            requestedSize,
-            Scratch3PenBlocks.PEN_SIZE_RANGE.min,
-            Scratch3PenBlocks.PEN_SIZE_RANGE.max
-        );
+        return MathUtil.clamp(requestedSize, Scratch3PenBlocks.PEN_SIZE_RANGE.min, Scratch3PenBlocks.PEN_SIZE_RANGE.max);
     }
-
     /**
      * Retrieve the ID of the renderer "Skin" corresponding to the pen layer. If
      * the pen Skin doesn't yet exist, create it.
@@ -148,7 +128,6 @@ class Scratch3PenBlocks {
         }
         return this._penSkinId;
     }
-
     /**
      * @param {Target} target - collect pen state for this target. Probably, but not necessarily, a RenderedTarget.
      * @returns {PenState} the mutable pen state associated with that target. This will be created if necessary.
@@ -162,7 +141,6 @@ class Scratch3PenBlocks {
         }
         return penState;
     }
-
     /**
      * When a pen-using Target is cloned, clone the pen state.
      * @param {Target} newTarget - the newly created target.
@@ -181,7 +159,6 @@ class Scratch3PenBlocks {
             }
         }
     }
-
     /**
      * Handle a target which has moved. This only fires when the pen is down.
      * @param {RenderedTarget} target - the target which has moved.
@@ -201,7 +178,6 @@ class Scratch3PenBlocks {
             }
         }
     }
-
     /**
      * Wrap a color input into the range (0,100).
      * @param {number} value - the value to be wrapped.
@@ -211,7 +187,6 @@ class Scratch3PenBlocks {
     _wrapColor (value) {
         return MathUtil.wrapClamp(value, 0, 100);
     }
-
     /**
      * Initialize color parameters menu with localized strings
      * @returns {array} of the localized text and values for each menu element
@@ -253,7 +228,6 @@ class Scratch3PenBlocks {
             }
         ];
     }
-
     /**
      * Clamp a pen color parameter to the range (0,100).
      * @param {number} value - the value to be clamped.
@@ -263,7 +237,6 @@ class Scratch3PenBlocks {
     _clampColorParam (value) {
         return MathUtil.clamp(value, 0, 100);
     }
-
     /**
      * Convert an alpha value to a pen transparency value.
      * Alpha ranges from 0 to 1, where 0 is transparent and 1 is opaque.
@@ -275,7 +248,6 @@ class Scratch3PenBlocks {
     _alphaToTransparency (alpha) {
         return (1.0 - alpha) * 100.0;
     }
-
     /**
      * Convert a pen transparency value to an alpha value.
      * Alpha ranges from 0 to 1, where 0 is transparent and 1 is opaque.
@@ -287,7 +259,6 @@ class Scratch3PenBlocks {
     _transparencyToAlpha (transparency) {
         return 1.0 - transparency / 100.0;
     }
-
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
@@ -555,7 +526,6 @@ class Scratch3PenBlocks {
             }
         };
     }
-
     /**
      * The pen "clear" block clears the pen layer's contents.
      */
@@ -567,7 +537,6 @@ class Scratch3PenBlocks {
             this.runtime.requestRedraw();
         }
     }
-
     /**
      * The pen "stamp" block stamps the current drawable's image onto the pen layer.
      * @param {object} args - the block arguments.
@@ -584,7 +553,6 @@ class Scratch3PenBlocks {
             this.runtime.requestRedraw();
         }
     }
-
     /**
      * The pen "pen down" block causes the target to leave pen trails on future motion.
      * @param {object} args - the block arguments.
@@ -596,23 +564,19 @@ class Scratch3PenBlocks {
     _penDown (target) {
         // used by compiler
         const penState = this._getPenState(target);
-
         if (!penState.penDown) {
             penState.penDown = true;
             target.onTargetMoved = this._onTargetMoved;
         }
-
         const penSkinId = this._getPenLayerID();
         if (penSkinId >= 0) {
             this.runtime.renderer.penPoint(penSkinId, penState.penAttributes, target.x, target.y);
             this.runtime.requestRedraw();
         }
     }
-
     isPenDown (args, util) {
         return this._getPenState(util.target).penDown;
     }
-
     /**
      * The pen "pen up" block stops the target from leaving pen trails.
      * @param {object} args - the block arguments.
@@ -624,13 +588,11 @@ class Scratch3PenBlocks {
     _penUp (target) {
         // used by compiler
         const penState = this._getPenState(target);
-
         if (penState.penDown) {
             penState.penDown = false;
             target.onTargetMoved = null;
         }
     }
-
     /**
      * The pen "set pen color to {color}" block sets the pen to a particular RGB color.
      * The transparency is reset to 0.
@@ -654,13 +616,10 @@ class Scratch3PenBlocks {
         } else {
             penState.transparency = 0;
         }
-
         // Set the legacy "shade" value the same way scratch 2 did.
         penState._shade = penState.brightness / 2;
-
         this._updatePenColor(penState);
     }
-
     /**
      * Update the cached color from the color, saturation, brightness and transparency values
      * in the provided PenState object.
@@ -678,7 +637,6 @@ class Scratch3PenBlocks {
         penState.penAttributes.color4f[2] = rgb.b / 255.0;
         penState.penAttributes.color4f[3] = this._transparencyToAlpha(penState.transparency);
     }
-
     /**
      * Set or change a single color parameter on the pen state, and update the pen color.
      * @param {ColorParam} param - the name of the color parameter to set or change.
@@ -707,7 +665,6 @@ class Scratch3PenBlocks {
         }
         this._updatePenColor(penState);
     }
-
     /**
      * The "change pen {ColorParam} by {number}" block changes one of the pen's color parameters
      * by a given amound.
@@ -720,7 +677,6 @@ class Scratch3PenBlocks {
         const penState = this._getPenState(util.target);
         this._setOrChangeColorParam(args.COLOR_PARAM, Cast.toNumber(args.VALUE), penState, true);
     }
-
     /**
      * The "set pen {ColorParam} to {number}" block sets one of the pen's color parameters
      * to a given amound.
@@ -733,7 +689,6 @@ class Scratch3PenBlocks {
         const penState = this._getPenState(util.target);
         this._setOrChangeColorParam(args.COLOR_PARAM, Cast.toNumber(args.VALUE), penState, false);
     }
-
     getPenColorParam (args, util) {
         const penState = this._getPenState(util.target);
         switch (args.COLOR_PARAM) {
@@ -751,7 +706,6 @@ class Scratch3PenBlocks {
             break;
         }
     }
-
     /**
      * The pen "change pen size by {number}" block changes the pen size by the given amount.
      * @param {object} args - the block arguments.
@@ -766,7 +720,6 @@ class Scratch3PenBlocks {
         const penAttributes = this._getPenState(target).penAttributes;
         penAttributes.diameter = this._clampPenSize(penAttributes.diameter + size);
     }
-
     /**
      * The pen "set pen size to {number}" block sets the pen size to the given amount.
      * @param {object} args - the block arguments.
@@ -781,11 +734,9 @@ class Scratch3PenBlocks {
         const penAttributes = this._getPenState(target).penAttributes;
         penAttributes.diameter = this._clampPenSize(size);
     }
-
     getPenSize (args, util) {
         return this._getPenState(util.target).penAttributes.diameter;
     }
-
     /* LEGACY OPCODES */
     /**
      * Scratch 2 "hue" param is equivelant to twice the new "color" param.
@@ -803,7 +754,6 @@ class Scratch3PenBlocks {
         this._setOrChangeColorParam(ColorParam.TRANSPARENCY, 0, penState, false);
         this._legacyUpdatePenColor(penState);
     }
-
     /**
      * Scratch 2 "hue" param is equivelant to twice the new "color" param.
      * @param {object} args - the block arguments.
@@ -818,10 +768,8 @@ class Scratch3PenBlocks {
         const penState = this._getPenState(target);
         const colorChange = hueChange / 2;
         this._setOrChangeColorParam(ColorParam.COLOR, colorChange, penState, true);
-
         this._legacyUpdatePenColor(penState);
     }
-
     /**
      * Use legacy "set shade" code to calculate RGB value for shade,
      * then convert back to HSV and store those components.
@@ -837,17 +785,15 @@ class Scratch3PenBlocks {
     _setPenShadeToNumber (shade, target) {
         const penState = this._getPenState(target);
         let newShade = Cast.toNumber(shade);
-
         // Wrap clamp the new shade value the way scratch 2 did.
         newShade = newShade % 200;
-        if (newShade < 0) newShade += 200;
-
+        if (newShade < 0) {
+            newShade += 200;
+        }
         // And store the shade that was used to compute this new color for later use.
         penState._shade = newShade;
-
         this._legacyUpdatePenColor(penState);
     }
-
     /**
      * Because "shade" cannot be backed out of hsv consistently, use the previously
      * stored penState._shade to make the shade change.
@@ -863,7 +809,6 @@ class Scratch3PenBlocks {
         const shadeChange = Cast.toNumber(shade);
         this._setPenShadeToNumber(penState._shade + shadeChange, target);
     }
-
     /**
      * Update the pen state's color from its hue & shade values, Scratch 2.0 style.
      * @param {object} penState - update the HSV & RGB values in this pen state from its hue & shade values.
@@ -882,15 +827,12 @@ class Scratch3PenBlocks {
         } else {
             rgb = Color.mixRgb(rgb, Color.RGB_WHITE, (shade - 50) / 60);
         }
-
         // Update the pen state according to new color
         const hsv = Color.rgbToHsv(rgb);
         penState.color = (100 * hsv.h) / 360;
         penState.saturation = 100 * hsv.s;
         penState.brightness = 100 * hsv.v;
-
         this._updatePenColor(penState);
     }
 }
-
-module.exports = Scratch3PenBlocks;
+export default Scratch3PenBlocks;

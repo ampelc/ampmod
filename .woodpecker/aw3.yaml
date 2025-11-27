@@ -26,10 +26,11 @@
 #
 
 when:
-  - event: tag
-    ref: refs/tags/**
-  - event: manual
-    ref: refs/tags/**
+    branch: [develop]
+    event: [push, manual]
+    paths:
+        - .woodpecker/*.yaml
+        - packages/**
 
 steps:
     - name: clone-pages
@@ -46,7 +47,7 @@ steps:
           - git config --global user.email "no@thankyou.com"
           - git config --global user.name "CI Builder"
           # clone and move the target repo
-          - git clone -b pages --depth=1 https://$CBTOKEN@codeberg.org/ampmod/pages.git amp-build
+          - git clone -b aw3 --depth=1 https://$CBTOKEN@codeberg.org/ampmod/pages.git amp-build
           - chmod -R a+w amp-build
     - name: install
       image: node:24-alpine
@@ -58,9 +59,7 @@ steps:
       image: node:24-alpine
       commands:
           - corepack enable
-          - NODE_ENV=production IS_CBP_BUILD=true SPA=true pnpm run build
-          # Only needed for custom domains
-          # - cp domains build/.domains
+          - NODE_ENV=production AW3=true ROOT=/ampmod/ ESBUILD_WORKERS=8 pnpm run build
     - name: push
       image: alpine/git
       environment:
@@ -72,12 +71,11 @@ steps:
           - git config --global --add safe.directory /woodpecker/src/codeberg.org/ampmod/ampmod/amp-build
           - git config --global user.email "no@thankyou.com"
           - git config --global user.name "CI Builder"
-          # Navigate to the canary build directory
+          # Navigate to the build directory
           - cd ./amp-build
           # Remove all previous files, then copy in the new build
           - git rm -rf ./*
-          - echo "/* index.html 200" > _redirects
           - cp -a ../packages/gui/build/. .
           - git add --all
           - git commit -m "Woodpecker CI Build at $( env TZ=America/Chicago date +'%Y-%m-%d %X %Z' )"
-          - git push -f -u origin canary
+          - git push -f -u origin aw3

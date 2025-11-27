@@ -1,5 +1,4 @@
 // @ts-check
-
 class VariablePool {
     /**
      * @param {string} prefix The prefix at the start of the variable name.
@@ -14,10 +13,8 @@ class VariablePool {
          */
         this.count = 0;
     }
-
     next () {
         return `${this.prefix}${this.count++}`;
     }
 }
-
-module.exports = VariablePool;
+export default VariablePool;

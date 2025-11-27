@@ -1,6 +1,5 @@
 // @ts-check
 /* eslint-disable no-eval */
-
 /**
  * @returns {boolean} true if the nullish coalescing operator (x ?? y) is supported.
  * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
@@ -15,7 +14,6 @@ const supportsNullishCoalescing = () => {
         return false;
     }
 };
-
-module.exports = {
+export default {
     supportsNullishCoalescing: supportsNullishCoalescing()
 };

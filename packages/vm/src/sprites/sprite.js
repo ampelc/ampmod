@@ -1,11 +1,10 @@
-const RenderedTarget = require('./rendered-target');
-const Blocks = require('../engine/blocks');
-const {loadSoundFromAsset} = require('../import/load-sound');
-const {loadCostumeFromAsset} = require('../import/load-costume');
-const newBlockIds = require('../util/new-block-ids');
-const StringUtil = require('../util/string-util');
-const StageLayering = require('../engine/stage-layering');
-
+import RenderedTarget from './rendered-target.js';
+import Blocks from '../engine/blocks.js';
+import {loadSoundFromAsset} from '../import/load-sound.js';
+import {loadCostumeFromAsset} from '../import/load-costume.js';
+import newBlockIds from '../util/new-block-ids.js';
+import StringUtil from '../util/string-util.js';
+import StageLayering from '../engine/stage-layering.js';
 class Sprite {
     /**
      * Sprite to be used on the Scratch stage.
@@ -49,13 +48,11 @@ class Sprite {
          * @type {Array.<!RenderedTarget>}
          */
         this.clones = [];
-
         this.soundBank = null;
         if (this.runtime && this.runtime.audioEngine) {
             this.soundBank = this.runtime.audioEngine.createBank();
         }
     }
-
     /**
      * Add an array of costumes, taking care to avoid duplicate names.
      * @param {!Array<object>} costumes Array of objects representing costumes.
@@ -66,7 +63,6 @@ class Sprite {
             this.addCostumeAt(costume, this.costumes_.length);
         }
     }
-
     /**
      * Get full costume list
      * @return {object[]} list of costumes. Note that mutating the returned list will not
@@ -76,7 +72,6 @@ class Sprite {
     get costumes () {
         return this.costumes_;
     }
-
     /**
      * Add a costume at the given index, taking care to avoid duplicate names.
      * @param {!object} costumeObject Object representing the costume.
@@ -90,7 +85,6 @@ class Sprite {
         costumeObject.name = StringUtil.unusedName(costumeObject.name, usedNames);
         this.costumes_.splice(index, 0, costumeObject);
     }
-
     /**
      * Delete a costume by index.
      * @param {number} index Costume index to be deleted
@@ -99,7 +93,6 @@ class Sprite {
     deleteCostumeAt (index) {
         return this.costumes.splice(index, 1)[0];
     }
-
     /**
      * Create a clone of this sprite.
      * @param {string=} optLayerGroup Optional layer group the clone's drawable should be added to
@@ -121,7 +114,6 @@ class Sprite {
         }
         return newClone;
     }
-
     /**
      * Disconnect a clone from this sprite. The clone is unmodified.
      * In particular, the clone's dispose() method is not called.
@@ -134,7 +126,6 @@ class Sprite {
             this.clones.splice(cloneIndex, 1);
         }
     }
-
     duplicate () {
         const newSprite = new Sprite(null, this.runtime);
         const blocksContainer = this.blocks._blocks;
@@ -144,33 +135,26 @@ class Sprite {
         copiedBlocks.forEach(block => {
             newSprite.blocks.createBlock(block);
         });
-
         const allNames = this.runtime.targets.map(t => t.sprite.name);
         newSprite.name = StringUtil.unusedName(this.name, allNames);
-
         const assetPromises = [];
-
         newSprite.costumes = this.costumes_.map(costume => {
             const newCostume = Object.assign({}, costume);
             assetPromises.push(loadCostumeFromAsset(newCostume, this.runtime));
             return newCostume;
         });
-
         newSprite.sounds = this.sounds.map(sound => {
             const newSound = Object.assign({}, sound);
             const soundAsset = sound.asset;
             assetPromises.push(loadSoundFromAsset(newSound, soundAsset, this.runtime, newSprite.soundBank));
             return newSound;
         });
-
         return Promise.all(assetPromises).then(() => newSprite);
     }
-
     dispose () {
         if (this.soundBank) {
             this.soundBank.dispose();
         }
     }
 }
-
-module.exports = Sprite;
+export default Sprite;

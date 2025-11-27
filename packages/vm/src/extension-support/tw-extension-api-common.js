@@ -1,10 +1,9 @@
-const ArgumentType = require('./argument-type');
-const BlockType = require('./block-type');
-const BlockShape = require('./tw-block-shape');
-const TargetType = require('./target-type');
-const Cast = require('../util/cast');
-const external = require('./tw-external');
-
+import ArgumentType from './argument-type.js';
+import BlockType from './block-type.js';
+import BlockShape from './tw-block-shape.js';
+import TargetType from './target-type.js';
+import Cast from '../util/cast.js';
+import external from './tw-external.js';
 const Scratch = {
     ArgumentType,
     BlockType,
@@ -13,5 +12,4 @@ const Scratch = {
     Cast,
     external
 };
-
-module.exports = Scratch;
+export default Scratch;

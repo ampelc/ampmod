@@ -1,17 +1,7 @@
-/**
- * @fileoverview
- * Many ScratchX extensions require jQuery to do things like loading scripts and making requests.
- * The real jQuery is pretty large and we'd rather not bring in everything, so this file reimplements
- * small stubs of a few jQuery methods.
- * It's just supposed to be enough to make existing ScratchX extensions work, nothing more.
- */
-
-const log = require('../util/log');
-
+import log from '../util/log.js';
 const jQuery = () => {
     throw new Error('Not implemented');
 };
-
 jQuery.getScript = (src, callback) => {
     const script = document.createElement('script');
     script.src = src;
@@ -21,7 +11,6 @@ jQuery.getScript = (src, callback) => {
     }
     document.body.appendChild(script);
 };
-
 /**
  * @param {Record<string, any>|undefined} obj
  * @returns {URLSearchParams}
@@ -35,19 +24,15 @@ const objectToQueryString = obj => {
     }
     return params;
 };
-
 let jsonpCallback = 0;
-
 jQuery.ajax = async (arg1, arg2) => {
     let options = {};
-
     if (arg1 && arg2) {
         options = arg2;
         options.url = arg1;
     } else if (arg1) {
         options = arg1;
     }
-
     const urlParameters = objectToQueryString(options.data);
     const getFinalURL = () => {
         const query = urlParameters.toString();
@@ -62,7 +47,6 @@ jQuery.ajax = async (arg1, arg2) => {
         }
         return url;
     };
-
     const successCallback = result => {
         if (options.success) {
             options.success(result);
@@ -76,7 +60,6 @@ jQuery.ajax = async (arg1, arg2) => {
             options.error(error);
         }
     };
-
     try {
         if (options.dataType === 'jsonp') {
             const callbackName = `_jsonp_callback${jsonpCallback++}`;
@@ -84,19 +67,15 @@ jQuery.ajax = async (arg1, arg2) => {
                 delete global[callbackName];
                 successCallback(data);
             };
-
             const callbackParameterName = options.jsonp || 'callback';
             urlParameters.set(callbackParameterName, callbackName);
-
             jQuery.getScript(getFinalURL());
             return;
         }
-
         if (options.dataType === 'script') {
             jQuery.getScript(getFinalURL(), successCallback);
             return;
         }
-
         const res = await fetch(getFinalURL(), {
             headers: options.headers
         });
@@ -108,5 +87,4 @@ jQuery.ajax = async (arg1, arg2) => {
         errorCallback(e);
     }
 };
-
-module.exports = jQuery;
+export default jQuery;

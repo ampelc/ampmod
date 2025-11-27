@@ -4,19 +4,10 @@
 @layer websiteDesign;
 
 @layer websiteDesign {
-    * {
-        box-sizing: border-box;
-        font-family: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-
-    code {
-        font-family: 'Ubuntu Mono', monospace;
-    }
-
     body {
         margin: 0;
         padding: 0;
-        background: $page-background !important;
+        background: $page-background;
         color: $page-foreground;
         min-height: 100vh;
 

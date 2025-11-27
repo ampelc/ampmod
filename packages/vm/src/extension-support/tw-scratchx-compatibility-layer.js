@@ -1,10 +1,6 @@
-// ScratchX API Documentation: https://github.com/LLK/scratchx/wiki/
-
-const ArgumentType = require('./argument-type');
-const BlockType = require('./block-type');
-
-const {argumentIndexToId, generateExtensionId} = require('./tw-scratchx-utilities');
-
+import ArgumentType from './argument-type.js';
+import BlockType from './block-type.js';
+import {argumentIndexToId, generateExtensionId} from './tw-scratchx-utilities.js';
 /**
  * @typedef ScratchXDescriptor
  * @property {unknown[][]} blocks
@@ -12,13 +8,11 @@ const {argumentIndexToId, generateExtensionId} = require('./tw-scratchx-utilitie
  * @property {string} [url]
  * @property {string} [displayName]
  */
-
 /**
  * @typedef ScratchXStatus
  * @property {0|1|2} status 0 is red/error, 1 is yellow/not ready, 2 is green/ready
  * @property {string} msg
  */
-
 const parseScratchXBlockType = type => {
     if (type === '' || type === ' ' || type === 'w') {
         return {
@@ -47,9 +41,7 @@ const parseScratchXBlockType = type => {
     }
     throw new Error(`Unknown ScratchX block type: ${type}`);
 };
-
 const isScratchCompatibleValue = v => typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean';
-
 /**
  * @param {string} argument ScratchX argument with leading % removed.
  * @param {unknown} defaultValue Default value, if any
@@ -57,12 +49,10 @@ const isScratchCompatibleValue = v => typeof v === 'string' || typeof v === 'num
 const parseScratchXArgument = (argument, defaultValue) => {
     const result = {};
     const hasDefaultValue = isScratchCompatibleValue(defaultValue);
-
     // defaultValue is ignored for booleans in Scratch 3
     if (hasDefaultValue && argument !== 'b') {
         result.defaultValue = defaultValue;
     }
-
     if (argument === 's') {
         result.type = ArgumentType.STRING;
         if (!hasDefaultValue) {
@@ -85,7 +75,6 @@ const parseScratchXArgument = (argument, defaultValue) => {
     }
     return result;
 };
-
 const wrapScratchXFunction = (originalFunction, argumentCount, async) => args => {
     // Convert Scratch 3's argument object to an argument list expected by ScratchX
     const argumentList = [];
@@ -99,7 +88,6 @@ const wrapScratchXFunction = (originalFunction, argumentCount, async) => args =>
     }
     return originalFunction(...argumentList);
 };
-
 /**
  * @param {string} name
  * @param {ScratchXDescriptor} descriptor
@@ -119,11 +107,9 @@ const convert = (name, descriptor, functions) => {
         getInfo: () => info,
         _getStatus: functions._getStatus
     };
-
     if (descriptor.url) {
         info.docsURI = descriptor.url;
     }
-
     for (const blockDescriptor of descriptor.blocks) {
         if (blockDescriptor.length === 1) {
             // Separator
@@ -134,7 +120,6 @@ const convert = (name, descriptor, functions) => {
         const blockText = blockDescriptor[1];
         const functionName = blockDescriptor[2];
         const defaultArgumentValues = blockDescriptor.slice(3);
-
         let scratchText = '';
         const argumentInfo = [];
         const blockTextParts = blockText.split(/%([\w.:]+)/g);
@@ -152,7 +137,6 @@ const convert = (name, descriptor, functions) => {
                 scratchText += part;
             }
         }
-
         const scratch3BlockType = parseScratchXBlockType(scratchXBlockType);
         const blockInfo = {
             opcode: functionName,
@@ -161,16 +145,10 @@ const convert = (name, descriptor, functions) => {
             arguments: argumentInfo
         };
         info.blocks.push(blockInfo);
-
         const originalFunction = functions[functionName];
         const argumentCount = argumentInfo.length;
-        scratch3Extension[functionName] = wrapScratchXFunction(
-            originalFunction,
-            argumentCount,
-            scratch3BlockType.async
-        );
+        scratch3Extension[functionName] = wrapScratchXFunction(originalFunction, argumentCount, scratch3BlockType.async);
     }
-
     const menus = descriptor.menus;
     if (menus) {
         const scratch3Menus = {};
@@ -183,12 +161,9 @@ const convert = (name, descriptor, functions) => {
         }
         info.menus = scratch3Menus;
     }
-
     return scratch3Extension;
 };
-
 const extensionNameToExtension = new Map();
-
 /**
  * @param {*} Scratch Scratch 3.0 extension API object
  * @returns {*} ScratchX-compatible API object
@@ -199,7 +174,6 @@ const createScratchX = Scratch => {
         extensionNameToExtension.set(name, scratch3Extension);
         Scratch.extensions.register(scratch3Extension);
     };
-
     /**
      * @param {string} extensionName
      * @returns {ScratchXStatus}
@@ -214,11 +188,9 @@ const createScratchX = Scratch => {
             msg: 'does not exist'
         };
     };
-
     return {
         register,
         getStatus
     };
 };
-
-module.exports = createScratchX;
+export default createScratchX;

@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from '../design.css';
 import newCompilerStyles from './minor-pages.css';
 

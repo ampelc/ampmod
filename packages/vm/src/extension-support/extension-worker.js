@@ -1,15 +1,11 @@
-/* eslint-env worker */
-
-const ScratchCommon = require('./tw-extension-api-common');
-const createScratchX = require('./tw-scratchx-compatibility-layer');
-const dispatch = require('../dispatch/worker-dispatch');
-const log = require('../util/log');
-const {isWorker} = require('./tw-extension-worker-context');
-const createTranslate = require('./tw-l10n');
-const AmpModApi = require('./ampmod-api');
-
+import ScratchCommon from './tw-extension-api-common.js';
+import createScratchX from './tw-scratchx-compatibility-layer.js';
+import dispatch from '../dispatch/worker-dispatch.js';
+import log from '../util/log.js';
+import {isWorker} from './tw-extension-worker-context.js';
+import createTranslate from './tw-l10n.js';
+import AmpModApi from './ampmod-api.js';
 const translate = createTranslate(null);
-
 const loadScripts = url => {
     if (isWorker) {
         importScripts(url);
@@ -25,29 +21,22 @@ const loadScripts = url => {
         });
     }
 };
-
 class ExtensionWorker {
     constructor () {
         this.nextExtensionId = 0;
-
         this.initialRegistrations = [];
-
         this.firstRegistrationPromise = new Promise(resolve => {
             this.firstRegistrationCallback = resolve;
         });
-
         dispatch.waitForConnection.then(() => {
             dispatch.call('extensions', 'allocateWorker').then(async x => {
                 const [id, extension] = x;
                 this.workerId = id;
-
                 try {
                     await loadScripts(extension);
                     await this.firstRegistrationPromise;
-
                     const initialRegistrations = this.initialRegistrations;
                     this.initialRegistrations = null;
-
                     Promise.all(initialRegistrations).then(() => dispatch.call('extensions', 'onWorkerInit', id));
                 } catch (e) {
                     log.error(e);
@@ -55,10 +44,8 @@ class ExtensionWorker {
                 }
             });
         });
-
         this.extensions = [];
     }
-
     register (extensionObject) {
         const extensionId = this.nextExtensionId++;
         this.extensions.push(extensionObject);
@@ -73,7 +60,6 @@ class ExtensionWorker {
         return promise;
     }
 }
-
 global.Scratch = global.Scratch || {};
 Object.assign(global.Scratch, ScratchCommon, {
     canFetch: () => Promise.resolve(true),
@@ -93,7 +79,6 @@ Object.assign(global.Scratch, ScratchCommon, {
     translate
 });
 global.amp = AmpModApi || {};
-
 /**
  * Expose only specific parts of the worker to extensions.
  */
@@ -101,5 +86,4 @@ const extensionWorker = new ExtensionWorker();
 global.Scratch.extensions = {
     register: extensionWorker.register.bind(extensionWorker)
 };
-
 global.ScratchExtensions = createScratchX(global.Scratch);

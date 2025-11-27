@@ -92,11 +92,13 @@ class FileHashRouter extends HashRouter {
         super(callbacks);
         this.rootPath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
         this.compat_playerPath = process.env.ampmod_mode === 'lab' ? this.rootPath : `${this.rootPath}editor.html`;
-        this.editorPath = process.env.ampmod_mode === 'lab' ? this.rootPath : `${this.rootPath}editor.html`;
-        this.fullscreenPath = `${this.rootPath}fullscreen.html`;
+        this.editorPath = process.env.AW3 ? "/projects/editor" : process.env.ampmod_mode === 'lab' ? this.rootPath : `${this.rootPath}editor.html`;
+        this.fullscreenPath = process.env.AW3 ? "/projects/editor/fullscreen" : `${this.rootPath}fullscreen.html`;
     }
 
     onpathchange() {
+        if (process.env.SPA) return;
+
         const pathName = location.pathname;
 
         if (pathName === this.editorPath || pathName === this.compat_playerPath) {
@@ -389,9 +391,9 @@ const TWStateManager = function (WrappedComponent) {
             }
 
             if (
-                this.props.reduxProjectId !== prevProps.reduxProjectId ||
+                !process.env.SPA && (this.props.reduxProjectId !== prevProps.reduxProjectId ||
                 this.props.isPlayerOnly !== prevProps.isPlayerOnly ||
-                this.props.isFullScreen !== prevProps.isFullScreen
+                this.props.isFullScreen !== prevProps.isFullScreen)
             ) {
                 const oldPath = `${location.pathname}${location.search}${location.hash}`;
                 const routerState = {

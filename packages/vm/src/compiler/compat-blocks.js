@@ -1,12 +1,9 @@
 // @ts-check
-
 /**
  * @fileoverview List of blocks to be supported in the compiler compatibility layer.
  * This is only for native blocks. Extensions should not be listed here.
  */
-
 // Please keep these lists alphabetical.
-
 const stacked = [
     'looks_changestretchby',
     'looks_hideallsprites',
@@ -34,7 +31,6 @@ const stacked = [
     'sound_setvolumeto',
     'sound_stopallsounds'
 ];
-
 const inputs = [
     // amp: arrays blocks that we haven't got to working on yet
     'arrays_at',
@@ -50,8 +46,9 @@ const inputs = [
     'sensing_online',
     'sound_volume'
 ];
-
-module.exports = {
+export {stacked};
+export {inputs};
+export default {
     stacked,
     inputs
 };

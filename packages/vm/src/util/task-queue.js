@@ -1,5 +1,4 @@
-const Timer = require('../util/timer');
-
+import Timer from './timer.js';
 /**
  * This class uses the token bucket algorithm to control a queue of tasks.
  */
@@ -31,10 +30,8 @@ class TaskQueue {
         this._timer.start();
         this._timeout = null;
         this._lastUpdateTime = this._timer.timeElapsed();
-
         this._runTasks = this._runTasks.bind(this);
     }
-
     /**
      * Get the number of queued tasks which have not yet started.
      *
@@ -44,7 +41,6 @@ class TaskQueue {
     get length () {
         return this._pendingTaskRecords.length;
     }
-
     /**
      * Wait until the token bucket is full enough, then run the provided task.
      *
@@ -67,7 +63,6 @@ class TaskQueue {
             newRecord.cancel = () => {
                 reject(new Error('Task canceled'));
             };
-
             // The caller, `_runTasks()`, is responsible for cost-checking and spending tokens.
             newRecord.wrappedTask = () => {
                 try {
@@ -78,15 +73,12 @@ class TaskQueue {
             };
         });
         this._pendingTaskRecords.push(newRecord);
-
         // If the queue has been idle we need to prime the pump
         if (this._pendingTaskRecords.length === 1) {
             this._runTasks();
         }
-
         return newRecord.promise;
     }
-
     /**
      * Cancel one pending task, rejecting its promise.
      *
@@ -106,7 +98,6 @@ class TaskQueue {
         }
         return false;
     }
-
     /**
      * Cancel all pending tasks, rejecting all their promises.
      *
@@ -121,7 +112,6 @@ class TaskQueue {
         this._pendingTaskRecords = [];
         oldTasks.forEach(r => r.cancel());
     }
-
     /**
      * Shorthand for calling _refill() then _spend(cost).
      *
@@ -135,7 +125,6 @@ class TaskQueue {
         this._refill();
         return this._spend(cost);
     }
-
     /**
      * Refill the token bucket based on the amount of time since the last refill.
      *
@@ -144,13 +133,13 @@ class TaskQueue {
     _refill () {
         const now = this._timer.timeElapsed();
         const timeSinceRefill = now - this._lastUpdateTime;
-        if (timeSinceRefill <= 0) return;
-
+        if (timeSinceRefill <= 0) {
+            return;
+        }
         this._lastUpdateTime = now;
         this._tokenCount += (timeSinceRefill * this._refillRate) / 1000;
         this._tokenCount = Math.min(this._tokenCount, this._maxTokens);
     }
-
     /**
      * If we can "afford" the given cost, subtract that many tokens and return true.
      * Otherwise, return false.
@@ -166,7 +155,6 @@ class TaskQueue {
         }
         return false;
     }
-
     /**
      * Loop until the task queue is empty, running each task and spending tokens to do so.
      * Any time the bucket can't afford the next task, delay asynchronously until it can.
@@ -201,5 +189,4 @@ class TaskQueue {
         }
     }
 }
-
-module.exports = TaskQueue;
+export default TaskQueue;

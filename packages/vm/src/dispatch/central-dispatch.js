@@ -1,7 +1,5 @@
-const SharedDispatch = require('./shared-dispatch');
-
-const log = require('../util/log');
-
+import SharedDispatch from './shared-dispatch.js';
+import log from '../util/log.js';
 /**
  * This class serves as the central broker for message dispatch. It expects to operate on the main thread / Window and
  * it must be informed of any Worker threads which will participate in the messaging system. From any context in the
@@ -12,7 +10,6 @@ const log = require('../util/log');
 class CentralDispatch extends SharedDispatch {
     constructor () {
         super();
-
         /**
          * Map of channel name to worker or local service provider.
          * If the entry is a Worker, the service is provided by an object on that worker.
@@ -21,20 +18,17 @@ class CentralDispatch extends SharedDispatch {
          * @type {object.<Worker|object>}
          */
         this.services = {};
-
         /**
          * The constructor we will use to recognize workers.
          * @type {Function}
          */
         this.workerClass = typeof Worker === 'undefined' ? null : Worker;
-
         /**
          * List of workers attached to this dispatcher.
          * @type {Array}
          */
         this.workers = [];
     }
-
     /**
      * Synchronously call a particular method on a particular service provided locally.
      * Calling this function on a remote service will fail.
@@ -49,14 +43,12 @@ class CentralDispatch extends SharedDispatch {
             if (isRemote) {
                 throw new Error(`Cannot use 'callSync' on remote provider for service ${service}.`);
             }
-
             // TODO: verify correct `this` after switching from apply to spread
             // eslint-disable-next-line prefer-spread
             return provider[method].apply(provider, args);
         }
         throw new Error(`Provider not found for service: ${service}`);
     }
-
     /**
      * Synchronously set a local object as the global provider of the specified service.
      * WARNING: Any method on the provider can be called from any worker within the dispatch system.
@@ -69,7 +61,6 @@ class CentralDispatch extends SharedDispatch {
         }
         this.services[service] = provider;
     }
-
     /**
      * Set a local object as the global provider of the specified service.
      * WARNING: Any method on the provider can be called from any worker within the dispatch system.
@@ -86,7 +77,6 @@ class CentralDispatch extends SharedDispatch {
             return Promise.reject(e);
         }
     }
-
     /**
      * Add a worker to the message dispatch system. The worker must implement a compatible message dispatch framework.
      * The dispatcher will immediately attempt to "handshake" with the worker.
@@ -103,7 +93,6 @@ class CentralDispatch extends SharedDispatch {
             log.warn('Central dispatch ignoring attempt to add duplicate worker');
         }
     }
-
     /**
      * Fetch the service provider object for a particular service name.
      * @override
@@ -113,14 +102,11 @@ class CentralDispatch extends SharedDispatch {
      */
     _getServiceProvider (service) {
         const provider = this.services[service];
-        return (
-            provider && {
-                provider,
-                isRemote: Boolean((this.workerClass && provider instanceof this.workerClass) || provider.isRemote)
-            }
-        );
+        return (provider && {
+            provider,
+            isRemote: Boolean((this.workerClass && provider instanceof this.workerClass) || provider.isRemote)
+        });
     }
-
     /**
      * Handle a call message sent to the dispatch service itself
      * @override
@@ -141,5 +127,4 @@ class CentralDispatch extends SharedDispatch {
         return promise;
     }
 }
-
-module.exports = new CentralDispatch();
+export default new CentralDispatch();

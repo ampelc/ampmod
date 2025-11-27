@@ -31,6 +31,7 @@ if (process.env.ENABLE_SERVICE_WORKER) {
 
 const IS_CBP_BUILD = Boolean(process.env.IS_CBP_BUILD);
 const htmlWebpackPluginCommon = {
+    scriptLoading: 'module',
     root: root,
     meta: JSON.parse(process.env.EXTRA_META || '{}'),
     APP_NAME,
@@ -75,7 +76,7 @@ const base = {
         port: process.env.PORT || 8601,
         // allows ROUTING_STYLE=wildcard to work properly
         historyApiFallback: {
-            rewrites: [
+            rewrites: process.env.SPA ? [ {from: /./, to: '/index.html'} ] : [
                 {from: /^\/\d+\/?$/, to: '/index.html'},
                 {
                     from: /^\/\d+\/fullscreen\/?$/,
@@ -93,16 +94,21 @@ const base = {
             overlay: false,
         }
     },
+    experiments: {
+        futureDefaults: true,
+        css: false, // for now
+        outputModule: true,
+    },
     output: {
         clean: !process.env.CI,
-        library: "GUI",
         filename:
             process.env.NODE_ENV === "production"
                 ? `js/${CACHE_EPOCH}/[name].[contenthash].js`
                 : "js/[name].js",
         chunkFilename:
             process.env.NODE_ENV === 'production' ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
-        publicPath: root
+        publicPath: root,
+        module: true
     },
     resolve: {
         symlinks: false,
@@ -179,7 +185,7 @@ const base = {
                                     ...(process.env.NODE_ENV === 'production'
                                         ? [require('cssnano')({ preset: 'default' })]
                                         : []),
-                                    require('@csstools/postcss-bundler'),
+                                    // require('@csstools/postcss-bundler'),
                                 ]
                             }
                         }
@@ -208,8 +214,8 @@ const base = {
         chunkIds: "deterministic",
         runtimeChunk: "single",
         splitChunks: {
-            chunks: "all",
-            minSize: 10000,
+            chunks: process.env.SPA ? "async" : "all",
+            minSize: 20000,
             minChunks: 1,
             maxInitialRequests: 3,
             cacheGroups: {
@@ -229,11 +235,14 @@ const base = {
     },
     plugins: [
         new webpack.DefinePlugin({
+            "global": "globalThis",
             "process.env.DEBUG": Boolean(process.env.DEBUG),
             "process.env.DISABLE_SERVICE_WORKER": JSON.stringify(
                 process.env.DISABLE_SERVICE_WORKER || ""
             ),
             "process.env.ROOT": JSON.stringify(root),
+            "process.env.AW3": Boolean(process.env.AW3),
+            "process.env.SPA": Boolean(process.env.SPA),
             "process.env.ROUTING_STYLE": JSON.stringify(
                 process.env.ROUTING_STYLE || "filehash"
             ),
@@ -297,7 +306,7 @@ if (process.env.NODE_ENV !== "production") {
 module.exports = [
     // to run editor examples
     merge(base, {
-        entry: {
+        entry: process.env.SPA ? './src/playground/amp-spa.tsx' : {
             'website': [
                 './src/website/components/header/header.tsx',
                 './src/website/components/footer/footer.tsx',
@@ -324,53 +333,9 @@ module.exports = [
             splitChunks: {
                 chunks: 'all',
                 minChunks: 1,
-                minSize: 10000,
-                maxSize: 2000000,
+                minSize: 50000,
+                maxSize: 8000000,
                 maxInitialRequests: 8,
-                cacheGroups: {
-                    reactVendor: {
-                        test: /node_modules[\\/](react|react-dom|react-modal|react-intl)/,
-                        name: 'react-libs',
-                        chunks: 'all',
-                        priority: 20
-                    },
-                    examples: {
-                        test: /[\\/]src[\\/]lib[\\/]examples[\\/]/,
-                        name: 'examples',
-                        priority: 50,
-                        reuseExistingChunk: true
-                    },
-                    sharedEditor: {
-                        test: /[\\/]src[\\/]playground[\\/]/,
-                        name: 'ampmod-ide',
-                        chunks: chunk => ['editor','fullscreen','embed'].includes(chunk.name),
-                        minChunks: 2,
-                        priority: 35,
-                        reuseExistingChunk: true
-                    },
-                    stylesEditor: {
-                        name: 'common-editor',
-                        type: 'css/mini-extract',
-                        chunks: chunk => ['editor', 'fullscreen', 'embed'].includes(chunk.name),
-                        enforce: true,
-                        minChunks: 2
-                    },
-                    stylesWebsite: {
-                        name: 'common-website',
-                        type: 'css/mini-extract',
-                        chunks: chunk =>
-                            ['home', 'minorpages', 'faq', 'examples-landing', 'credits', 'notfound'].includes(chunk.name),
-                        enforce: true,
-                        minChunks: 2
-                    },
-                    stylesGlobal: {
-                        name: 'common',
-                        type: 'css/mini-extract',
-                        chunks: 'all',
-                        enforce: true,
-                        minChunks: 4
-                    }
-                }
             },
             minimizer: [new SwcMinifyWebpackPlugin({compress: true, mangle: true, format: {comments: "some"}})]
         },
@@ -394,113 +359,118 @@ module.exports = [
                     ...htmlWebpackPluginCommon
                 }),
             ] : [],
-            new HtmlWebpackPlugin({
-                chunks: ['info', 'minorpages'],
-                title: `Privacy Policy - ${APP_NAME}`,
-                template: 'src/playground/simple.ejs',
-                filename: 'privacy.html',
-                skipSimpleAnalytics: true,
-                page: 'privacy',
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ["editor"],
-                template: "src/playground/index.ejs",
-                filename:
-                    process.env.BUILD_MODE === "lab"
-                        ? "index.html"
-                        : "editor.html",
-                title: `${APP_NAME} - ${APP_SLOGAN}`,
-                isEditor: true,
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['editor'],
-                template: 'src/playground/index.ejs',
-                filename: 'player.html',
-                title: `${APP_NAME} - ${APP_SLOGAN}`,
-                isEditor: true,
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['fullscreen'],
-                template: 'src/playground/index.ejs',
-                filename: 'fullscreen.html',
-                title: `${APP_NAME} - ${APP_SLOGAN}`,
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['embed'],
-                template: 'src/playground/embed.ejs',
-                filename: 'embed.html',
-                title: `Embedded Project - ${APP_NAME}`,
-                ...htmlWebpackPluginCommon
-            }),
-            ...(process.env.BUILD_MODE !== 'lab'
+            ...(process.env.SPA
                 ? [
-                      new HtmlWebpackPlugin({
-                          chunks: ['info', 'home'],
-                          template: 'src/playground/simple.ejs',
-                          filename: 'index.html',
-                          title: `${APP_NAME} - ${APP_SLOGAN}`,
-                          description: APP_DESCRIPTION,
-                          ...htmlWebpackPluginCommon
-                      })
-                  ]
-                : []),
-            new HtmlWebpackPlugin({
-                chunks: ['info', 'minorpages'],
-                template: 'src/playground/simple.ejs',
-                filename: 'new-compiler.html',
-                title: `New compiler - ${APP_NAME}`,
-                // prettier-ignore
-                 
-                description: `${APP_NAME} 0.3 includes a rewritten compiler to make projects run up to 2 times faster than in ${APP_NAME} 0.2.2.`,
-                page: 'newcompiler',
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['info', 'examples-landing'],
-                template: 'src/playground/simple.ejs',
-                filename: 'examples.html',
-                title: `Examples - ${APP_NAME}`,
-                // prettier-ignore
-                 
-                description: `Example projects for ${APP_NAME}.`,
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['info', 'faq'],
-                template: 'src/playground/simple.ejs',
-                filename: 'faq.html',
-                title: `FAQ - ${APP_NAME}`,
-                // prettier-ignore
-                 
-                description: `Frequently asked questions about ${APP_NAME}.`,
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['addon-settings'],
-                template: 'src/playground/index.ejs',
-                filename: 'addons.html',
-                title: `Addon Settings - ${APP_NAME}`,
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['info', 'credits'],
-                template: 'src/playground/simple.ejs',
-                filename: 'credits.html',
-                title: `Credits - ${APP_NAME}`,
-                description: `Meet the development team of ${APP_NAME}.`,
-                ...htmlWebpackPluginCommon
-            }),
-            new HtmlWebpackPlugin({
-                chunks: ['notfound'],
-                template: 'src/playground/simple.ejs',
-                filename: '404.html',
-                title: `Not Found - ${APP_NAME}`,
-                ...htmlWebpackPluginCommon
-            }),
+                    new HtmlWebpackPlugin({
+                        template: 'src/playground/simple.ejs',
+                        filename: 'index.html',
+                        title: `${APP_NAME} - ${APP_SLOGAN}`,
+                        ...htmlWebpackPluginCommon
+                    })
+                ]
+                : [
+                    new HtmlWebpackPlugin({
+                        chunks: ['info', 'minorpages'],
+                        title: `Privacy Policy - ${APP_NAME}`,
+                        template: 'src/playground/simple.ejs',
+                        filename: 'privacy.html',
+                        skipSimpleAnalytics: true,
+                        page: 'privacy',
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ["editor"],
+                        template: "src/playground/index.ejs",
+                        filename:
+                            process.env.BUILD_MODE === "lab"
+                                ? "index.html"
+                                : "editor.html",
+                        title: `${APP_NAME} - ${APP_SLOGAN}`,
+                        isEditor: true,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['editor'],
+                        template: 'src/playground/index.ejs',
+                        filename: 'player.html',
+                        title: `${APP_NAME} - ${APP_SLOGAN}`,
+                        isEditor: true,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['fullscreen'],
+                        template: 'src/playground/index.ejs',
+                        filename: 'fullscreen.html',
+                        title: `${APP_NAME} - ${APP_SLOGAN}`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['embed'],
+                        template: 'src/playground/embed.ejs',
+                        filename: 'embed.html',
+                        title: `Embedded Project - ${APP_NAME}`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    ...(process.env.BUILD_MODE !== 'lab'
+                        ? [
+                                new HtmlWebpackPlugin({
+                                    chunks: ['info', 'home'],
+                                    template: 'src/playground/simple.ejs',
+                                    filename: 'index.html',
+                                    title: `${APP_NAME} - ${APP_SLOGAN}`,
+                                    description: APP_DESCRIPTION,
+                                    ...htmlWebpackPluginCommon
+                                })
+                            ]
+                        : []),
+                    new HtmlWebpackPlugin({
+                        chunks: ['info', 'minorpages'],
+                        template: 'src/playground/simple.ejs',
+                        filename: 'new-compiler.html',
+                        title: `New compiler - ${APP_NAME}`,
+                        description: `${APP_NAME} 0.3 includes a rewritten compiler to make projects run up to 2 times faster than in ${APP_NAME} 0.2.2.`,
+                        page: 'newcompiler',
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['info', 'examples-landing'],
+                        template: 'src/playground/simple.ejs',
+                        filename: 'examples.html',
+                        title: `Examples - ${APP_NAME}`,
+                        description: `Example projects for ${APP_NAME}.`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['info', 'faq'],
+                        template: 'src/playground/simple.ejs',
+                        filename: 'faq.html',
+                        title: `FAQ - ${APP_NAME}`,
+                        description: `Frequently asked questions about ${APP_NAME}.`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['addon-settings'],
+                        template: 'src/playground/index.ejs',
+                        filename: 'addons.html',
+                        title: `Addon Settings - ${APP_NAME}`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['info', 'credits'],
+                        template: 'src/playground/simple.ejs',
+                        filename: 'credits.html',
+                        title: `Credits - ${APP_NAME}`,
+                        description: `Meet the development team of ${APP_NAME}.`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['notfound'],
+                        template: 'src/playground/simple.ejs',
+                        filename: '404.html',
+                        title: `Not Found - ${APP_NAME}`,
+                        ...htmlWebpackPluginCommon
+                    })
+                ]),
             new CopyWebpackPlugin({
                 patterns: [
                     {
@@ -530,8 +500,6 @@ module.exports = [
                   'standalone': ['./src/playground/amp-standalone-handler.jsx']
               },
               output: {
-                  library: 'AmpModStandalone',
-                  libraryTarget: 'umd',
                   filename: '[name].js',
                   chunkFilename: '[name].js',
                   path: path.resolve('standalone'),

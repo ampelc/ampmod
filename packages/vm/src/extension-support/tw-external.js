@@ -13,9 +13,7 @@ const checkURL = url => {
         throw new Error(`Unsupported URL: ${url}`);
     }
 };
-
 const external = {};
-
 /**
  * @param {string} url
  * @template T
@@ -27,7 +25,6 @@ external.importModule = url => {
     // instead of trying making it try to use the webpack import system.
     return import(/* webpackIgnore: true */ url);
 };
-
 /**
  * @param {string} url
  * @returns {Promise<Response>}
@@ -40,7 +37,6 @@ external.fetch = async url => {
     }
     return res;
 };
-
 /**
  * @param {string} url
  * @returns {Promise<string>}
@@ -55,7 +51,6 @@ external.dataURL = async url => {
         fr.readAsDataURL(blob);
     });
 };
-
 /**
  * @param {string} url
  * @returns {Promise<Blob>}
@@ -64,7 +59,6 @@ external.blob = async url => {
     const res = await external.fetch(url);
     return res.blob();
 };
-
 /**
  * @param {string} url
  * @param {string} returnExpression
@@ -78,5 +72,4 @@ external.evalAndReturn = async (url, returnExpression) => {
     const fn = new Function(js);
     return fn();
 };
-
-module.exports = external;
+export default external;

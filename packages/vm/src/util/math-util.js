@@ -7,7 +7,6 @@ class MathUtil {
     static degToRad (deg) {
         return (deg * Math.PI) / 180;
     }
-
     /**
      * Convert a value from radians to degrees.
      * @param {!number} rad Value in radians.
@@ -16,7 +15,6 @@ class MathUtil {
     static radToDeg (rad) {
         return (rad * 180) / Math.PI;
     }
-
     /**
      * Clamp a number between two limits.
      * If n < min, return min. If n > max, return max. Else, return n.
@@ -28,7 +26,6 @@ class MathUtil {
     static clamp (n, min, max) {
         return Math.min(Math.max(n, min), max);
     }
-
     /**
      * Keep a number between two limits, wrapping "extra" into the range.
      * e.g., wrapClamp(7, 1, 5) == 2
@@ -43,7 +40,6 @@ class MathUtil {
         const range = max - min + 1;
         return n - Math.floor((n - min) / range) * range;
     }
-
     /**
      * Convert a value from tan function in degrees.
      * @param {!number} angle in degrees
@@ -62,7 +58,6 @@ class MathUtil {
             return Math.round(Math.tan((Math.PI * angle) / 180) * 1e10) / 1e10;
         }
     }
-
     /**
      * Given an array of unique numbers,
      * returns a reduced array such that each element of the reduced array
@@ -76,7 +71,6 @@ class MathUtil {
         const sorted = elts.slice(0).sort((a, b) => a - b);
         return elts.map(e => sorted.indexOf(e));
     }
-
     /**
      * Return a random number given an inclusive range and a number in that
      * range that should be excluded.
@@ -94,15 +88,12 @@ class MathUtil {
         // inclusive range [lower, upper] minus 1 already
         // (e.g. in the set {3, 4, 5}, 5 - 3 = 2).
         const possibleOptions = upper - lower;
-
         const randInt = lower + Math.floor(Math.random() * possibleOptions);
         if (randInt >= excluded) {
             return randInt + 1;
         }
-
         return randInt;
     }
-
     /**
      * Scales a number from one range to another.
      * @param {number} i number to be scaled
@@ -117,5 +108,4 @@ class MathUtil {
         return p * (oMax - oMin) + oMin;
     }
 }
-
-module.exports = MathUtil;
+export default MathUtil;

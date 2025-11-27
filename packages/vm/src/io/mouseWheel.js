@@ -6,7 +6,6 @@ class MouseWheel {
          */
         this.runtime = runtime;
     }
-
     /**
      * Mouse wheel DOM event handler.
      * @param  {object} data Data from DOM event.
@@ -20,9 +19,7 @@ class MouseWheel {
         } else {
             return;
         }
-
         this.runtime.startHats('event_whenkeypressed', matchFields);
     }
 }
-
-module.exports = MouseWheel;
+export default MouseWheel;

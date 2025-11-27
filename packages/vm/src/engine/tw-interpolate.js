@@ -4,10 +4,8 @@
  */
 const setupInitialState = runtime => {
     const renderer = runtime.renderer;
-
     for (const target of runtime.targets) {
         const directionAndScale = target._getRenderedDirectionAndScale();
-
         // If sprite may have been interpolated in the previous frame, reset its renderer state.
         if (renderer && target.interpolationData) {
             const drawableID = target.drawableID;
@@ -15,7 +13,6 @@ const setupInitialState = runtime => {
             renderer.updateDrawableDirectionScale(drawableID, directionAndScale.direction, directionAndScale.scale);
             renderer.updateDrawableEffect(drawableID, 'ghost', target.effects.ghost);
         }
-
         if (target.visible && !target.isStage) {
             target.interpolationData = {
                 x: target.x,
@@ -30,7 +27,6 @@ const setupInitialState = runtime => {
         }
     }
 };
-
 /**
  * Interpolate the position of targets.
  * @param {Runtime} runtime The Runtime with targets to interpolate.
@@ -41,7 +37,6 @@ const interpolate = (runtime, time) => {
     if (!renderer) {
         return;
     }
-
     for (const target of runtime.targets) {
         // interpolationData is the initial state at the start of the frame (time 0)
         // the state on the target itself is the state at the end of the frame (time 1)
@@ -49,14 +44,11 @@ const interpolate = (runtime, time) => {
         if (!interpolationData) {
             continue;
         }
-
         // Don't waste time interpolating sprites that are hidden.
         if (!target.visible) {
             continue;
         }
-
         const drawableID = target.drawableID;
-
         // Position interpolation.
         const xDistance = target.x - interpolationData.x;
         const yDistance = target.y - interpolationData.y;
@@ -75,7 +67,6 @@ const interpolate = (runtime, time) => {
                 renderer.updateDrawablePosition(drawableID, [newX, newY]);
             }
         }
-
         // Effect interpolation.
         const ghostChange = target.effects.ghost - interpolationData.ghost;
         const absoluteGhostChange = Math.abs(ghostChange);
@@ -84,13 +75,11 @@ const interpolate = (runtime, time) => {
             const newGhost = target.effects.ghost + ghostChange * time;
             renderer.updateDrawableEffect(drawableID, 'ghost', newGhost);
         }
-
         // Interpolate scale and direction.
         const costumeUnchanged = interpolationData.costume === target.currentCostume;
         if (costumeUnchanged) {
             let {direction, scale} = target._getRenderedDirectionAndScale();
             let updateDrawableDirectionScale = false;
-
             // Interpolate direction.
             if (direction !== interpolationData.direction) {
                 // Perfect 90 degree angles should not be interpolated.
@@ -99,24 +88,18 @@ const interpolate = (runtime, time) => {
                     const currentRadians = (direction * Math.PI) / 180;
                     const startingRadians = (interpolationData.direction * Math.PI) / 180;
                     direction =
-                        (Math.atan2(
-                            Math.sin(currentRadians) * time + Math.sin(startingRadians) * (1 - time),
-                            Math.cos(currentRadians) * time + Math.cos(startingRadians) * (1 - time)
-                        ) *
+                        (Math.atan2(Math.sin(currentRadians) * time + Math.sin(startingRadians) * (1 - time), Math.cos(currentRadians) * time + Math.cos(startingRadians) * (1 - time)) *
                             180) /
-                        Math.PI;
+                            Math.PI;
                     updateDrawableDirectionScale = true;
                 }
             }
-
             // Interpolate scale.
             const startingScale = interpolationData.scale;
             if (scale[0] !== startingScale[0] || scale[1] !== startingScale[1]) {
                 // Do not interpolate size when the sign of either scale differs.
-                if (
-                    Math.sign(scale[0]) === Math.sign(startingScale[0]) &&
-                    Math.sign(scale[1]) === Math.sign(startingScale[1])
-                ) {
+                if (Math.sign(scale[0]) === Math.sign(startingScale[0]) &&
+                    Math.sign(scale[1]) === Math.sign(startingScale[1])) {
                     const changeX = scale[0] - startingScale[0];
                     const changeY = scale[1] - startingScale[1];
                     const absoluteChangeX = Math.abs(changeX);
@@ -129,15 +112,15 @@ const interpolate = (runtime, time) => {
                     }
                 }
             }
-
             if (updateDrawableDirectionScale) {
                 renderer.updateDrawableDirectionScale(drawableID, direction, scale);
             }
         }
     }
 };
-
-module.exports = {
+export {setupInitialState};
+export {interpolate};
+export default {
     setupInitialState,
     interpolate
 };

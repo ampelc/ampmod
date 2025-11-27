@@ -5,6 +5,7 @@ import WelcomeBanner from "./image.png";
 import * as Bowser from "bowser";
 import Localise from "../localise/localise.jsx";
 import classNames from "classnames";
+import SmartLink from "../smart-link/smart-link";
 
 export default () => {
     const [isPhone, setIsPhone] = useState(false);
@@ -35,13 +36,13 @@ export default () => {
                         <div className={styles.spacing}></div>
                         <div className={myStyles.buttonRow}>
                             {!isPhone && (
-                                <a href="editor.html" className={myStyles.primaryButton}>
+                                <SmartLink to="/editor" className={myStyles.primaryButton}>
                                     <Localise id="hero.create" />
-                                </a>
+                                </SmartLink>
                             )}
-                            <a href="examples.html" className={myStyles.primaryButton}>
+                            <SmartLink to="/examples" className={myStyles.primaryButton} onMouseEnter={() => process.env.SPA && import(/* webpackChunkName: "examples-landing" */ '../../examples/examples')}>
                                 <Localise id="hero.examples" />
-                            </a>
+                            </SmartLink>
                         </div>
                     </div>
 

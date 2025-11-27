@@ -108,6 +108,7 @@ import {APP_FORUMS, APP_FORUMS_BUGS, APP_NAME} from '@ampmod/branding';
 import ampmodIcon from './tw-advanced.svg';
 import ampmodCanaryIcon from './ampmod-canary.svg';
 import lampmodIcon from './lampmod.svg';
+import SmartLink from '../../website/components/smart-link/smart-link';
 
 const ariaMessages = defineMessages({
     tutorials: {
@@ -517,7 +518,7 @@ class MenuBar extends React.Component {
                             </div>
                         )}
                         {(isScratchDesktop && aboutButton) || (
-                            <a className={classNames(styles.menuBarItem, styles.logo)} href="/">
+                            <SmartLink className={classNames(styles.menuBarItem, styles.logo)} to="/" target="_blank">
                                 <img
                                     src={
                                         process.env.ampmod_mode === 'canary'
@@ -532,7 +533,7 @@ class MenuBar extends React.Component {
                                     alt="AmpMod"
                                 />
                                 <div className={styles.logoGround} />
-                            </a>
+                            </SmartLink>
                         )}
                         {(this.props.canChangeTheme || this.props.canChangeLanguage) && (
                             <SettingsMenu
@@ -542,6 +543,7 @@ class MenuBar extends React.Component {
                                 onClickDesktopSettings={
                                     this.props.onClickDesktopSettings && this.handleClickDesktopSettings
                                 }
+                                onClickAddonSettings={this.props.onClickAddonSettings}
                                 onOpenCustomSettings={
                                     this.props.onClickAddonSettings &&
                                     this.props.onClickAddonSettings.bind(null, 'editor-theme3')

@@ -1,10 +1,9 @@
-const MathUtil = require('../util/math-util');
-const StringUtil = require('../util/string-util');
-const Cast = require('../util/cast');
-const Clone = require('../util/clone');
-const Target = require('../engine/target');
-const StageLayering = require('../engine/stage-layering');
-
+import MathUtil from '../util/math-util.js';
+import StringUtil from '../util/string-util.js';
+import Cast from '../util/cast.js';
+import Clone from '../util/clone.js';
+import Target from '../engine/target.js';
+import StageLayering from '../engine/stage-layering.js';
 /**
  * Rendered target: instance of a sprite (clone), or the stage.
  */
@@ -16,7 +15,6 @@ class RenderedTarget extends Target {
      */
     constructor (sprite, runtime) {
         super(runtime, sprite.blocks);
-
         /**
          * Reference to the sprite that this is a render of.
          * @type {!Sprite}
@@ -36,14 +34,12 @@ class RenderedTarget extends Target {
          * @type {?Number}
          */
         this.drawableID = null;
-
         /**
          * Drag state of this rendered target. If true, x/y position can't be
          * changed by blocks.
          * @type {boolean}
          */
         this.dragging = false;
-
         /**
          * Map of current graphic effect values.
          * @type {!Object.<string, number>}
@@ -57,88 +53,74 @@ class RenderedTarget extends Target {
             brightness: 0,
             ghost: 0
         };
-
         /**
          * Whether this represents an "original" non-clone rendered-target for a sprite,
          * i.e., created by the editor and not clone blocks.
          * @type {boolean}
          */
         this.isOriginal = true;
-
         /**
          * Whether this rendered target represents the Scratch stage.
          * @type {boolean}
          */
         this.isStage = false;
-
         /**
          * Scratch X coordinate. Currently should range from -240 to 240.
          * @type {Number}
          */
         this.x = 0;
-
         /**
          * Scratch Y coordinate. Currently should range from -180 to 180.
          * @type {number}
          */
         this.y = 0;
-
         /**
          * Scratch direction. Currently should range from -179 to 180.
          * @type {number}
          */
         this.direction = 90;
-
         /**
          * Whether the rendered target is draggable on the stage
          * @type {boolean}
          */
         this.draggable = false;
-
         /**
          * Whether the rendered target is currently visible.
          * @type {boolean}
          */
         this.visible = true;
-
         /**
          * Size of rendered target as a percent of costume size.
          * @type {number}
          */
         this.size = 100;
-
         /**
          * Currently selected costume index.
          * @type {number}
          */
         this.currentCostume = 0;
-
         /**
          * Current rotation style.
          * @type {!string}
          */
         this.rotationStyle = RenderedTarget.ROTATION_STYLE_ALL_AROUND;
-
         /**
          * Loudness for sound playback for this target, as a percentage.
          * @type {number}
          */
         this.volume = 100;
-
         /**
          * Current tempo (used by the music extension).
          * This property is global to the project and stored in the stage.
          * @type {number}
          */
         this.tempo = 60;
-
         /**
          * The transparency of the video (used by extensions with camera input).
          * This property is global to the project and stored in the stage.
          * @type {number}
          */
         this.videoTransparency = 50;
-
         /**
          * The state of the video input (used by extensions with camera input).
          * This property is global to the project and stored in the stage.
@@ -153,7 +135,6 @@ class RenderedTarget extends Target {
          * @type {string}
          */
         this.videoState = RenderedTarget.VIDEO_STATE.ON;
-
         /**
          * The language to use for speech synthesis, in the text2speech extension.
          * It is initialized to null so that on extension load, we can check for
@@ -161,15 +142,12 @@ class RenderedTarget extends Target {
          * @type {string}
          */
         this.textToSpeechLanguage = null;
-
         // Node-style event emitters have non-zero performance overhead compared to function calls, so we
         // replace some very high frequency events with these specific methods that are overridden elsewhere.
         this.onTargetMoved = null;
         this.onTargetVisualChange = null;
-
         this.interpolationData = null;
     }
-
     /**
      * Create a drawable with the this.renderer.
      * @param {boolean} layerGroup The layer group this drawable should be added to
@@ -183,7 +161,6 @@ class RenderedTarget extends Target {
             this.runtime.startHats('control_start_as_clone', null, this);
         }
     }
-
     get audioPlayer () {
         /* eslint-disable no-console */
         console.warn('get audioPlayer deprecated, please update to use .sprite.soundBank methods');
@@ -193,22 +170,18 @@ class RenderedTarget extends Target {
         const audioPlayerProxy = {
             playSound: soundId => bank.play(this, soundId)
         };
-
         Object.defineProperty(this, 'audioPlayer', {
             configurable: false,
             enumerable: true,
             writable: false,
             value: audioPlayerProxy
         });
-
         return audioPlayerProxy;
     }
-
     /**
      * Initialize the audio player for this sprite or clone.
      */
-    initAudio () {}
-
+    initAudio () { }
     /**
      * Rotation style for "all around"/spinning.
      * @type {string}
@@ -216,7 +189,6 @@ class RenderedTarget extends Target {
     static get ROTATION_STYLE_ALL_AROUND () {
         return 'all around';
     }
-
     /**
      * Rotation style for "left-right"/flipping.
      * @type {string}
@@ -224,7 +196,6 @@ class RenderedTarget extends Target {
     static get ROTATION_STYLE_LEFT_RIGHT () {
         return 'left-right';
     }
-
     /**
      * Rotation style for "no rotation."
      * @type {string}
@@ -232,7 +203,6 @@ class RenderedTarget extends Target {
     static get ROTATION_STYLE_NONE () {
         return "don't rotate";
     }
-
     /**
      * Available states for video input.
      * @enum {string}
@@ -244,13 +214,11 @@ class RenderedTarget extends Target {
             ON_FLIPPED: 'on-flipped'
         };
     }
-
     emitVisualChange () {
         if (this.onTargetVisualChange) {
             this.onTargetVisualChange(this);
         }
     }
-
     /**
      * Set the X and Y coordinates.
      * @param {!number} x New X coordinate, in Scratch coordinates.
@@ -259,8 +227,12 @@ class RenderedTarget extends Target {
      */
     setXY (x, y, force) {
         // used by compiler
-        if (this.isStage) return;
-        if (this.dragging && !force) return;
+        if (this.isStage) {
+            return;
+        }
+        if (this.dragging && !force) {
+            return;
+        }
         const oldX = this.x;
         const oldY = this.y;
         if (this.renderer) {
@@ -269,7 +241,6 @@ class RenderedTarget extends Target {
                 [x, y];
             this.x = position[0];
             this.y = position[1];
-
             this.renderer.updateDrawablePosition(this.drawableID, position);
             if (this.visible) {
                 this.emitVisualChange();
@@ -284,7 +255,6 @@ class RenderedTarget extends Target {
         }
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Get the rendered direction and scale, after applying rotation style.
      * @return {object<string, number>} Direction and scale to render.
@@ -304,7 +274,6 @@ class RenderedTarget extends Target {
         }
         return {direction: finalDirection, scale: finalScale};
     }
-
     /**
      * Set the direction.
      * @param {!number} direction New direction.
@@ -329,17 +298,17 @@ class RenderedTarget extends Target {
         }
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Set draggability; i.e., whether it's able to be dragged in the player
      * @param {!boolean} draggable True if should be draggable.
      */
     setDraggable (draggable) {
-        if (this.isStage) return;
+        if (this.isStage) {
+            return;
+        }
         this.draggable = !!draggable;
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Set visibility; i.e., whether it's shown or hidden.
      * @param {!boolean} visible True if should be shown.
@@ -359,7 +328,6 @@ class RenderedTarget extends Target {
         }
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Set size, as a percentage of the costume size.
      * @param {!number} size Size of rendered target, as % of costume size.
@@ -394,7 +362,6 @@ class RenderedTarget extends Target {
         }
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Set a particular graphic effect value.
      * @param {!string} effectName Name of effect (see `RenderedTarget.prototype.effects`).
@@ -402,7 +369,9 @@ class RenderedTarget extends Target {
      */
     setEffect (effectName, value) {
         // used by compiler
-        if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) return;
+        if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) {
+            return;
+        }
         this.effects[effectName] = value;
         if (this.renderer) {
             this.renderer.updateDrawableEffect(this.drawableID, effectName, value);
@@ -412,19 +381,22 @@ class RenderedTarget extends Target {
             }
         }
     }
-
     /**
      * Clear all graphic effects on this rendered target.
      */
     clearEffects () {
         // used by compiler
         for (const effectName in this.effects) {
-            if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) continue;
+            if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) {
+                continue;
+            }
             this.effects[effectName] = 0;
         }
         if (this.renderer) {
             for (const effectName in this.effects) {
-                if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) continue;
+                if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) {
+                    continue;
+                }
                 this.renderer.updateDrawableEffect(this.drawableID, effectName, 0);
             }
             if (this.visible) {
@@ -433,7 +405,6 @@ class RenderedTarget extends Target {
             }
         }
     }
-
     /**
      * Set the current costume.
      * @param {number} index New index of costume.
@@ -444,12 +415,10 @@ class RenderedTarget extends Target {
         if (index === Infinity || index === -Infinity || !index) {
             index = 0;
         }
-
         this.currentCostume = MathUtil.wrapClamp(index, 0, this.sprite.costumes.length - 1);
         if (this.renderer) {
             const costume = this.sprite.costumes[this.currentCostume];
             this.renderer.updateDrawableSkinId(this.drawableID, costume.skinId);
-
             if (this.visible) {
                 this.emitVisualChange();
                 this.runtime.requestRedraw();
@@ -457,7 +426,6 @@ class RenderedTarget extends Target {
         }
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Add a costume, taking care to avoid duplicate names.
      * @param {!object} costumeObject Object representing the costume.
@@ -470,7 +438,6 @@ class RenderedTarget extends Target {
             this.sprite.addCostumeAt(costumeObject, this.sprite.costumes.length);
         }
     }
-
     /**
      * Rename a costume, taking care to avoid duplicate names.
      * @param {int} costumeIndex - the index of the costume to be renamed.
@@ -483,7 +450,6 @@ class RenderedTarget extends Target {
         const oldName = this.getCostumes()[costumeIndex].name;
         const newUnusedName = StringUtil.unusedName(newName, usedNames);
         this.getCostumes()[costumeIndex].name = newUnusedName;
-
         if (this.isStage) {
             // Since this is a backdrop, go through all targets and
             // update any blocks referencing the old backdrop name
@@ -496,7 +462,6 @@ class RenderedTarget extends Target {
             this.blocks.updateAssetName(oldName, newUnusedName, 'costume');
         }
     }
-
     /**
      * Delete a costume by index.
      * @param {number} index Costume index to be deleted
@@ -506,14 +471,13 @@ class RenderedTarget extends Target {
      */
     deleteCostume (index) {
         const originalCostumeCount = this.sprite.costumes.length;
-        if (originalCostumeCount === 1) return null;
-
+        if (originalCostumeCount === 1) {
+            return null;
+        }
         if (index < 0 || index >= originalCostumeCount) {
             return null;
         }
-
         const deletedCostume = this.sprite.deleteCostumeAt(index);
-
         if (index === this.currentCostume && index === originalCostumeCount - 1) {
             this.setCostume(index - 1);
         } else if (index < this.currentCostume) {
@@ -521,11 +485,9 @@ class RenderedTarget extends Target {
         } else {
             this.setCostume(this.currentCostume);
         }
-
         this.runtime.requestTargetsUpdate(this);
         return deletedCostume;
     }
-
     /**
      * Add a sound, taking care to avoid duplicate names.
      * @param {!object} soundObject Object representing the sound.
@@ -540,7 +502,6 @@ class RenderedTarget extends Target {
             this.sprite.sounds.push(soundObject);
         }
     }
-
     /**
      * Rename a sound, taking care to avoid duplicate names.
      * @param {int} soundIndex - the index of the sound to be renamed.
@@ -553,7 +514,6 @@ class RenderedTarget extends Target {
         this.sprite.sounds[soundIndex].name = newUnusedName;
         this.blocks.updateAssetName(oldName, newUnusedName, 'sound');
     }
-
     /**
      * Delete a sound by index.
      * @param {number} index Sound index to be deleted
@@ -569,7 +529,6 @@ class RenderedTarget extends Target {
         this.runtime.requestTargetsUpdate(this);
         return deletedSound;
     }
-
     /**
      * Update the rotation style.
      * @param {!string} rotationStyle New rotation style.
@@ -593,7 +552,6 @@ class RenderedTarget extends Target {
         }
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Get a costume index of this rendered target, by name of the costume.
      * @param {?string} costumeName Name of a costume.
@@ -608,7 +566,6 @@ class RenderedTarget extends Target {
         }
         return -1;
     }
-
     /**
      * Get a costume of this rendered target by id.
      * @return {object} current costume
@@ -616,7 +573,6 @@ class RenderedTarget extends Target {
     getCurrentCostume () {
         return this.getCostumes()[this.currentCostume];
     }
-
     /**
      * Get full costume list
      * @return {object[]} list of costumes
@@ -625,7 +581,6 @@ class RenderedTarget extends Target {
         // used by compiler
         return this.sprite.costumes;
     }
-
     /**
      * Reorder costume list by moving costume at costumeIndex to newIndex.
      * @param {!number} costumeIndex Index of the costume to move.
@@ -635,20 +590,17 @@ class RenderedTarget extends Target {
     reorderCostume (costumeIndex, newIndex) {
         newIndex = MathUtil.clamp(newIndex, 0, this.sprite.costumes.length - 1);
         costumeIndex = MathUtil.clamp(costumeIndex, 0, this.sprite.costumes.length - 1);
-
-        if (newIndex === costumeIndex) return false;
-
+        if (newIndex === costumeIndex) {
+            return false;
+        }
         const currentCostume = this.getCurrentCostume();
         const costume = this.sprite.costumes[costumeIndex];
-
         // Use the sprite method for deleting costumes because setCostume is handled manually
         this.sprite.deleteCostumeAt(costumeIndex);
-
         this.addCostume(costume, newIndex);
         this.currentCostume = this.getCostumeIndexByName(currentCostume.name);
         return true;
     }
-
     /**
      * Reorder sound list by moving sound at soundIndex to newIndex.
      * @param {!number} soundIndex Index of the sound to move.
@@ -658,15 +610,14 @@ class RenderedTarget extends Target {
     reorderSound (soundIndex, newIndex) {
         newIndex = MathUtil.clamp(newIndex, 0, this.sprite.sounds.length - 1);
         soundIndex = MathUtil.clamp(soundIndex, 0, this.sprite.sounds.length - 1);
-
-        if (newIndex === soundIndex) return false;
-
+        if (newIndex === soundIndex) {
+            return false;
+        }
         const sound = this.sprite.sounds[soundIndex];
         this.deleteSound(soundIndex);
         this.addSound(sound, newIndex);
         return true;
     }
-
     /**
      * Get full sound list
      * @return {object[]} list of sounds
@@ -674,7 +625,6 @@ class RenderedTarget extends Target {
     getSounds () {
         return this.sprite.sounds;
     }
-
     /**
      * Update all drawable properties for this rendered target.
      * Use when a batch has changed, e.g., when the drawable is first created.
@@ -685,15 +635,14 @@ class RenderedTarget extends Target {
             this.renderer.updateDrawablePosition(this.drawableID, [this.x, this.y]);
             this.renderer.updateDrawableDirectionScale(this.drawableID, direction, scale);
             this.renderer.updateDrawableVisible(this.drawableID, this.visible);
-
             const costume = this.getCostumes()[this.currentCostume];
             this.renderer.updateDrawableSkinId(this.drawableID, costume.skinId);
-
             for (const effectName in this.effects) {
-                if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) continue;
+                if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) {
+                    continue;
+                }
                 this.renderer.updateDrawableEffect(this.drawableID, effectName, this.effects[effectName]);
             }
-
             if (this.visible) {
                 this.emitVisualChange();
                 this.runtime.requestRedraw();
@@ -701,7 +650,6 @@ class RenderedTarget extends Target {
         }
         this.runtime.requestTargetsUpdate(this);
     }
-
     /**
      * Return the human-readable name for this rendered target, e.g., the sprite's name.
      * @override
@@ -710,7 +658,6 @@ class RenderedTarget extends Target {
     getName () {
         return this.sprite.name;
     }
-
     /**
      * Return whether this rendered target is a sprite (not a clone, not the stage).
      * @return {boolean} True if not a clone and not the stage.
@@ -718,7 +665,6 @@ class RenderedTarget extends Target {
     isSprite () {
         return !this.isStage && this.isOriginal;
     }
-
     /**
      * Return the rendered target's tight bounding box.
      * Includes top, left, bottom, right attributes in Scratch coordinates.
@@ -730,7 +676,6 @@ class RenderedTarget extends Target {
         }
         return null;
     }
-
     /**
      * Return the bounding box around a slice of the top 8px of the rendered target.
      * Includes top, left, bottom, right attributes in Scratch coordinates.
@@ -742,7 +687,6 @@ class RenderedTarget extends Target {
         }
         return null;
     }
-
     /**
      * Return whether this target is touching the mouse, an edge, or a sprite.
      * @param {string} requestedObject an id for mouse or edge, or a sprite name.
@@ -751,7 +695,9 @@ class RenderedTarget extends Target {
     isTouchingObject (requestedObject) {
         // used by compiler
         if (requestedObject === '_mouse_') {
-            if (!this.runtime.ioDevices.mouse) return false;
+            if (!this.runtime.ioDevices.mouse) {
+                return false;
+            }
             const mouseX = this.runtime.ioDevices.mouse.getClientX();
             const mouseY = this.runtime.ioDevices.mouse.getClientY();
             return this.isTouchingPoint(mouseX, mouseY);
@@ -760,7 +706,6 @@ class RenderedTarget extends Target {
         }
         return this.isTouchingSprite(requestedObject);
     }
-
     /**
      * Return whether touching a point.
      * @param {number} x X coordinate of test point.
@@ -773,7 +718,6 @@ class RenderedTarget extends Target {
         }
         return false;
     }
-
     /**
      * Return whether touching a stage edge.
      * @return {boolean} True iff the rendered target is touching the stage edge.
@@ -783,18 +727,15 @@ class RenderedTarget extends Target {
             const stageWidth = this.runtime.stageWidth;
             const stageHeight = this.runtime.stageHeight;
             const bounds = this.getBounds();
-            if (
-                bounds.left < -stageWidth / 2 ||
+            if (bounds.left < -stageWidth / 2 ||
                 bounds.right > stageWidth / 2 ||
                 bounds.top > stageHeight / 2 ||
-                bounds.bottom < -stageHeight / 2
-            ) {
+                bounds.bottom < -stageHeight / 2) {
                 return true;
             }
         }
         return false;
     }
-
     /**
      * Return whether touching any of a named sprite's clones.
      * @param {string} spriteName Name of the sprite.
@@ -814,7 +755,6 @@ class RenderedTarget extends Target {
             .map(clone => clone.drawableID);
         return this.renderer.isTouchingDrawables(this.drawableID, drawableCandidates);
     }
-
     /**
      * Return whether touching a color.
      * @param {Array.<number>} rgb [r,g,b], values between 0-255.
@@ -827,7 +767,6 @@ class RenderedTarget extends Target {
         }
         return false;
     }
-
     /**
      * Return whether rendered target's color is touching a color.
      * @param {object} targetRgb {Array.<number>} [r,g,b], values between 0-255.
@@ -841,14 +780,12 @@ class RenderedTarget extends Target {
         }
         return false;
     }
-
     getLayerOrder () {
         if (this.renderer) {
             return this.renderer.getDrawableOrder(this.drawableID);
         }
         return null;
     }
-
     /**
      * Move to the front layer.
      */
@@ -859,10 +796,8 @@ class RenderedTarget extends Target {
             // of what layers are present
             this.renderer.setDrawableOrder(this.drawableID, Infinity, StageLayering.SPRITE_LAYER);
         }
-
         this.runtime.setExecutablePosition(this, Infinity);
     }
-
     /**
      * Move to the back layer.
      */
@@ -873,10 +808,8 @@ class RenderedTarget extends Target {
             // of what layers are present
             this.renderer.setDrawableOrder(this.drawableID, -Infinity, StageLayering.SPRITE_LAYER, false);
         }
-
         this.runtime.setExecutablePosition(this, -Infinity);
     }
-
     /**
      * Move forward a number of layers.
      * @param {number} nLayers How many layers to go forward.
@@ -886,10 +819,8 @@ class RenderedTarget extends Target {
         if (this.renderer) {
             this.renderer.setDrawableOrder(this.drawableID, nLayers, StageLayering.SPRITE_LAYER, true);
         }
-
         this.runtime.moveExecutable(this, nLayers);
     }
-
     /**
      * Move backward a number of layers.
      * @param {number} nLayers How many layers to go backward.
@@ -899,10 +830,8 @@ class RenderedTarget extends Target {
         if (this.renderer) {
             this.renderer.setDrawableOrder(this.drawableID, -nLayers, StageLayering.SPRITE_LAYER, true);
         }
-
         this.runtime.moveExecutable(this, -nLayers);
     }
-
     /**
      * Move behind some other rendered target.
      * @param {!RenderedTarget} other Other rendered target to move behind.
@@ -912,11 +841,9 @@ class RenderedTarget extends Target {
             const otherLayer = this.renderer.setDrawableOrder(other.drawableID, 0, StageLayering.SPRITE_LAYER, true);
             this.renderer.setDrawableOrder(this.drawableID, otherLayer, StageLayering.SPRITE_LAYER);
         }
-
         const executionPosition = this.runtime.executableTargets.indexOf(other);
         this.runtime.setExecutablePosition(this, executionPosition);
     }
-
     /**
      * Keep a desired position within a fence.
      * @param {number} newX New desired X position.
@@ -935,7 +862,9 @@ class RenderedTarget extends Target {
             };
         }
         const bounds = this.getBounds();
-        if (!bounds) return;
+        if (!bounds) {
+            return;
+        }
         // Adjust the known bounds to the target position.
         bounds.left += newX - this.x;
         bounds.right += newX - this.x;
@@ -958,7 +887,6 @@ class RenderedTarget extends Target {
         }
         return [newX + dx, newY + dy];
     }
-
     /**
      * Make a clone, copying any run-time properties.
      * If we've hit the global clone limit, returns null.
@@ -986,7 +914,6 @@ class RenderedTarget extends Target {
         newClone.updateAllDrawableProperties();
         return newClone;
     }
-
     /**
      * Make a duplicate using a duplicate sprite.
      * @return {RenderedTarget} New clone.
@@ -1010,7 +937,6 @@ class RenderedTarget extends Target {
             return newTarget;
         });
     }
-
     /**
      * Called when the project receives a "green flag."
      * For a rendered target, this clears graphic effects.
@@ -1018,7 +944,6 @@ class RenderedTarget extends Target {
     onGreenFlag () {
         this.clearEffects();
     }
-
     /**
      * Called when the project receives a "stop all"
      * Stop all sounds and clear graphic effects.
@@ -1026,7 +951,6 @@ class RenderedTarget extends Target {
     onStopAll () {
         this.clearEffects();
     }
-
     /**
      * Post/edit sprite info.
      * @param {object} data An object with sprite info data to set.
@@ -1054,21 +978,18 @@ class RenderedTarget extends Target {
             this.setSize(data.size);
         }
     }
-
     /**
      * Put the sprite into the drag state. While in effect, setXY must be forced
      */
     startDrag () {
         this.dragging = true;
     }
-
     /**
      * Remove the sprite from the drag state.
      */
     stopDrag () {
         this.dragging = false;
     }
-
     /**
      * Serialize sprite info, used when emitting events about the sprite
      * @returns {object} Sprite data as a simple object
@@ -1101,7 +1022,6 @@ class RenderedTarget extends Target {
             videoState: this.videoState
         };
     }
-
     /**
      * Dispose, destroying any run-time properties.
      */
@@ -1113,10 +1033,7 @@ class RenderedTarget extends Target {
         this.runtime.removeExecutable(this);
         this.sprite.removeClone(this);
         if (this.renderer && this.drawableID !== null) {
-            this.renderer.destroyDrawable(
-                this.drawableID,
-                this.isStage ? StageLayering.BACKGROUND_LAYER : StageLayering.SPRITE_LAYER
-            );
+            this.renderer.destroyDrawable(this.drawableID, this.isStage ? StageLayering.BACKGROUND_LAYER : StageLayering.SPRITE_LAYER);
             if (this.visible) {
                 this.emitVisualChange();
                 this.runtime.requestRedraw();
@@ -1124,5 +1041,4 @@ class RenderedTarget extends Target {
         }
     }
 }
-
-module.exports = RenderedTarget;
+export default RenderedTarget;

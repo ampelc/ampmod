@@ -10,21 +10,9 @@ import {persistTheme} from '../../lib/themes/themePersistance.js';
 import addonsIcon from './addons.svg';
 import styles from './settings-menu.css';
 
-const handleClickAddonSettings = () => {
-    if (process.env.ampmod_mode === "standalone") {
-        const url = new URL(window.location.href);
-        url.searchParams.set('addon-settings', '');
-        url.hash = '';
-
-        window.open(url.toString(), '_blank');
-        return;
-    }
-    const path = process.env.ROUTING_STYLE === 'wildcard' ? 'addons' : 'addons.html';
-    const url = `${process.env.ROOT}${path}`;
-    window.open(url);
-};
-
-const GuiThemeMenu = ({}) => (
+const GuiThemeMenu = ({handleClickAddonSettings}: {
+  handleClickAddonSettings: () => void;
+}) => (
     <MenuItem>
         <div
             className={styles.option}

@@ -11,7 +11,6 @@
  * Or, you can use the `time` function
  * to do some measurement yourself.
  */
-
 class Timer {
     constructor (nowObj = Timer.nowObj) {
         /**
@@ -19,14 +18,12 @@ class Timer {
          * Updated when calling `timer.start`.
          */
         this.startTime = 0;
-
         /**
          * Used to pass custom logic for determining the value for "now",
          * which is sometimes useful for compatibility with Scratch 2
          */
         this.nowObj = nowObj;
     }
-
     /**
      * Disable use of self.performance for now as it results in lower performance
      * However, instancing it like below (caching the self.performance to a local variable) negates most of the issues.
@@ -35,7 +32,6 @@ class Timer {
     static get USE_PERFORMANCE () {
         return false;
     }
-
     /**
      * Legacy object to allow for us to call now to get the old style date time (for backwards compatibility)
      * @deprecated This is only called via the nowObj.now() if no other means is possible...
@@ -47,7 +43,6 @@ class Timer {
             }
         };
     }
-
     /**
      * Use this object to route all time functions through single access points.
      */
@@ -59,7 +54,6 @@ class Timer {
         }
         return Timer.legacyDateCode;
     }
-
     /**
      * Return the currently known absolute time, in ms precision.
      * @returns {number} ms elapsed since 1 January 1970 00:00:00 UTC.
@@ -67,7 +61,6 @@ class Timer {
     time () {
         return this.nowObj.now();
     }
-
     /**
      * Start a timer for measuring elapsed time,
      * at the most accurate precision possible.
@@ -75,11 +68,9 @@ class Timer {
     start () {
         this.startTime = this.nowObj.now();
     }
-
     timeElapsed () {
         return this.nowObj.now() - this.startTime;
     }
-
     /**
      * Call a handler function after a specified amount of time has elapsed.
      * @param {function} handler - function to call after the timeout
@@ -89,7 +80,6 @@ class Timer {
     setTimeout (handler, timeout) {
         return global.setTimeout(handler, timeout);
     }
-
     /**
      * Clear a timeout from the pending timeout pool.
      * @param {number} timeoutId - the ID returned by `setTimeout()`
@@ -99,5 +89,4 @@ class Timer {
         global.clearTimeout(timeoutId);
     }
 }
-
-module.exports = Timer;
+export default Timer;

@@ -1,7 +1,7 @@
-const BlockType = require('../../extension-support/block-type');
-const ArgumentType = require('../../extension-support/argument-type');
-const AmpMod = require('../../extension-support/ampmod-api');
-const RuntimeType = require('../../engine/runtime');
+import BlockType from '../../extension-support/block-type.js';
+import ArgumentType from '../../extension-support/argument-type.js';
+import AmpMod from '../../extension-support/ampmod-api.js';
+import RuntimeType from '../../engine/runtime.js';
 
 /**
  * Class for Electro Test blocks
@@ -134,8 +134,9 @@ class ElectroTestBlocks {
     }
 
     pause () {
+        // @ts-ignore
         this.runtime.isPaused = true;
     }
 }
 
-module.exports = ElectroTestBlocks;
+export default ElectroTestBlocks;

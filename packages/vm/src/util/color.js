@@ -5,24 +5,20 @@ class Color {
      * @property {number} g - the green component, in the range [0, 255].
      * @property {number} b - the blue component, in the range [0, 255].
      */
-
     /**
      * @typedef {object} HSVObject - An object representing a color in HSV format.
      * @property {number} h - hue, in the range [0-359).
      * @property {number} s - saturation, in the range [0,1].
      * @property {number} v - value, in the range [0,1].
      */
-
     /** @type {RGBObject} */
     static get RGB_BLACK () {
         return {r: 0, g: 0, b: 0};
     }
-
     /** @type {RGBObject} */
     static get RGB_WHITE () {
         return {r: 255, g: 255, b: 255};
     }
-
     /**
      * Convert a Scratch decimal color to a hex string, #RRGGBB.
      * @param {number} decimal RGB color as a decimal.
@@ -36,7 +32,6 @@ class Color {
         hex = `#${'000000'.substr(0, 6 - hex.length)}${hex}`;
         return hex;
     }
-
     /**
      * Convert a Scratch decimal color to an RGB color object.
      * @param {number} decimal RGB color as decimal.
@@ -49,7 +44,6 @@ class Color {
         const b = decimal & 0xff;
         return {r: r, g: g, b: b, a: a > 0 ? a : 255};
     }
-
     /**
      * Convert a hex color (e.g., F00, #03F, #0033FF) to an RGB color object.
      * @param {!string} hex Hex representation of the color.
@@ -81,7 +75,6 @@ class Color {
         }
         return null;
     }
-
     /**
      * Convert an RGB color object to a hex color.
      * @param {RGBObject} rgb - {r: red [0,255], g: green [0,255], b: blue [0,255]}.
@@ -90,7 +83,6 @@ class Color {
     static rgbToHex (rgb) {
         return Color.decimalToHex(Color.rgbToDecimal(rgb));
     }
-
     /**
      * Convert an RGB color object to a Scratch decimal color.
      * @param {RGBObject} rgb - {r: red [0,255], g: green [0,255], b: blue [0,255]}.
@@ -99,7 +91,6 @@ class Color {
     static rgbToDecimal (rgb) {
         return (rgb.r << 16) + (rgb.g << 8) + rgb.b;
     }
-
     /**
      * Convert a hex color (e.g., F00, #03F, #0033FF) to a decimal color number.
      * @param {!string} hex Hex representation of the color.
@@ -108,7 +99,6 @@ class Color {
     static hexToDecimal (hex) {
         return Color.rgbToDecimal(Color.hexToRgb(hex));
     }
-
     /**
      * Convert an HSV color to RGB format.
      * @param {HSVObject} hsv - {h: hue [0,360), s: saturation [0,1], v: value [0,1]}
@@ -116,20 +106,19 @@ class Color {
      */
     static hsvToRgb (hsv) {
         let h = hsv.h % 360;
-        if (h < 0) h += 360;
+        if (h < 0) {
+            h += 360;
+        }
         const s = Math.max(0, Math.min(hsv.s, 1));
         const v = Math.max(0, Math.min(hsv.v, 1));
-
         const i = Math.floor(h / 60);
         const f = h / 60 - i;
         const p = v * (1 - s);
         const q = v * (1 - s * f);
         const t = v * (1 - s * (1 - f));
-
         let r;
         let g;
         let b;
-
         switch (i) {
         default:
         case 0:
@@ -163,14 +152,12 @@ class Color {
             b = q;
             break;
         }
-
         return {
             r: Math.floor(r * 255),
             g: Math.floor(g * 255),
             b: Math.floor(b * 255)
         };
     }
-
     /**
      * Convert an RGB color to HSV format.
      * @param {RGBObject} rgb - {r: red [0,255], g: green [0,255], b: blue [0,255]}.
@@ -182,7 +169,6 @@ class Color {
         const b = rgb.b / 255;
         const x = Math.min(Math.min(r, g), b);
         const v = Math.max(Math.max(r, g), b);
-
         // For grays, hue will be arbitrarily reported as zero. Otherwise, calculate
         let h = 0;
         let s = 0;
@@ -192,10 +178,8 @@ class Color {
             h = ((i - f / (v - x)) * 60) % 360;
             s = (v - x) / v;
         }
-
         return {h: h, s: s, v: v};
     }
-
     /**
      * Linear interpolation between rgb0 and rgb1.
      * @param {RGBObject} rgb0 - the color corresponding to fraction1 <= 0.
@@ -204,8 +188,12 @@ class Color {
      * @return {RGBObject} the interpolated color.
      */
     static mixRgb (rgb0, rgb1, fraction1) {
-        if (fraction1 <= 0) return rgb0;
-        if (fraction1 >= 1) return rgb1;
+        if (fraction1 <= 0) {
+            return rgb0;
+        }
+        if (fraction1 >= 1) {
+            return rgb1;
+        }
         const fraction0 = 1 - fraction1;
         return {
             r: fraction0 * rgb0.r + fraction1 * rgb1.r,
@@ -214,5 +202,4 @@ class Color {
         };
     }
 }
-
-module.exports = Color;
+export default Color;

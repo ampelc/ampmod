@@ -2,19 +2,15 @@ class StageLayering {
     static get BACKGROUND_LAYER () {
         return 'background';
     }
-
     static get VIDEO_LAYER () {
         return 'video';
     }
-
     static get PEN_LAYER () {
         return 'pen';
     }
-
     static get SPRITE_LAYER () {
         return 'sprite';
     }
-
     // Order of layer groups relative to each other,
     static get LAYER_GROUPS () {
         return [
@@ -25,5 +21,4 @@ class StageLayering {
         ];
     }
 }
-
-module.exports = StageLayering;
+export default StageLayering;

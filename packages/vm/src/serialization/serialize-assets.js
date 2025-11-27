@@ -28,7 +28,6 @@ const serializeAssets = function (runtime, assetType, optTargetId) {
     }
     return assetDescs;
 };
-
 /**
  * Serialize all the sounds in the provided runtime or, if a target id is provided,
  * in the specified target into an array of file descriptors.
@@ -41,7 +40,6 @@ const serializeAssets = function (runtime, assetType, optTargetId) {
 const serializeSounds = function (runtime, optTargetId) {
     return serializeAssets(runtime, 'sounds', optTargetId);
 };
-
 /**
  * Serialize all the costumes in the provided runtime into an array of file
  * descriptors. A file descriptor is an object containing the name of the file
@@ -53,8 +51,9 @@ const serializeSounds = function (runtime, optTargetId) {
 const serializeCostumes = function (runtime, optTargetId) {
     return serializeAssets(runtime, 'costumes', optTargetId);
 };
-
-module.exports = {
+export {serializeSounds};
+export {serializeCostumes};
+export default {
     serializeSounds,
     serializeCostumes
 };

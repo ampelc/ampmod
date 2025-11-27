@@ -1,8 +1,6 @@
-const SharedDispatch = require('./shared-dispatch');
-
-const log = require('../util/log');
-const {centralDispatchService} = require('../extension-support/tw-extension-worker-context');
-
+import SharedDispatch from './shared-dispatch.js';
+import log from '../util/log.js';
+import {centralDispatchService} from '../extension-support/tw-extension-worker-context.js';
 /**
  * This class provides a Worker with the means to participate in the message dispatch system managed by CentralDispatch.
  * From any context in the messaging system, the dispatcher's "call" method can call any method on any "service"
@@ -13,7 +11,6 @@ const {centralDispatchService} = require('../extension-support/tw-extension-work
 class WorkerDispatch extends SharedDispatch {
     constructor () {
         super();
-
         /**
          * This promise will be resolved when we have successfully connected to central dispatch.
          * @type {Promise}
@@ -23,7 +20,6 @@ class WorkerDispatch extends SharedDispatch {
         this._connectionPromise = new Promise(resolve => {
             this._onConnect = resolve;
         });
-
         /**
          * Map of service name to local service provider.
          * If a service is not listed here, it is assumed to be provided by another context (another Worker or the main
@@ -32,13 +28,11 @@ class WorkerDispatch extends SharedDispatch {
          * @type {object}
          */
         this.services = {};
-
         this._onMessage = this._onMessage.bind(this, centralDispatchService);
         if (typeof self !== 'undefined') {
             self.onmessage = this._onMessage;
         }
     }
-
     /**
      * @returns {Promise} a promise which will resolve upon connection to central dispatch. If you need to make a call
      * immediately on "startup" you can attach a 'then' to this promise.
@@ -50,7 +44,6 @@ class WorkerDispatch extends SharedDispatch {
     get waitForConnection () {
         return this._connectionPromise;
     }
-
     /**
      * Set a local object as the global provider of the specified service.
      * WARNING: Any method on the provider can be called from any worker within the dispatch system.
@@ -63,11 +56,8 @@ class WorkerDispatch extends SharedDispatch {
             log.warn(`Worker dispatch replacing existing service provider for ${service}`);
         }
         this.services[service] = provider;
-        return this.waitForConnection.then(() =>
-            this._remoteCall(centralDispatchService, 'dispatch', 'setService', service)
-        );
+        return this.waitForConnection.then(() => this._remoteCall(centralDispatchService, 'dispatch', 'setService', service));
     }
-
     /**
      * Fetch the service provider object for a particular service name.
      * @override
@@ -83,7 +73,6 @@ class WorkerDispatch extends SharedDispatch {
             isRemote: !provider
         };
     }
-
     /**
      * Handle a call message sent to the dispatch service itself
      * @override
@@ -109,5 +98,4 @@ class WorkerDispatch extends SharedDispatch {
         return promise;
     }
 }
-
-module.exports = new WorkerDispatch();
+export default new WorkerDispatch();

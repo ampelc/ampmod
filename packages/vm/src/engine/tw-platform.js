@@ -1,10 +1,11 @@
-// Forks should change this.
-// This can be accessed externally on `vm.runtime.platform`
-const {APP_NAME, APP_WEBSITE, APP_CONTACT} = require('@ampmod/branding');
-
-module.exports = {
+import {APP_NAME, APP_WEBSITE, APP_CONTACT} from '@ampmod/branding';
+export const version = process.env.ampmod_version;
+export {APP_NAME as name};
+export {APP_WEBSITE as url};
+export {APP_CONTACT as contact};
+export default {
     name: APP_NAME,
     url: APP_WEBSITE,
-    version: process.env.ampmod_version,
+    version,
     contact: APP_CONTACT
 };

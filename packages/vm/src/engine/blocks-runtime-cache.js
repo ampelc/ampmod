@@ -1,3 +1,4 @@
+import './blocks.js';
 /**
  * @fileoverview
  * The BlocksRuntimeCache caches data about the top block of scripts so that
@@ -6,7 +7,6 @@
  * compares strings in uppercase we can go ahead and uppercase the cached value
  * so we don't need to in the future.
  */
-
 /**
  * A set of cached data about the top block of a script.
  * @param {Blocks} container - Container holding the block and related data
@@ -19,16 +19,13 @@ class RuntimeScriptCache {
          * @type {Blocks}
          */
         this.container = container;
-
         /**
          * ID for block this instance caches.
          * @type {string}
          */
         this.blockId = blockId;
-
         const block = container.getBlock(blockId);
         const fields = container.getFields(block);
-
         /**
          * Formatted fields or fields of input blocks ready for comparison in
          * runtime.
@@ -44,7 +41,9 @@ class RuntimeScriptCache {
         if (Object.keys(fields).length === 0) {
             const inputs = container.getInputs(block);
             for (const input in inputs) {
-                if (!Object.prototype.hasOwnProperty.call(inputs, input)) continue;
+                if (!Object.prototype.hasOwnProperty.call(inputs, input)) {
+                    continue;
+                }
                 const id = inputs[input].block;
                 const inputBlock = container.getBlock(id);
                 const inputFields = container.getFields(inputBlock);
@@ -61,18 +60,25 @@ class RuntimeScriptCache {
 }
 
 /**
- * Get an array of scripts from a block container prefiltered to match opcode.
- * @param {Blocks} container - Container of blocks
- * @param {string} opcode - Opcode to filter top blocks by
+ * The default implementation of getScripts.
+ * Starts as a placeholder function that throws an error if called too early.
+ * @type {function}
  */
-exports.getScripts = function () {
+export let getScripts = function () {
     throw new Error('blocks.js has not initialized BlocksRuntimeCache');
 };
 
 /**
- * Exposed RuntimeScriptCache class used by integration in blocks.js.
- * @private
+ * Public API to allow external code to replace the implementation of getScripts.
+ * This is an alternative to monkey-patching used for dependency injection.
+ * @param {function} newFunction The new function to use for getScripts.
  */
-exports._RuntimeScriptCache = RuntimeScriptCache;
+export const setScripts = function (newFunction) {
+    if (typeof newFunction !== 'function') {
+        throw new Error('setScripts requires a function argument.');
+    }
+    // Reassign the exported variable
+    getScripts = newFunction;
+};
 
-require('./blocks');
+export {RuntimeScriptCache as _RuntimeScriptCache};

@@ -1,5 +1,4 @@
-const log = require('./log');
-
+import log from './log.js';
 /**
  * Escape a string to be safe to use in XML content.
  * CC-BY-SA: hgoebl
@@ -34,5 +33,4 @@ const xmlEscape = function (unsafe) {
         }
     });
 };
-
-module.exports = xmlEscape;
+export default xmlEscape;

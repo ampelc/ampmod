@@ -37,13 +37,13 @@ const base = {
             },
             {
                 test: /\.mp3$/,
-                loader: "asset/resource",
+                loader: 'asset/resource',
                 options: {
                     outputPath: 'media/music/'
                 }
             }
         ]
-    },
+    }
 };
 
 module.exports = [

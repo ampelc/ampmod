@@ -45,17 +45,21 @@ const onProjectLoaded = () => {
 
 const WrappedGUI = compose(AppStateHOC, TWStateManagerHOC, TWEmbedFullScreenHOC)(GUI);
 
-render(
-    <WrappedGUI
+export default function Embed() {
+    if (urlParams.has('addons')) {
+        runAddons();
+    }
+
+    return <WrappedGUI
         isEmbedded
         projectId={projectId}
         onVmInit={onVmInit}
         onProjectLoaded={onProjectLoaded}
         routingStyle="none"
         {...(!urlParams.has('use-user-theme') ? {theme: Theme.light} : {})}
-    />
-);
+    />;
+}
 
-if (urlParams.has('addons')) {
-    runAddons();
+if (!process.env.SPA) {
+    render(<Embed />);
 }

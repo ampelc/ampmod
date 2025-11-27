@@ -20,87 +20,83 @@ applyGuiColors(detectTheme());
 setHtmlLang();
 document.title = `${APP_NAME} - ${APP_SLOGAN}`;
 
-const Home = () => (
-    <>
-        <Header />
-        <Clippy isFixed messageSet="website" />
-        <Hero />
-        <main className={styles.main}>
-            <div className={styles.mainContentGrid}>
-                <div className={styles.leftColumn}>
-                    <section>
-                        <h2>
-                            <Localise id="whatIsAppName" values={{APP_NAME}} />
-                        </h2>
-                        <p>
-                            <Localise id="appDescription" values={{APP_NAME}} />
-                        </p>
-                    </section>
-                    <section>
-                        <h2>
-                            <Localise id="buildEasily" />
-                        </h2>
-                        <p>
-                            <Localise id="buildEasilyText" values={{APP_NAME}} />
-                        </p>
-                    </section>
-                    <section>
-                        <h2>
-                            <Localise id="needHelp" />
-                        </h2>
-                        <div className={styles.buttonRow}>
-                            <a href={APP_WIKI} className={styles.button}>
-                                <Localise id="visitWiki" />
-                            </a>
-                        </div>
-                    </section>
+export default function Home() {
+    return (
+        <>
+            <Header />
+            <Clippy isFixed messageSet="website" />
+            <Hero />
+            <main className={styles.main}>
+                <div className={styles.mainContentGrid}>
+                    <div className={styles.leftColumn}>
+                        <section>
+                            <h2>
+                                <Localise id="whatIsAppName" values={{ APP_NAME }} />
+                            </h2>
+                            <p>
+                                <Localise id="appDescription" values={{ APP_NAME }} />
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2>
+                                <Localise id="buildEasily" />
+                            </h2>
+                            <p>
+                                <Localise id="buildEasilyText" values={{ APP_NAME }} />
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2>
+                                <Localise id="needHelp" />
+                            </h2>
+                            <div className={styles.buttonRow}>
+                                <a href={APP_WIKI} className={styles.button}>
+                                    <Localise id="visitWiki" />
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div className={styles.rightColumn}>
+                        <section>
+                            <h2>
+                                <Localise id="features" />
+                            </h2>
+                            <div className={styles.twoColumnGrid}>
+                                <div className={styles.columnItem}>
+                                    <h3>
+                                        <Localise id="forProgrammers" />
+                                    </h3>
+                                    <ul>
+                                        <li><Localise id="jsCompile" values={{ APP_NAME }} /></li>
+                                        <li><Localise id="arraysFeature" /></li>
+                                        <li><Localise id="extensionsFeature" values={{ APP_NAME }} /></li>
+                                    </ul>
+                                </div>
+
+                                <div className={styles.columnItem}>
+                                    <h3>
+                                        <Localise id="forArtists" />
+                                    </h3>
+                                    <ul>
+                                        <li><Localise id="newFonts" values={{ APP_NAME }} /></li>
+                                        <li><Localise id="roundedRectangle" /></li>
+                                        <li><Localise id="customFonts" /></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
 
-                <div className={styles.rightColumn}>
-                    <section>
-                        <h2>
-                            <Localise id="features" />
-                        </h2>
-                        <div className={styles.twoColumnGrid}>
-                            <div className={styles.columnItem}>
-                                <h3>
-                                    <Localise id="forProgrammers" />
-                                </h3>
-                                <ul>
-                                    <li>
-                                        <Localise id="jsCompile" values={{APP_NAME}} />
-                                    </li>
-                                    <li>
-                                        <Localise id="arraysFeature" />
-                                    </li>
-                                    <li>
-                                        <Localise id="extensionsFeature" values={{APP_NAME}} />
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className={styles.columnItem}>
-                                <h3>
-                                    <Localise id="forArtists" />
-                                </h3>
-                                <ul>
-                                    <li>
-                                        <Localise id="newFonts" values={{APP_NAME}} />
-                                    </li>
-                                    <li>
-                                        <Localise id="roundedRectangle" />
-                                    </li>
-                                    <li>
-                                        <Localise id="customFonts" />
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-            <Footer />
-        </main>
-    </>
-);
+                <Footer />
+            </main>
+        </>
+    );
+}
 
-render(<Home />);
+if (!process.env.SPA) {
+    render(<Home />);
+}

@@ -60,7 +60,7 @@ steps:
       commands:
           - corepack enable
           # Don't specify CBP build mode since redirects aren't properly implemented in canary
-          - NODE_ENV=production BUILD_MODE=canary ESBUILD_WORKERS=8 pnpm run build
+          - NODE_ENV=production BUILD_MODE=canary SPA=true ROOT=/@canary/ pnpm run build
           # Only needed for custom domains
           # - cp domains build/.domains
     - name: push
@@ -78,6 +78,7 @@ steps:
           - cd ./amp-build
           # Remove all previous files, then copy in the new build
           - git rm -rf ./*
+          - echo "/* index.html 200" > _redirects
           - cp -a ../packages/gui/build/. .
           - git add --all
           - git commit -m "Woodpecker CI Build at $( env TZ=America/Chicago date +'%Y-%m-%d %X %Z' )"

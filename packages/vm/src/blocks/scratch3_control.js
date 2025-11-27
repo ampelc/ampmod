@@ -1,5 +1,4 @@
-const Cast = require('../util/cast');
-
+import Cast from '../util/cast.js';
 class Scratch3ControlBlocks {
     constructor (runtime) {
         /**
@@ -7,16 +6,13 @@ class Scratch3ControlBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
-
         /**
          * The "counter" block value. For compatibility with 2.0.
          * @type {number}
          */
         this._counter = 0; // used by compiler
-
         this.runtime.on('RUNTIME_DISPOSED', this.clearCounter.bind(this));
     }
-
     /**
      * Retrieve the block primitives implemented by this package.
      * @return {object.<string, Function>} Mapping of opcode to Function.
@@ -44,7 +40,6 @@ class Scratch3ControlBlocks {
             control_async: this.async
         };
     }
-
     getHats () {
         return {
             control_start_as_clone: {
@@ -52,7 +47,6 @@ class Scratch3ControlBlocks {
             }
         };
     }
-
     repeat (args, util) {
         const times = Math.round(Cast.toNumber(args.TIMES));
         // Initialize loop
@@ -69,7 +63,6 @@ class Scratch3ControlBlocks {
             util.startBranch(1, true);
         }
     }
-
     repeatUntil (args, util) {
         const condition = Cast.toBoolean(args.CONDITION);
         // If the condition is false (repeat UNTIL), start the branch.
@@ -77,7 +70,6 @@ class Scratch3ControlBlocks {
             util.startBranch(1, true);
         }
     }
-
     repeatWhile (args, util) {
         const condition = Cast.toBoolean(args.CONDITION);
         // If the condition is true (repeat WHILE), start the branch.
@@ -85,36 +77,29 @@ class Scratch3ControlBlocks {
             util.startBranch(1, true);
         }
     }
-
     forEach (args, util) {
         const variable = util.target.lookupOrCreateVariable(args.VARIABLE.id, args.VARIABLE.name);
-
         if (typeof util.stackFrame.index === 'undefined') {
             util.stackFrame.index = 0;
         }
-
         if (util.stackFrame.index < Number(args.VALUE)) {
             util.stackFrame.index++;
             variable.value = util.stackFrame.index;
             util.startBranch(1, true);
         }
     }
-
     waitUntil (args, util) {
         const condition = Cast.toBoolean(args.CONDITION);
         if (!condition) {
             util.yield();
         }
     }
-
     forever (args, util) {
         util.startBranch(1, true);
     }
-
     wait (args, util) {
         if (util.stackTimerNeedsInit()) {
             const duration = Math.max(0, 1000 * Cast.toNumber(args.DURATION));
-
             util.startStackTimer(duration);
             this.runtime.requestRedraw();
             util.yield();
@@ -122,14 +107,12 @@ class Scratch3ControlBlocks {
             util.yield();
         }
     }
-
     if (args, util) {
         const condition = Cast.toBoolean(args.CONDITION);
         if (condition) {
             util.startBranch(1, false);
         }
     }
-
     ifElse (args, util) {
         const condition = Cast.toBoolean(args.CONDITION);
         if (condition) {
@@ -138,7 +121,6 @@ class Scratch3ControlBlocks {
             util.startBranch(2, false);
         }
     }
-
     stop (args, util) {
         const option = args.STOP_OPTION;
         if (option === 'all') {
@@ -149,7 +131,6 @@ class Scratch3ControlBlocks {
             util.stopThisScript();
         }
     }
-
     createClone (args, util) {
         this._createClone(Cast.toString(args.CLONE_OPTION), util.target);
     }
@@ -162,38 +143,34 @@ class Scratch3ControlBlocks {
         } else {
             cloneTarget = this.runtime.getSpriteTargetByName(cloneOption);
         }
-
         // If clone target is not found, return
-        if (!cloneTarget) return;
-
+        if (!cloneTarget) {
+            return;
+        }
         // Create clone
         const newClone = cloneTarget.makeClone();
         if (newClone) {
             this.runtime.addTarget(newClone);
-
             // Place behind the original target.
             newClone.goBehindOther(cloneTarget);
         }
     }
-
     deleteClone (args, util) {
-        if (util.target.isOriginal) return;
+        if (util.target.isOriginal) {
+            return;
+        }
         this.runtime.disposeTarget(util.target);
         this.runtime.stopForTarget(util.target);
     }
-
     getCounter () {
         return this._counter;
     }
-
     clearCounter () {
         this._counter = 0;
     }
-
     incrCounter () {
         this._counter++;
     }
-
     allAtOnce (args, util) {
         // Since the "all at once" block is implemented for compatiblity with
         // Scratch 2.0 projects, it behaves the same way it did in 2.0, which
@@ -203,20 +180,16 @@ class Scratch3ControlBlocks {
         // removed before the release of 2.0.)
         util.startBranch(1, false);
     }
-
     async async (args, util) {
         const delay = ms => new Promise(res => setTimeout(res, ms));
         await delay(0);
         util.startBranch(1, false);
     }
-
     ternary (args, util) {
         return Cast.toBoolean(args.CONDITION) ? Cast.toString(args.LEFT) : Cast.toString(args.RIGHT);
     }
-
     isClone (args, util) {
         return !util.target.isOriginal;
     }
 }
-
-module.exports = Scratch3ControlBlocks;
+export default Scratch3ControlBlocks;

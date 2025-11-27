@@ -9,7 +9,6 @@
  * @property {Array.<ExtensionBlockMetadata|string>} blocks - the blocks provided by this extension, plus separators.
  * @property {Object.<ExtensionMenuMetadata>} [menus] - map of menu name to metadata for each of this extension's menus.
  */
-
 /**
  * @typedef {object} ExtensionBlockMetadata
  * All the metadata needed to register an extension block.
@@ -26,7 +25,6 @@
  * @property {int} [branchCount] - for flow control blocks, the number of branches/substacks for this block.
  * @property {Object.<ExtensionArgumentMetadata>} [arguments] - map of argument placeholder to metadata about each arg.
  */
-
 /**
  * @typedef {object} ExtensionArgumentMetadata
  * All the metadata needed to register an argument for an extension block.
@@ -34,28 +32,23 @@
  * @property {*} [defaultValue] - the default value of this argument.
  * @property {string} [menu] - the name of the menu to use for this argument, if any.
  */
-
 /**
  * @typedef {ExtensionDynamicMenu|ExtensionMenuItems} ExtensionMenuMetadata
  * All the metadata needed to register an extension drop-down menu.
  */
-
 /**
  * @typedef {string} ExtensionDynamicMenu
  * The string name of a function which returns menu items.
  * @see {ExtensionMenuItems} - the type of data expected to be returned by the specified function.
  */
-
 /**
  * @typedef {Array.<ExtensionMenuItemSimple|ExtensionMenuItemComplex>} ExtensionMenuItems
  * Items in an extension menu.
  */
-
 /**
  * @typedef {string} ExtensionMenuItemSimple
  * A menu item for which the label and value are identical strings.
  */
-
 /**
  * @typedef {object} ExtensionMenuItemComplex
  * A menu item for which the label and value can differ.

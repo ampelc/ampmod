@@ -6,6 +6,7 @@ import CanaryLogo from '../../../components/menu-bar/ampmod-canary.svg';
 import styles from './header.css';
 import TWNews from '../../../components/menu-bar/tw-news';
 import Localise from '../localise/localise';
+import SmartLink from "../smart-link/smart-link";
 
 // Determine if today is April Fools’ Day
 function isAprilFools() {
@@ -15,50 +16,69 @@ function isAprilFools() {
 
 const Header = () => {
     const showFakeLogo = isAprilFools();
+    const logoSrc =
+        process.env.ampmod_mode === 'canary'
+            ? CanaryLogo
+            : showFakeLogo
+            ? FakeLogo
+            : Logo;
 
-    const logoSrc = process.env.ampmod_mode === 'canary' ? CanaryLogo : showFakeLogo ? FakeLogo : Logo;
-
-    const logoAlt = showFakeLogo && process.env.ampmod_mode !== 'canary' ? 'LampMod Logo' : 'AmpMod Logo';
+    const logoAlt =
+        showFakeLogo && process.env.ampmod_mode !== 'canary'
+            ? 'LampMod Logo'
+            : 'AmpMod Logo';
 
     return (
-        <React.Fragment>
+        <>
             <div className={styles.header}>
                 <div className={styles.mainGroup}>
-                    <a href="/" className={classNames(styles.headerItem, styles.ampmodLogo)} aria-label={logoAlt}>
+                    <SmartLink
+                        to="/"
+                        className={classNames(styles.headerItem, styles.ampmodLogo)}
+                        aria-label={logoAlt}
+                        onMouseEnter={() => process.env.SPA && import(/* webpackChunkName: "home" */ '../../home/home')}
+                    >
                         <img height={26} src={logoSrc} alt={logoAlt} />
-                    </a>
+                    </SmartLink>
 
-                    <a href="editor.html" className={classNames(styles.headerItem, styles.hoverable)}>
+                    <SmartLink
+                        to="/editor"
+                        className={classNames(styles.headerItem, styles.hoverable)}
+                    >
                         <Localise id="header.create" />
-                    </a>
+                    </SmartLink>
 
-                    <a href="examples.html" className={classNames(styles.headerItem, styles.hoverable)}>
+                    <SmartLink
+                        to="/examples"
+                        className={classNames(styles.headerItem, styles.hoverable)}
+                        onMouseEnter={() => process.env.SPA && import(/* webpackChunkName: "examples-landing" */ '../../examples/examples')}
+                    >
                         <Localise id="examples.title" />
-                    </a>
+                    </SmartLink>
 
-                    <a
-                        href="https://ampmod.codeberg.page/manual"
+                    <SmartLink
+                        to="https://ampmod.codeberg.page/manual"
                         className={classNames(styles.headerItem, styles.hoverable)}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         <Localise id="header.manual" />
-                    </a>
+                    </SmartLink>
 
-                    <a
-                        href="https://ampmod.codeberg.page/extensions"
+                    <SmartLink
+                        to="https://ampmod.codeberg.page/extensions"
                         className={classNames(styles.headerItem, styles.hoverable)}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         <Localise id="header.extensions" />
-                    </a>
+                    </SmartLink>
                 </div>
             </div>
 
             <div className={styles.spacer}></div>
             <TWNews />
-        </React.Fragment>
+        </>
     );
 };
 

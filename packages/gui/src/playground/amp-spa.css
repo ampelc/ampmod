@@ -1,0 +1,23 @@
+@import "../css/colors.css";
+
+.launching {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: $menu-bar-background;
+    background-image: $menu-bar-background-image;
+    color: $menu-bar-foreground;
+    display: flex;
+    flex-direction: column;
+    vertical-align: center;
+    align-items: center;
+    justify-content: center;
+    font-family: "Inter Variable", sans-serif;
+    line-height: 1.2em;
+}
+
+.launching a {
+    color: inherit;
+}

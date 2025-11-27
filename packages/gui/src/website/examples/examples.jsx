@@ -20,8 +20,7 @@ applyGuiColors(detectTheme());
 setHtmlLang();
 document.title = `${localise('examples.title')} - ${APP_NAME}`;
 
-// Exported  so it works with desktop
-export const ExamplesPage = () => {
+export default function ExamplesPage() {
     const firstExampleRef = React.useRef(null);
     let exdriver = {};
 
@@ -101,4 +100,4 @@ export const ExamplesPage = () => {
     );
 };
 
-render(<ExamplesPage />);
+if (!process.env.SPA) { render(<ExamplesPage />); }

@@ -1,13 +1,8 @@
-/**
- * A debug "index" module exporting VideoMotion and VideoMotionView to debug
- * VideoMotion directly.
- * @file debug.js
- */
-
-const VideoMotion = require('./library');
-const VideoMotionView = require('./view');
-
-module.exports = {
+import VideoMotion from './library.js';
+import VideoMotionView from './view.js';
+export {VideoMotion};
+export {VideoMotionView};
+export default {
     VideoMotion,
     VideoMotionView
 };

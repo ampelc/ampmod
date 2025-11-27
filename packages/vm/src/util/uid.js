@@ -1,7 +1,6 @@
 /**
  * @fileoverview UID generator, from Blockly.
  */
-
 /**
  * Legal characters for the unique ID.
  * Should be all on a US keyboard.  No XML special characters or control codes.
@@ -9,7 +8,6 @@
  * @private
  */
 const soup_ = '!#%()*+,-./:;=?@[]^_`{|}~' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
 /**
  * Generate a unique ID, from Blockly.  This should be globally unique.
  * 87 characters ^ 20 length > 128 bits (better than a UUID).
@@ -24,5 +22,4 @@ const uid = function () {
     }
     return id.join('');
 };
-
-module.exports = uid;
+export default uid;

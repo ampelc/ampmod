@@ -3,14 +3,12 @@
  * @type {number}
  */
 const TO_DEGREE = 180 / Math.PI;
-
 /**
  * A object reused to save on memory allocation returning u and v vector from
  * motionVector.
  * @type {UV}
  */
 const _motionVectorOut = {u: 0, v: 0};
-
 /**
  * Determine a motion vector combinations of the color component difference on
  * the x axis, y axis, and temporal axis.
@@ -47,7 +45,6 @@ const motionVector = function (A2, A1B2, B1, C2, C1, out = _motionVectorOut) {
     }
     return out;
 };
-
 /**
  * Translate an angle in degrees with the range -180 to 180 rotated to
  * Scratch's reference angle.
@@ -57,7 +54,6 @@ const motionVector = function (A2, A1B2, B1, C2, C1, out = _motionVectorOut) {
 const scratchDegrees = function (degrees) {
     return ((degrees + 270) % 360) - 180;
 };
-
 /**
  * Get the angle of the y and x component of a 2d vector in degrees in
  * Scratch's coordinate plane.
@@ -68,8 +64,10 @@ const scratchDegrees = function (degrees) {
 const scratchAtan2 = function (y, x) {
     return scratchDegrees(Math.atan2(y, x) * TO_DEGREE);
 };
-
-module.exports = {
+export {motionVector};
+export {scratchDegrees};
+export {scratchAtan2};
+export default {
     motionVector,
     scratchDegrees,
     scratchAtan2

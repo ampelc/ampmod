@@ -1,5 +1,4 @@
-const log = require('../util/log');
-
+import log from '../util/log.js';
 /**
  * @typedef {object} DispatchCallMessage - a message to the dispatch system representing a service method call
  * @property {*} responseId - send a response message with this response ID. See {@link DispatchResponseMessage}
@@ -7,19 +6,16 @@ const log = require('../util/log');
  * @property {string} method - the name of the method to be called
  * @property {Array|undefined} args - the arguments to be passed to the method
  */
-
 /**
  * @typedef {object} DispatchResponseMessage - a message to the dispatch system representing the results of a call
  * @property {*} responseId - a copy of the response ID from the call which generated this response
  * @property {*|undefined} error - if this is truthy, then it contains results from a failed call (such as an exception)
  * @property {*|undefined} result - if error is not truthy, then this contains the return value of the call (if any)
  */
-
 /**
  * @typedef {DispatchCallMessage|DispatchResponseMessage} DispatchMessage
  * Any message to the dispatch system.
  */
-
 /**
  * The SharedDispatch class is responsible for dispatch features shared by
  * {@link CentralDispatch} and {@link WorkerDispatch}.
@@ -33,14 +29,12 @@ class SharedDispatch {
          * @type {Array.<Function[]>}
          */
         this.callbacks = [];
-
         /**
          * The next response ID to be used.
          * @type {int}
          */
         this.nextResponseId = 0;
     }
-
     /**
      * Call a particular method on a particular service, regardless of whether that service is provided locally or on
      * a worker. If the service is provided by a worker, the `args` will be copied using the Structured Clone
@@ -58,7 +52,6 @@ class SharedDispatch {
     call (service, method, ...args) {
         return this.transferCall(service, method, null, ...args);
     }
-
     /**
      * Call a particular method on a particular service, regardless of whether that service is provided locally or on
      * a worker. If the service is provided by a worker, the `args` will be copied using the Structured Clone
@@ -81,7 +74,6 @@ class SharedDispatch {
                 if (isRemote) {
                     return this._remoteTransferCall(provider, service, method, transfer, ...args);
                 }
-
                 // TODO: verify correct `this` after switching from apply to spread
                 // eslint-disable-next-line prefer-spread
                 const result = provider[method].apply(provider, args);
@@ -92,7 +84,6 @@ class SharedDispatch {
             return Promise.reject(e);
         }
     }
-
     /**
      * Check if a particular service lives on another worker.
      * @param {string} service - the service to check.
@@ -102,7 +93,6 @@ class SharedDispatch {
     _isRemoteService (service) {
         return this._getServiceProvider(service).isRemote;
     }
-
     /**
      * Like {@link call}, but force the call to be posted through a particular communication channel.
      * @param {object} provider - send the call through this object's `postMessage` function.
@@ -114,7 +104,6 @@ class SharedDispatch {
     _remoteCall (provider, service, method, ...args) {
         return this._remoteTransferCall(provider, service, method, null, ...args);
     }
-
     /**
      * Like {@link transferCall}, but force the call to be posted through a particular communication channel.
      * @param {object} provider - send the call through this object's `postMessage` function.
@@ -127,7 +116,6 @@ class SharedDispatch {
     _remoteTransferCall (provider, service, method, transfer, ...args) {
         return new Promise((resolve, reject) => {
             const responseId = this._storeCallbacks(resolve, reject);
-
             /** @TODO: remove this hack! this is just here so we don't try to send `util` to a worker */
             // tw: upstream's logic is broken
             // Args is actually a 3 length list of [args, util, real block info]
@@ -136,7 +124,6 @@ class SharedDispatch {
                 args.pop();
                 args.pop();
             }
-
             if (transfer) {
                 provider.postMessage({service, method, responseId, args}, transfer);
             } else {
@@ -144,7 +131,6 @@ class SharedDispatch {
             }
         });
     }
-
     /**
      * Store callback functions pending a response message.
      * @param {Function} resolve - function to call if the service method returns.
@@ -157,7 +143,6 @@ class SharedDispatch {
         this.callbacks[responseId] = [resolve, reject];
         return responseId;
     }
-
     /**
      * Deliver call response from a worker. This should only be called as the result of a message from a worker.
      * @param {int} responseId - the response ID of the callback set to call.
@@ -177,7 +162,6 @@ class SharedDispatch {
             log.error(`Dispatch callback failed: ${e}`);
         }
     }
-
     /**
      * Handle a message event received from a connected worker.
      * @param {Worker} worker - the worker which sent the message, or the global object if running in a worker.
@@ -204,22 +188,16 @@ class SharedDispatch {
             if (typeof message.responseId === 'undefined') {
                 log.error(`Dispatch message missing required response ID: ${JSON.stringify(event)}`);
             } else {
-                promise.then(
-                    result =>
-                        worker.postMessage({
-                            responseId: message.responseId,
-                            result
-                        }),
-                    error =>
-                        worker.postMessage({
-                            responseId: message.responseId,
-                            error: `${error}`
-                        })
-                );
+                promise.then(result => worker.postMessage({
+                    responseId: message.responseId,
+                    result
+                }), error => worker.postMessage({
+                    responseId: message.responseId,
+                    error: `${error}`
+                }));
             }
         }
     }
-
     /**
      * Fetch the service provider object for a particular service name.
      * @abstract
@@ -230,7 +208,6 @@ class SharedDispatch {
     _getServiceProvider (service) {
         throw new Error(`Could not get provider for ${service}: _getServiceProvider not implemented`);
     }
-
     /**
      * Handle a call message sent to the dispatch service itself
      * @abstract
@@ -243,5 +220,4 @@ class SharedDispatch {
         throw new Error(`Unimplemented dispatch message handler cannot handle ${message.method} method`);
     }
 }
-
-module.exports = SharedDispatch;
+export default SharedDispatch;

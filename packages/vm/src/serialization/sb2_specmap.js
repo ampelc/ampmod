@@ -1,42 +1,15 @@
-/**
- * @fileoverview
- * The specMap below handles a few pieces of "translation" work between
- * the SB2 JSON format and the data we need to run a project
- * in the Scratch 3.0 VM.
- * Notably:
- *  - Map 2.0 and 1.4 opcodes (forward:) into 3.0-format (motion_movesteps).
- *  - Map ordered, unnamed args to unordered, named inputs and fields.
- * Keep this up-to-date as 3.0 blocks are renamed, changed, etc.
- * Originally this was generated largely by a hand-guided scripting process.
- * The relevant data lives here:
- * https://github.com/scratchfoundation/scratch-flash/blob/master/src/Specs.as
- * (for the old opcode and argument order).
- * and here:
- * https://github.com/scratchfoundation/scratch-blocks/tree/develop/blocks_vertical
- * (for the new opcodes and argument names).
- * and here:
- * https://github.com/scratchfoundation/scratch-blocks/blob/develop/tests/
- * (for the shadow blocks created for each block).
- * I started with the `commands` array in Specs.as, and discarded irrelevant
- * properties. By hand, I matched the opcode name to the 3.0 opcode.
- * Finally, I filled in the expected arguments as below.
- */
-
-const Variable = require('../engine/variable');
-
+import Variable from '../engine/variable.js';
 /**
  * @typedef {object} SB2SpecMap_blockInfo
  * @property {string} opcode - the Scratch 3.0 block opcode. Use 'extensionID.opcode' for extension opcodes.
  * @property {Array.<SB2SpecMap_argInfo>} argMap - metadata for this block's arguments.
  */
-
 /**
  * @typedef {object} SB2SpecMap_argInfo
  * @property {string} type - the type of this arg (such as 'input' or 'field')
  * @property {string} inputOp - the scratch-blocks shadow type for this arg
  * @property {string} inputName - the name this argument will take when provided to the block implementation
  */
-
 /**
  * Mapping of Scratch 2.0 opcode to Scratch 3.0 block metadata.
  * @type {object.<SB2SpecMap_blockInfo>}
@@ -1596,7 +1569,6 @@ const specMap = {
         argMap: []
     }
 };
-
 /**
  * Add to the specMap entries for an opcode from a Scratch 2.0 extension. Two entries will be made with the same
  * metadata; this is done to support projects saved by both older and newer versions of the Scratch 2.0 editor.
@@ -1611,16 +1583,12 @@ const addExtensionOp = function (sb2Extension, sb2Opcode, blockInfo) {
      * @type {string}
      */
     const sep = '\u001F'; // Unicode Unit Separator
-
     // make one entry for projects saved by recent versions of the Scratch 2.0 editor
     specMap[`${sb2Extension}${sep}${sb2Opcode}`] = blockInfo;
-
     // make a second for projects saved by older versions of the Scratch 2.0 editor
     specMap[`${sb2Extension}.${sb2Opcode}`] = blockInfo;
 };
-
 const weDo2 = 'LEGO WeDo 2.0';
-
 addExtensionOp(weDo2, 'motorOnFor', {
     opcode: 'wedo2_motorOnFor',
     argMap: [
@@ -1636,7 +1604,6 @@ addExtensionOp(weDo2, 'motorOnFor', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'motorOn', {
     opcode: 'wedo2_motorOn',
     argMap: [
@@ -1647,7 +1614,6 @@ addExtensionOp(weDo2, 'motorOn', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'motorOff', {
     opcode: 'wedo2_motorOff',
     argMap: [
@@ -1658,7 +1624,6 @@ addExtensionOp(weDo2, 'motorOff', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'startMotorPower', {
     opcode: 'wedo2_startMotorPower',
     argMap: [
@@ -1674,7 +1639,6 @@ addExtensionOp(weDo2, 'startMotorPower', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'setMotorDirection', {
     opcode: 'wedo2_setMotorDirection',
     argMap: [
@@ -1690,7 +1654,6 @@ addExtensionOp(weDo2, 'setMotorDirection', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'setLED', {
     opcode: 'wedo2_setLightHue',
     argMap: [
@@ -1701,7 +1664,6 @@ addExtensionOp(weDo2, 'setLED', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'playNote', {
     opcode: 'wedo2_playNoteFor',
     argMap: [
@@ -1717,7 +1679,6 @@ addExtensionOp(weDo2, 'playNote', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'whenDistance', {
     opcode: 'wedo2_whenDistance',
     argMap: [
@@ -1733,7 +1694,6 @@ addExtensionOp(weDo2, 'whenDistance', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'whenTilted', {
     opcode: 'wedo2_whenTilted',
     argMap: [
@@ -1744,12 +1704,10 @@ addExtensionOp(weDo2, 'whenTilted', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'getDistance', {
     opcode: 'wedo2_getDistance',
     argMap: []
 });
-
 addExtensionOp(weDo2, 'isTilted', {
     opcode: 'wedo2_isTilted',
     argMap: [
@@ -1760,7 +1718,6 @@ addExtensionOp(weDo2, 'isTilted', {
         }
     ]
 });
-
 addExtensionOp(weDo2, 'getTilt', {
     opcode: 'wedo2_getTiltAngle',
     argMap: [
@@ -1771,5 +1728,4 @@ addExtensionOp(weDo2, 'getTilt', {
         }
     ]
 });
-
-module.exports = specMap;
+export default specMap;

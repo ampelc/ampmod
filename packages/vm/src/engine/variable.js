@@ -1,11 +1,5 @@
-/**
- * @fileoverview
- * Object representing a Scratch variable.
- */
-
-const uid = require('../util/uid');
-const xmlEscape = require('../util/xml-escape');
-
+import uid from '../util/uid.js';
+import xmlEscape from '../util/xml-escape.js';
 class Variable {
     /**
      * @param {string | null} id Id of the variable.
@@ -34,14 +28,10 @@ class Variable {
             throw new Error(`Invalid variable type: ${this.type}`);
         }
     }
-
     toXML (isLocal) {
         isLocal = isLocal === true;
-        return `<variable type="${this.type}" id="${this.id}" islocal="${
-            isLocal
-        }" iscloud="${this.isCloud}">${xmlEscape(this.name)}</variable>`;
+        return `<variable type="${this.type}" id="${this.id}" islocal="${isLocal}" iscloud="${this.isCloud}">${xmlEscape(this.name)}</variable>`;
     }
-
     /**
      * Type representation for scalar variables.
      * This is currently represented as ''
@@ -51,7 +41,6 @@ class Variable {
     static get SCALAR_TYPE () {
         return ''; // used by compiler
     }
-
     /**
      * Type representation for list variables.
      * @const {string}
@@ -59,7 +48,6 @@ class Variable {
     static get LIST_TYPE () {
         return 'list'; // used by compiler
     }
-
     /**
      * Type representation for list variables.
      * @const {string}
@@ -68,5 +56,4 @@ class Variable {
         return 'broadcast_msg';
     }
 }
-
-module.exports = Variable;
+export default Variable;

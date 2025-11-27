@@ -25,9 +25,13 @@ const onExportSettings = settings => {
     downloadBlob('turbowarp-addon-settings.json', blob);
 };
 
-render(
-    <React.Fragment>
+export default function AddonSettings() {
+    return <React.Fragment>
         <Clippy isFixed />
         <Settings onExportSettings={onExportSettings} />
-    </React.Fragment>
-);
+    </React.Fragment>;
+};
+
+if (!process.env.SPA) {
+    render(<AddonSettings />);
+}

@@ -1,21 +1,20 @@
-const adapter = require('./adapter');
-const mutationAdapter = require('./mutation-adapter');
-const xmlEscape = require('../util/xml-escape');
-const MonitorRecord = require('./monitor-record');
-const Clone = require('../util/clone');
-const {Map} = require('immutable');
-const BlocksExecuteCache = require('./blocks-execute-cache');
-const BlocksRuntimeCache = require('./blocks-runtime-cache');
-const log = require('../util/log');
-const Variable = require('./variable');
-const getMonitorIdForBlockWithArgs = require('../util/get-monitor-id');
-
+import adapter from './adapter.js';
+import mutationAdapter from './mutation-adapter.js';
+import xmlEscape from '../util/xml-escape.js';
+import MonitorRecord from './monitor-record.js';
+import Clone from '../util/clone.js';
+import immutable from 'immutable';
+import * as BlocksExecuteCache from './blocks-execute-cache.js';
+import * as BlocksRuntimeCache from './blocks-runtime-cache.js';
+import log from '../util/log.js';
+import Variable from './variable.js';
+import getMonitorIdForBlockWithArgs from '../util/get-monitor-id.js';
+const {Map} = immutable;
 /**
  * @fileoverview
  * Store and mutate the VM block representation,
  * and handle updates from Scratch Blocks events.
  */
-
 /**
  * Create a block container.
  * @param {Runtime} runtime The runtime this block container operates within
@@ -25,21 +24,18 @@ const getMonitorIdForBlockWithArgs = require('../util/get-monitor-id');
 class Blocks {
     constructor (runtime, optNoGlow) {
         this.runtime = runtime;
-
         /**
          * All blocks in the workspace.
          * Keys are block IDs, values are metadata about the block.
          * @type {Object.<string, Object>}
          */
         this._blocks = {};
-
         /**
          * All top-level scripts in the workspace.
          * A list of block IDs that represent scripts (i.e., first block in script).
          * @type {Array.<String>}
          */
         this._scripts = [];
-
         /**
          * Runtime Cache
          * @type {{inputs: {}, procedureParamNames: {}, procedureDefinitions: {}}}
@@ -65,45 +61,38 @@ class Blocks {
              * @type {object.<string, ?string>}
              */
             procedureDefinitions: {},
-
             /**
              * A cache for execute to use and store on. Only available to
              * execute.
              * @type {object.<string, object>}
              */
             _executeCached: {},
-
             /**
              * A cache of block IDs and targets to start threads on as they are
              * actively monitored.
              * @type {Array<{blockId: string, target: Target}>}
              */
             _monitored: null,
-
             /**
              * A cache of hat opcodes to collection of theads to execute.
              * @type {object.<string, object>}
              */
             scripts: {},
-
             /**
              * tw: A cache of top block (usually hat, but not always) opcodes to compiled scripts.
              * @type {object.<string, object>}
              */
             compiledScripts: {},
-
             /**
              * tw: A cache of procedure code opcodes to a parsed intermediate representation
              * @type {object.<string, object>}
              */
             compiledProcedures: {},
-
             /**
              * tw: Whether populateProcedureCache has been run
              */
             proceduresPopulated: false
         };
-
         /**
          * Flag which indicates that blocks in this container should not glow.
          * Blocks will still glow when clicked on, but this flag is used to control
@@ -115,7 +104,6 @@ class Blocks {
          */
         this.forceNoGlow = optNoGlow || false;
     }
-
     /**
      * Get the cached compilation result of a block.
      * @param {string} blockId ID of the top block.
@@ -127,7 +115,6 @@ class Blocks {
         }
         return null;
     }
-
     /**
      * Set the cached compilation result of a script.
      * @param {string} blockId ID of the top block.
@@ -139,7 +126,6 @@ class Blocks {
             value: value
         };
     }
-
     /**
      * Set the cached error of a script.
      * @param {string} blockId ID of the top block.
@@ -151,7 +137,6 @@ class Blocks {
             value: error
         };
     }
-
     /**
      * Blockly inputs that represent statements/branch.
      * are prefixed with this string.
@@ -160,7 +145,6 @@ class Blocks {
     static get BRANCH_INPUT_PREFIX () {
         return 'SUBSTACK';
     }
-
     /**
      * Provide an object with metadata for the requested block ID.
      * @param {!string} blockId ID of block we have stored.
@@ -169,7 +153,6 @@ class Blocks {
     getBlock (blockId) {
         return this._blocks[blockId];
     }
-
     /**
      * Get all known top-level blocks that start scripts.
      * @return {Array.<string>} List of block IDs.
@@ -177,7 +160,6 @@ class Blocks {
     getScripts () {
         return this._scripts;
     }
-
     /**
      * Get the next block for a particular block
      * @param {?string} id ID of block to get the next block for
@@ -187,7 +169,6 @@ class Blocks {
         const block = this._blocks[id];
         return typeof block === 'undefined' ? null : block.next;
     }
-
     /**
      * Get the branch for a particular C-shaped block.
      * @param {?string} id ID for block to get the branch for.
@@ -196,19 +177,20 @@ class Blocks {
      */
     getBranch (id, branchNum) {
         const block = this._blocks[id];
-        if (typeof block === 'undefined') return null;
-        if (!branchNum) branchNum = 1;
-
+        if (typeof block === 'undefined') {
+            return null;
+        }
+        if (!branchNum) {
+            branchNum = 1;
+        }
         let inputName = Blocks.BRANCH_INPUT_PREFIX;
         if (branchNum > 1) {
             inputName += branchNum;
         }
-
         // Empty C-block?
         const input = block.inputs[inputName];
         return typeof input === 'undefined' ? null : input.block;
     }
-
     /**
      * Get the opcode for a particular block
      * @param {?object} block The block to query
@@ -217,7 +199,6 @@ class Blocks {
     getOpcode (block) {
         return typeof block === 'undefined' ? null : block.opcode;
     }
-
     /**
      * Get all fields and their values for a block.
      * @param {?object} block The block to query.
@@ -226,19 +207,19 @@ class Blocks {
     getFields (block) {
         return typeof block === 'undefined' ? null : block.fields;
     }
-
     /**
      * Get all non-branch inputs for a block.
      * @param {?object} block the block to query.
      * @return {?Array.<object>} All non-branch inputs and their associated blocks.
      */
     getInputs (block) {
-        if (typeof block === 'undefined') return null;
+        if (typeof block === 'undefined') {
+            return null;
+        }
         let inputs = this._cache.inputs[block.id];
         if (typeof inputs !== 'undefined') {
             return inputs;
         }
-
         inputs = {};
         for (const input in block.inputs) {
             // Ignore blocks prefixed with branch prefix.
@@ -246,11 +227,9 @@ class Blocks {
                 inputs[input] = block.inputs[input];
             }
         }
-
         this._cache.inputs[block.id] = inputs;
         return inputs;
     }
-
     /**
      * Get mutation data for a block.
      * @param {?object} block The block to query.
@@ -259,7 +238,6 @@ class Blocks {
     getMutation (block) {
         return typeof block === 'undefined' ? null : block.mutation;
     }
-
     /**
      * Get the top-level script for a given block.
      * @param {?string} id ID of block to query.
@@ -267,13 +245,14 @@ class Blocks {
      */
     getTopLevelScript (id) {
         let block = this._blocks[id];
-        if (typeof block === 'undefined') return null;
+        if (typeof block === 'undefined') {
+            return null;
+        }
         while (block.parent !== null) {
             block = this._blocks[block.parent];
         }
         return block.id;
     }
-
     /**
      * Get the procedure definition for a given name.
      * @param {?string} name Name of procedure to query.
@@ -284,9 +263,10 @@ class Blocks {
         if (typeof blockID !== 'undefined') {
             return blockID;
         }
-
         for (const id in this._blocks) {
-            if (!Object.prototype.hasOwnProperty.call(this._blocks, id)) continue;
+            if (!Object.prototype.hasOwnProperty.call(this._blocks, id)) {
+                continue;
+            }
             const block = this._blocks[id];
             if (block.opcode === 'procedures_definition') {
                 // tw: make sure that populateProcedureCache is kept up to date with this method
@@ -297,11 +277,9 @@ class Blocks {
                 }
             }
         }
-
         this._cache.procedureDefinitions[name] = null;
         return null;
     }
-
     /**
      * Get names and ids of parameters for the given procedure.
      * @param {?string} name Name of procedure to query.
@@ -310,7 +288,6 @@ class Blocks {
     getProcedureParamNamesAndIds (name) {
         return this.getProcedureParamNamesIdsAndDefaults(name).slice(0, 2);
     }
-
     /**
      * Get names, ids, and defaults of parameters for the given procedure.
      * @param {?string} name Name of procedure to query.
@@ -321,31 +298,28 @@ class Blocks {
         if (typeof cachedNames !== 'undefined') {
             return cachedNames;
         }
-
         for (const id in this._blocks) {
-            if (!Object.prototype.hasOwnProperty.call(this._blocks, id)) continue;
+            if (!Object.prototype.hasOwnProperty.call(this._blocks, id)) {
+                continue;
+            }
             const block = this._blocks[id];
             if (block.opcode === 'procedures_prototype' && block.mutation.proccode === name) {
                 // tw: make sure that populateProcedureCache is kept up to date with this method
                 const names = JSON.parse(block.mutation.argumentnames);
                 const ids = JSON.parse(block.mutation.argumentids);
                 const defaults = JSON.parse(block.mutation.argumentdefaults);
-
                 this._cache.procedureParamNames[name] = [names, ids, defaults];
                 return this._cache.procedureParamNames[name];
             }
         }
-
         const addonBlock = this.runtime.getAddonBlock(name);
         if (addonBlock) {
             this._cache.procedureParamNames[name] = addonBlock.namesIdsDefaults;
             return addonBlock.namesIdsDefaults;
         }
-
         this._cache.procedureParamNames[name] = null;
         return null;
     }
-
     /**
      * tw: Setup the procedureParamNames and procedureDefinitions caches all at once.
      * This makes subsequent calls to these methods faster.
@@ -355,9 +329,10 @@ class Blocks {
             return;
         }
         for (const id in this._blocks) {
-            if (!Object.prototype.hasOwnProperty.call(this._blocks, id)) continue;
+            if (!Object.prototype.hasOwnProperty.call(this._blocks, id)) {
+                continue;
+            }
             const block = this._blocks[id];
-
             if (block.opcode === 'procedures_prototype') {
                 const name = block.mutation.proccode;
                 if (!this._cache.procedureParamNames[name]) {
@@ -368,7 +343,6 @@ class Blocks {
                 }
                 continue;
             }
-
             if (block.opcode === 'procedures_definition') {
                 const internal = this._getCustomBlockInternal(block);
                 if (internal) {
@@ -382,7 +356,6 @@ class Blocks {
         }
         this._cache.proceduresPopulated = true;
     }
-
     duplicate () {
         const newBlocks = new Blocks(this.runtime, this.forceNoGlow);
         newBlocks._blocks = Clone.simple(this._blocks);
@@ -390,7 +363,6 @@ class Blocks {
         return newBlocks;
     }
     // ---------------------------------------------------------------------
-
     /**
      * Create event listener for blocks, variables, and comments. Handles validation and
      * serves as a generic adapter between the blocks, variables, and the
@@ -399,19 +371,19 @@ class Blocks {
      */
     blocklyListen (e) {
         // Validate event
-        if (typeof e !== 'object') return;
+        if (typeof e !== 'object') {
+            return;
+        }
         if (typeof e.blockId !== 'string' && typeof e.varId !== 'string' && typeof e.commentId !== 'string') {
             return;
         }
         const stage = this.runtime.getTargetForStage();
         const editingTarget = this.runtime.getEditingTarget();
-
         // UI event: clicked scripts toggle in the runtime.
         if (e.element === 'stackclick') {
             this.runtime.toggleScript(e.blockId, {stackClick: true});
             return;
         }
-
         // Block create/update/destroy
         switch (e.type) {
         case 'create': {
@@ -445,7 +417,6 @@ class Blocks {
             break;
         case 'endDrag':
             this.runtime.emitBlockDragUpdate(false /* areBlocksOverGui */);
-
             // Drag blocks onto another sprite
             if (e.isOutside) {
                 const newBlocks = adapter(e);
@@ -515,10 +486,9 @@ class Blocks {
             break;
         case 'var_delete': {
             this.resetCache(); // tw: more aggressive cache resetting
-            const target =
-                    editingTarget && Object.prototype.hasOwnProperty.call(editingTarget.variables, e.varId) ?
-                        editingTarget :
-                        stage;
+            const target = editingTarget && Object.prototype.hasOwnProperty.call(editingTarget.variables, e.varId) ?
+                editingTarget :
+                stage;
             target.deleteVariable(e.varId);
             this.emitProjectChanged();
             break;
@@ -528,16 +498,8 @@ class Blocks {
             if (this.runtime.getEditingTarget()) {
                 const currTarget = this.runtime.getEditingTarget();
                 currTarget.createComment(
-                    e.commentId,
-                    e.blockId,
-                    e.text,
-                    e.xy.x,
-                    e.xy.y,
-                    e.width,
-                    e.height,
-                    e.minimized
+                    e.commentId, e.blockId, e.text, e.xy.x, e.xy.y, e.width, e.height, e.minimized
                 );
-
                 if (currTarget.comments[e.commentId].x === null && currTarget.comments[e.commentId].y === null) {
                     // Block comments imported from 2.0 projects are imported with their
                     // x and y coordinates set to null so that scratch-blocks can
@@ -564,10 +526,8 @@ class Blocks {
                 if (Object.prototype.hasOwnProperty.call(change, 'minimized')) {
                     comment.minimized = change.minimized;
                 }
-                if (
-                    Object.prototype.hasOwnProperty.call(change, 'width') &&
-                        Object.prototype.hasOwnProperty.call(change, 'height')
-                ) {
+                if (Object.prototype.hasOwnProperty.call(change, 'width') &&
+                        Object.prototype.hasOwnProperty.call(change, 'height')) {
                     comment.width = change.width;
                     comment.height = change.height;
                 }
@@ -588,7 +548,6 @@ class Blocks {
                 const newCoord = e.newCoordinate_;
                 comment.x = newCoord.x;
                 comment.y = newCoord.y;
-
                 this.emitProjectChanged();
             }
             break;
@@ -612,15 +571,12 @@ class Blocks {
                     }
                     delete block.comment;
                 }
-
                 this.emitProjectChanged();
             }
             break;
         }
     }
-
     // ---------------------------------------------------------------------
-
     /**
      * Reset all runtime caches.
      */
@@ -635,7 +591,6 @@ class Blocks {
         this._cache.compiledProcedures = {};
         this._cache.proceduresPopulated = false;
     }
-
     /**
      * Emit a project changed event if this is a block container
      * that can affect the project state.
@@ -645,7 +600,6 @@ class Blocks {
             this.runtime.emitProjectChanged();
         }
     }
-
     /**
      * Block management: create blocks and scripts from a `create` event
      * @param {!object} block Blockly create event to be processed
@@ -664,23 +618,24 @@ class Blocks {
         if (block.topLevel) {
             this._addScript(block.id);
         }
-
         this.resetCache();
-
         // A new block was actually added to the block container,
         // emit a project changed event
         this.emitProjectChanged();
     }
-
     /**
      * Block management: change block field values
      * @param {!object} args Blockly change event to be processed
      */
     changeBlock (args) {
         // Validate
-        if (['field', 'mutation', 'checkbox'].indexOf(args.element) === -1) return;
+        if (['field', 'mutation', 'checkbox'].indexOf(args.element) === -1) {
+            return;
+        }
         let block = this._blocks[args.id];
-        if (typeof block === 'undefined') return;
+        if (typeof block === 'undefined') {
+            return;
+        }
         switch (args.element) {
         case 'field':
             // TODO when the field of a monitored block changes,
@@ -691,9 +646,10 @@ class Blocks {
             // 2. switch dropdown in flyout block to (current [v minute])
             // 3. the checkbox should become unchecked if we're not already
             //    monitoring current minute
-
             // Update block value
-            if (!block.fields[args.name]) return;
+            if (!block.fields[args.name]) {
+                return;
+            }
             if (args.name === 'VARIABLE' || args.name === 'LIST' || args.name === 'BROADCAST_OPTION') {
                 // Get variable name using the id in args.value.
                 const variable = this.runtime.getEditingTarget().lookupVariableById(args.value);
@@ -704,7 +660,6 @@ class Blocks {
             } else {
                 // Changing the value in a dropdown
                 block.fields[args.name].value = args.value;
-
                 // The selected item in the sensing of block menu needs to change based on the
                 // selected target.  Set it to the first item in the menu list.
                 // TODO: (#1787)
@@ -716,15 +671,12 @@ class Blocks {
                     }
                     this.runtime.requestBlocksUpdate();
                 }
-
                 const flyoutBlock = block.shadow && block.parent ? this._blocks[block.parent] : block;
                 if (flyoutBlock.isMonitored) {
-                    this.runtime.requestUpdateMonitor(
-                        Map({
-                            id: flyoutBlock.id,
-                            params: this._getBlockParams(flyoutBlock)
-                        })
-                    );
+                    this.runtime.requestUpdateMonitor(Map({
+                        id: flyoutBlock.id,
+                        params: this._getBlockParams(flyoutBlock)
+                    }));
                 }
             }
             break;
@@ -735,18 +687,15 @@ class Blocks {
             // A checkbox usually has a one to one correspondence with the monitor
             // block but in the case of monitored reporters that have arguments,
             // map the old id to a new id, creating a new monitor block if necessary
-            if (
-                block.fields &&
+            if (block.fields &&
                     Object.keys(block.fields).length > 0 &&
                     block.opcode !== 'data_variable' &&
-                    block.opcode !== 'data_listcontents'
-            ) {
+                    block.opcode !== 'data_listcontents') {
                 // This block has an argument which needs to get separated out into
                 // multiple monitor blocks with ids based on the selected argument
                 const newId = getMonitorIdForBlockWithArgs(block.id, block.fields);
                 // Note: we're not just constantly creating a longer and longer id everytime we check
                 // the checkbox because we're using the id of the block in the flyout as the base
-
                 // check if a block with the new id already exists, otherwise create
                 let newBlock = this.runtime.monitorBlocks.getBlock(newId);
                 if (!newBlock) {
@@ -754,13 +703,10 @@ class Blocks {
                     newBlock.id = newId;
                     this.runtime.monitorBlocks.createBlock(newBlock);
                 }
-
                 block = newBlock; // Carry on through the rest of this code with newBlock
             }
-
             const wasMonitored = block.isMonitored;
             block.isMonitored = args.value;
-
             // Variable blocks may be sprite specific depending on the owner of the variable
             let isSpriteLocalVariable = false;
             if (block.opcode === 'data_variable') {
@@ -768,9 +714,7 @@ class Blocks {
             } else if (block.opcode === 'data_listcontents') {
                 isSpriteLocalVariable = !this.runtime.getTargetForStage().variables[block.fields.LIST.id];
             }
-
-            const isSpriteSpecific =
-                    isSpriteLocalVariable ||
+            const isSpriteSpecific = isSpriteLocalVariable ||
                     (Object.prototype.hasOwnProperty.call(this.runtime.monitorBlockInfo, block.opcode) &&
                         this.runtime.monitorBlockInfo[block.opcode].isSpriteSpecific);
             if (isSpriteSpecific) {
@@ -781,37 +725,31 @@ class Blocks {
             } else {
                 block.targetId = null;
             }
-
             if (wasMonitored && !block.isMonitored) {
                 this.runtime.requestHideMonitor(block.id);
             } else if (!wasMonitored && block.isMonitored) {
                 // Tries to show the monitor for specified block. If it doesn't exist, add the monitor.
                 if (!this.runtime.requestShowMonitor(block.id)) {
-                    this.runtime.requestAddMonitor(
-                        MonitorRecord({
-                            id: block.id,
-                            targetId: block.targetId,
-                            spriteName: block.targetId ?
-                                this.runtime.getTargetById(block.targetId).getName() :
-                                null,
-                            opcode: block.opcode,
-                            params: this._getBlockParams(block),
-                            // @todo(vm#565) for numerical values with decimals, some countries use comma
-                            value: '',
-                            mode: block.opcode === 'data_listcontents' ? 'list' : 'default'
-                        })
-                    );
+                    this.runtime.requestAddMonitor(MonitorRecord({
+                        id: block.id,
+                        targetId: block.targetId,
+                        spriteName: block.targetId ?
+                            this.runtime.getTargetById(block.targetId).getName() :
+                            null,
+                        opcode: block.opcode,
+                        params: this._getBlockParams(block),
+                        // @todo(vm#565) for numerical values with decimals, some countries use comma
+                        value: '',
+                        mode: block.opcode === 'data_listcontents' ? 'list' : 'default'
+                    }));
                 }
             }
             break;
         }
         }
-
         this.emitProjectChanged();
-
         this.resetCache();
     }
-
     /**
      * Block management: move blocks from parent to parent
      * @param {!object} e Blockly move event to be processed
@@ -820,21 +758,17 @@ class Blocks {
         if (!Object.prototype.hasOwnProperty.call(this._blocks, e.id)) {
             return;
         }
-
         const block = this._blocks[e.id];
         // Track whether a change actually occurred
         // ignoring changes like routine re-positioning
         // of a block when loading a workspace
         let didChange = false;
-
         // Move coordinate changes.
         if (e.newCoordinate) {
             didChange = block.x !== e.newCoordinate.x || block.y !== e.newCoordinate.y;
-
             block.x = e.newCoordinate.x;
             block.y = e.newCoordinate.y;
         }
-
         // Remove from any old parent.
         if (typeof e.oldParent !== 'undefined') {
             const oldParent = this._blocks[e.oldParent];
@@ -848,7 +782,6 @@ class Blocks {
             this._blocks[e.id].parent = null;
             didChange = true;
         }
-
         // Is this block a top-level block?
         if (typeof e.newParent === 'undefined') {
             this._addScript(e.id);
@@ -866,12 +799,12 @@ class Blocks {
                 if (Object.prototype.hasOwnProperty.call(this._blocks[e.newParent].inputs, e.newInput)) {
                     oldShadow = this._blocks[e.newParent].inputs[e.newInput].shadow;
                 }
-
                 // If the block being attached is itself a shadow, make sure to set
                 // both block and shadow to that blocks ID. This happens when adding
                 // inputs to a custom procedure.
-                if (this._blocks[e.id].shadow) oldShadow = e.id;
-
+                if (this._blocks[e.id].shadow) {
+                    oldShadow = e.id;
+                }
                 this._blocks[e.newParent].inputs[e.newInput] = {
                     name: e.newInput,
                     block: e.id,
@@ -882,10 +815,10 @@ class Blocks {
             didChange = true;
         }
         this.resetCache();
-
-        if (didChange) this.emitProjectChanged();
+        if (didChange) {
+            this.emitProjectChanged();
+        }
     }
-
     /**
      * Block management: run all blocks.
      * @param {!object} runtime Runtime to run all blocks in.
@@ -902,14 +835,12 @@ class Blocks {
                     };
                 });
         }
-
         const monitored = this._cache._monitored;
         for (let i = 0; i < monitored.length; i++) {
             const {blockId, target} = monitored[i];
             runtime.addMonitorScript(blockId, target);
         }
     }
-
     /**
      * Block management: delete blocks and their associated scripts. Does nothing if a block
      * with the given ID does not exist.
@@ -917,19 +848,16 @@ class Blocks {
      */
     deleteBlock (blockId) {
         // @todo In runtime, stop threads running on this script.
-
         // Get block
         const block = this._blocks[blockId];
         if (!block) {
             // No block with the given ID exists
             return;
         }
-
         // Delete children
         if (block.next !== null) {
             this.deleteBlock(block.next);
         }
-
         // Delete inputs (including branches)
         for (const input in block.inputs) {
             // If it's null, the block in this input moved away.
@@ -941,17 +869,13 @@ class Blocks {
                 this.deleteBlock(block.inputs[input].shadow);
             }
         }
-
         // Delete any script starting with this block.
         this._deleteScript(blockId);
-
         // Delete block itself.
         delete this._blocks[blockId];
-
         this.resetCache();
         this.emitProjectChanged();
     }
-
     /**
      * Delete all blocks and their associated scripts.
      */
@@ -959,7 +883,6 @@ class Blocks {
         const blockIds = Object.keys(this._blocks);
         blockIds.forEach(blockId => this.deleteBlock(blockId));
     }
-
     /**
      * Returns a map of all references to variables or lists from blocks
      * in this block container.
@@ -1006,7 +929,6 @@ class Blocks {
         }
         return allReferences;
     }
-
     /**
      * Keep blocks up to date after a variable gets renamed.
      * @param {string} varId The id of the variable that was renamed
@@ -1029,7 +951,6 @@ class Blocks {
             }
         }
     }
-
     /**
      * Keep blocks up to date after they are shared between targets.
      * @param {boolean} isStage If the new target is a stage.
@@ -1044,7 +965,6 @@ class Blocks {
             }
         }
     }
-
     /**
      * Update blocks after a sound, costume, or backdrop gets renamed.
      * Any block referring to the old name of the asset should get updated
@@ -1077,7 +997,6 @@ class Blocks {
         }
         this.resetCache();
     }
-
     /**
      * Update sensing_of blocks after a variable gets renamed.
      * @param {string} oldName The old name of the variable that was renamed.
@@ -1090,12 +1009,10 @@ class Blocks {
         let blockUpdated = false;
         for (const blockId in blocks) {
             const block = blocks[blockId];
-            if (
-                block.opcode === 'sensing_of' &&
+            if (block.opcode === 'sensing_of' &&
                 block.fields.PROPERTY.value === oldName &&
                 // If block and shadow are different, it means a block is inserted to OBJECT, and should be ignored.
-                block.inputs.OBJECT.block === block.inputs.OBJECT.shadow
-            ) {
+                block.inputs.OBJECT.block === block.inputs.OBJECT.shadow) {
                 const inputBlock = this.getBlock(block.inputs.OBJECT.block);
                 if (inputBlock.fields.OBJECT.value === targetName) {
                     block.fields.PROPERTY.value = newName;
@@ -1103,10 +1020,11 @@ class Blocks {
                 }
             }
         }
-        if (blockUpdated) this.resetCache();
+        if (blockUpdated) {
+            this.resetCache();
+        }
         return blockUpdated;
     }
-
     /**
      * Helper function to retrieve a costume menu field from a block given its id.
      * @param {string} blockId A unique identifier for a block
@@ -1121,7 +1039,6 @@ class Blocks {
         }
         return null;
     }
-
     /**
      * Helper function to retrieve a sound menu field from a block given its id.
      * @param {string} blockId A unique identifier for a block
@@ -1136,7 +1053,6 @@ class Blocks {
         }
         return null;
     }
-
     /**
      * Helper function to retrieve a backdrop menu field from a block given its id.
      * @param {string} blockId A unique identifier for a block
@@ -1151,7 +1067,6 @@ class Blocks {
         }
         return null;
     }
-
     /**
      * Helper function to retrieve a sprite menu field from a block given its id.
      * @param {string} blockId A unique identifier for a block
@@ -1181,9 +1096,7 @@ class Blocks {
         }
         return null;
     }
-
     // ---------------------------------------------------------------------
-
     /**
      * Encode all of `this._blocks` as an XML string usable
      * by a Blockly/scratch-blocks workspace.
@@ -1193,7 +1106,6 @@ class Blocks {
     toXML (comments) {
         return this._scripts.map(script => this.blockToXML(script, comments)).join();
     }
-
     /**
      * Recursively encode an individual block and its children
      * into a Blockly/scratch-blocks XML string.
@@ -1206,7 +1118,9 @@ class Blocks {
         // block should exist, but currently some blocks' next property point
         // to a blockId for non-existent blocks. Until we track down that behavior,
         // this early exit allows the project to load.
-        if (!block) return;
+        if (!block) {
+            return;
+        }
         // Encode properties of this block.
         const tagName = block.shadow ? 'shadow' : 'block';
         let xmlString = `<${tagName}
@@ -1232,7 +1146,9 @@ class Blocks {
         }
         // Add any inputs on this block.
         for (const input in block.inputs) {
-            if (!Object.prototype.hasOwnProperty.call(block.inputs, input)) continue;
+            if (!Object.prototype.hasOwnProperty.call(block.inputs, input)) {
+                continue;
+            }
             const blockInput = block.inputs[input];
             // Only encode a value tag if the value input is occupied.
             if (blockInput.block || blockInput.shadow) {
@@ -1249,7 +1165,9 @@ class Blocks {
         }
         // Add any fields on this block.
         for (const field in block.fields) {
-            if (!Object.prototype.hasOwnProperty.call(block.fields, field)) continue;
+            if (!Object.prototype.hasOwnProperty.call(block.fields, field)) {
+                continue;
+            }
             const blockField = block.fields[field];
             xmlString += `<field name="${xmlEscape(blockField.name)}"`;
             const fieldId = blockField.id;
@@ -1273,7 +1191,6 @@ class Blocks {
         xmlString += `</${tagName}>`;
         return xmlString;
     }
-
     /**
      * Recursively encode a mutation object to XML.
      * @param {!object} mutation Object representing a mutation.
@@ -1282,14 +1199,14 @@ class Blocks {
     mutationToXML (mutation) {
         let mutationString = `<${mutation.tagName}`;
         for (const prop in mutation) {
-            if (prop === 'children' || prop === 'tagName') continue;
+            if (prop === 'children' || prop === 'tagName') {
+                continue;
+            }
             let mutationValue = typeof mutation[prop] === 'string' ? xmlEscape(mutation[prop]) : mutation[prop];
-
             // Handle dynamic extension blocks
             if (prop === 'blockInfo') {
                 mutationValue = xmlEscape(JSON.stringify(mutation[prop]));
             }
-
             mutationString += ` ${prop}="${mutationValue}"`;
         }
         mutationString += '>';
@@ -1299,7 +1216,6 @@ class Blocks {
         mutationString += `</${mutation.tagName}>`;
         return mutationString;
     }
-
     // ---------------------------------------------------------------------
     /**
      * Helper to serialize block fields and input fields for reporting new monitors
@@ -1319,7 +1235,6 @@ class Blocks {
         }
         return params;
     }
-
     /**
      * Helper to get the corresponding internal procedure definition block
      * @param {!object} defineBlock Outer define block.
@@ -1330,31 +1245,34 @@ class Blocks {
             return this._blocks[defineBlock.inputs.custom_block.block];
         }
     }
-
     /**
      * Helper to add a stack to `this._scripts`.
      * @param {?string} topBlockId ID of block that starts the script.
      */
     _addScript (topBlockId) {
         const i = this._scripts.indexOf(topBlockId);
-        if (i > -1) return; // Already in scripts.
+        if (i > -1) {
+            return;
+        } // Already in scripts.
         this._scripts.push(topBlockId);
         // Update `topLevel` property on the top block.
         this._blocks[topBlockId].topLevel = true;
     }
-
     /**
      * Helper to remove a script from `this._scripts`.
      * @param {?string} topBlockId ID of block that starts the script.
      */
     _deleteScript (topBlockId) {
         const i = this._scripts.indexOf(topBlockId);
-        if (i > -1) this._scripts.splice(i, 1);
+        if (i > -1) {
+            this._scripts.splice(i, 1);
+        }
         // Update `topLevel` property on the top block.
-        if (this._blocks[topBlockId]) this._blocks[topBlockId].topLevel = false;
+        if (this._blocks[topBlockId]) {
+            this._blocks[topBlockId].topLevel = false;
+        }
     }
 }
-
 /**
  * A private method shared with execute to build an object containing the block
  * information execute needs and that is reset when other cached Blocks info is
@@ -1364,15 +1282,15 @@ class Blocks {
  * @param {function} CacheType constructor for cached block information
  * @return {object} execute cache object
  */
-BlocksExecuteCache.getCached = function (blocks, blockId, CacheType) {
+BlocksExecuteCache.setCached((blocks, blockId, CacheType) => {
     let cached = blocks._cache._executeCached[blockId];
     if (typeof cached !== 'undefined') {
         return cached;
     }
-
     const block = blocks.getBlock(blockId);
-    if (typeof block === 'undefined') return null;
-
+    if (typeof block === 'undefined') {
+        return null;
+    }
     if (typeof CacheType === 'undefined') {
         cached = {
             id: blockId,
@@ -1390,10 +1308,9 @@ BlocksExecuteCache.getCached = function (blocks, blockId, CacheType) {
             mutation: blocks.getMutation(block)
         });
     }
-
     blocks._cache._executeCached[blockId] = cached;
     return cached;
-};
+});
 
 /**
  * Cache class constructor for runtime. Used to consider what threads should
@@ -1401,7 +1318,6 @@ BlocksExecuteCache.getCached = function (blocks, blockId, CacheType) {
  * @type {function}
  */
 const RuntimeScriptCache = BlocksRuntimeCache._RuntimeScriptCache;
-
 /**
  * Get an array of scripts from a block container prefiltered to match opcode.
  * @param {Blocks} blocks - Container of blocks
@@ -1409,11 +1325,10 @@ const RuntimeScriptCache = BlocksRuntimeCache._RuntimeScriptCache;
  * @returns {Array.<RuntimeScriptCache>} - Array of RuntimeScriptCache cache
  *   objects
  */
-BlocksRuntimeCache.getScripts = function (blocks, opcode) {
+BlocksRuntimeCache.setScripts((blocks, opcode) => {
     let scripts = blocks._cache.scripts[opcode];
     if (!scripts) {
         scripts = blocks._cache.scripts[opcode] = [];
-
         const allScripts = blocks._scripts;
         for (let i = 0; i < allScripts.length; i++) {
             const topBlockId = allScripts[i];
@@ -1424,6 +1339,5 @@ BlocksRuntimeCache.getScripts = function (blocks, opcode) {
         }
     }
     return scripts;
-};
-
-module.exports = Blocks;
+});
+export default Blocks;
