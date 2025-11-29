@@ -199,7 +199,7 @@ export default [
                 id="amp.extension.objects.name"
             />
         ),
-        extensionId: 'objects',
+        extensionId: 'obj',
         iconURL: objectsIcon,
         description: (
             <FormattedMessage

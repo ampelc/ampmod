@@ -1068,6 +1068,9 @@ const makeToolboxXML = function (
     // Always display pen blocks as a normal category, if it exists.
     let penXML = moveCategory('pen');
 
+    // Always display object blocks as a normal category, if it exists.
+    let objectsXML = moveCategory('obj');
+
     const everything = [
         xmlOpen,
         motionXML,
@@ -1091,7 +1094,11 @@ const makeToolboxXML = function (
         everything.push(gap, penXML, gap);
     }
 
-    everything.push(variablesXML, gap, arraysXML, gap, myBlocksXML);
+    everything.push(variablesXML, gap, arraysXML);
+
+    if (objectsXML) {
+        everything.push(gap, objectsXML, gap);
+    }
 
     if (futureEnabled) {
         const futureXML = moveCategory('future') || futureToolbox(isInitialSetup, isStage, targetId);

@@ -34,6 +34,7 @@ const defaultBuiltinExtensions = {
         }
         return FutureCompat;
     },
+    obj: () => import(/* webpackChunkName: "extension-obj" */ '../extensions/ampmod_objects'),
     electroTest: () => import(/* webpackChunkName: "electrotest" */ '../extensions/ampmod_electro_test/index.ts')
 };
 /**
