@@ -52,6 +52,7 @@ import customExtensionIcon from './custom/custom.svg';
 import legacyListsIcon from './legacyLists/legacylists.svg';
 import legacyListsInsetIcon from './legacyLists/list_icon.svg';
 import galleryIcon from './gallery/gallery.svg';
+import objectsIcon from './objects/objects.svg';
 import {APP_NAME} from '@ampmod/branding';
 
 //import listIconURL from './list/list.png';
@@ -190,6 +191,26 @@ export default [
         incompatibleWithScratch: true,
         featured: true
     }, */
+    {
+        name: (
+            <FormattedMessage
+                defaultMessage="Objects"
+                description="Name for the 'Objects' extension"
+                id="amp.extension.objects.name"
+            />
+        ),
+        extensionId: 'objects',
+        iconURL: objectsIcon,
+        description: (
+            <FormattedMessage
+                defaultMessage="Manage data efficiently in pairs of keys and values."
+                description="Description for the 'Objects' extension"
+                id="amp.extension.objects.description"
+            />
+        ),
+        tags: ['ampmod', 'data', 'new'],
+        featured: true
+    },
     {
         name: (
             <FormattedMessage
