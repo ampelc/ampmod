@@ -1100,6 +1100,8 @@ const makeToolboxXML = function (
         everything.push(gap, objectsXML, gap);
     }
 
+    everything.push(myBlocksXML);
+
     if (futureEnabled) {
         const futureXML = moveCategory('future') || futureToolbox(isInitialSetup, isStage, targetId);
 
