@@ -3080,7 +3080,8 @@ class Runtime extends EventEmitter {
         }
         // TODO: we may want to format the label in a locale-specific way.
         return {
-            category: 'extension', // This assumes that all extensions have the same monitor color.
+            // amp: recolour the monitor based off the extension's colours
+            category: block.info.color1 || categoryInfo.color1 || 'extension',
             label: `${categoryInfo.name}: ${block.info.text}`
         };
     }

@@ -42,6 +42,7 @@ const getCategoryColor = (theme, category) => {
 
 const MonitorComponent = props => {
     const mode = Array.isArray(props.value) ? 'list' : props.mode;
+    console.log(props.category);
 
     return (
         <ContextMenuTrigger
@@ -67,7 +68,7 @@ const MonitorComponent = props => {
                     data-opcode={props.opcode}
                 >
                     {React.createElement(modes[mode], {
-                        categoryColor: getCategoryColor(props.theme, props.category),
+                        categoryColor: getCategoryColor(props.theme, props.category) || props.category,
                         ...props
                     })}
                 </Box>
@@ -151,7 +152,10 @@ const MonitorComponent = props => {
 const monitorModes = Object.keys(modes);
 
 MonitorComponent.propTypes = {
-    category: PropTypes.oneOf(Object.keys(categoryColorMap)),
+    category: PropTypes.oneOfType([
+        PropTypes.oneOf(Object.keys(categoryColorMap)),
+        PropTypes.string])
+    ,
     componentRef: PropTypes.func.isRequired,
     draggable: PropTypes.bool.isRequired,
     id: PropTypes.string.isRequired,

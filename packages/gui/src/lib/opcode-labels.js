@@ -314,7 +314,7 @@ class OpcodeLabels {
         return {
             category: 'extension',
             label: opcode
-        };
+        }; 
     }
 }
 
