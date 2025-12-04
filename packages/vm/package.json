@@ -84,7 +84,7 @@
         "scratch-storage": "2.3.1",
         "script-loader": "0.7.2",
         "stats.js": "0.17.0",
-        "tap": "16.2.0",
+        "tap": "21.5.0",
         "tiny-worker": "2.3.0",
         "uglifyjs-webpack-plugin": "2.2.0"
     },
