@@ -204,10 +204,16 @@ const costumeUpload = function (fileData, fileType, vm, handleCostume, handleErr
  */
 const soundUpload = function (fileData, fileType, storage, handleSound, handleError) {
     let soundFormat;
+    console.log(storage.DataFormat);
     switch (fileType) {
         case 'audio/mp3':
         case 'audio/mpeg': {
             soundFormat = storage.DataFormat.MP3;
+            break;
+        }
+        case 'application/ogg':
+        case 'audio/ogg': {
+            soundFormat = storage.DataFormat.OGG;
             break;
         }
         case 'audio/wav':

@@ -9,13 +9,13 @@
     "url": "https://github.com/TurboWarp/scratch-storage.git"
   },
   "main": "./dist/node/scratch-storage.js",
-  "browser": "./src/index.js",
+  "browser": "./dist/web/scratch-storage.js",
   "scripts": {
-    "prepublishOnly": "npm run build",
-    "build": "webpack --progress --colors --bail",
+    "prepare": "pnpm run build",
+    "build": "webpack --progress --bail",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "commitmsg": "commitlint -e $GIT_PARAMS",
-    "test": "npm run test:lint && jest \"test[\\\\/](unit|integration)\"",
+    "test": "pnpm run test:lint && jest \"test[\\\\/](unit|integration)\"",
     "test:clearCache": "jest --clearCache",
     "test:lint": "eslint .",
     "test:integration": "jest \"test[\\\\/]integration\"",
@@ -50,9 +50,7 @@
     "eslint-plugin-react": "7.33.2",
     "file-loader": "4.1.0",
     "jest": "29.5.0",
-    "json": "^9.0.4",
-    "webpack": "4.47.0",
-    "webpack-cli": "3.1.2"
+    "json": "^9.0.4"
   },
   "overrides": {
     "webpack@4.47.0": {

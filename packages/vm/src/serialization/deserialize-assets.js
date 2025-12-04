@@ -44,7 +44,11 @@ const deserializeSound = function (sound, runtime, zip, assetFileName) {
         return Promise.resolve(null);
     }
 
-    const dataFormat = sound.dataFormat.toLowerCase() === 'mp3' ? storage.DataFormat.MP3 : storage.DataFormat.WAV;
+    const dataFormat = {
+        mp3: storage.DataFormat.MP3,
+        wav: storage.DataFormat.WAV,
+        ogg: storage.DataFormat.OGG
+    }[sound.dataFormat.toLowerCase()] || storage.DataFormat.WAV;
     return soundFile
         .async('uint8array')
         .then(data => storage.createAsset(storage.AssetType.Sound, dataFormat, data, null, true))

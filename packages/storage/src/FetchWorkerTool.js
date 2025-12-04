@@ -34,7 +34,7 @@ class PrivateFetchWorkerTool {
         try {
             if (this.isGetSupported) {
                 // eslint-disable-next-line no-undef
-                const FetchWorker = new Worker(new URL('./FetchWorkerTool.worker', import.meta.url), {
+                const FetchWorker = new Worker(new URL('./FetchWorkerTool.worker'), {
                     name: 'FetchWorkerTool',
                     type: 'classic'
                 });

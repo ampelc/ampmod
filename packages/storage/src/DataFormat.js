@@ -11,6 +11,7 @@ const DataFormat = {
     SB3: 'sb3',
     SVG: 'svg',
     WAV: 'wav',
+    OGG: 'ogg',
     TTF: 'ttf',
     OTF: 'otf',
     WOFF: 'woff',
