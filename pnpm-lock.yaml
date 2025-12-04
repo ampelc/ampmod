@@ -325,8 +325,8 @@ importers:
         specifier: 2.9.0
         version: 2.9.0(prop-types@15.8.1)(react@16.14.0)
       react-modal:
-        specifier: 3.9.1
-        version: 3.9.1(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
+        specifier: 3.16.3
+        version: 3.16.3(react-dom@16.14.0(react@16.14.0))(react@16.14.0)
       react-popover:
         specifier: 0.5.10
         version: 0.5.10
@@ -9400,11 +9400,11 @@ packages:
   react-lifecycles-compat@3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
 
-  react-modal@3.9.1:
-    resolution: {integrity: sha512-k+TUkhGWpIVHLsEyjNmlyOYL0Uz03fNZvlkhCImd1h+6fhNgTi6H6jexVXPVhD2LMMDzJyfugxMN+APN/em+eQ==}
+  react-modal@3.16.3:
+    resolution: {integrity: sha512-yCYRJB5YkeQDQlTt17WGAgFJ7jr2QYcWa1SHqZ3PluDmnKJ/7+tVU+E6uKyZ0nODaeEj+xCpK4LcSnKXLMC0Nw==}
     peerDependencies:
-      react: ^0.14.0 || ^15.0.0 || ^16
-      react-dom: ^0.14.0 || ^15.0.0 || ^16
+      react: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
+      react-dom: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19
 
   react-popover@0.5.10:
     resolution: {integrity: sha512-5SYDTfncywSH00I70oHd4gFRUR8V0rJ4sRADSI/P6G0RVXp9jUgaWloJ0Bk+SFnjpLPuipTKuzQNNd2CTs5Hrw==}
@@ -23155,7 +23155,7 @@ snapshots:
 
   react-lifecycles-compat@3.0.4: {}
 
-  react-modal@3.9.1(react-dom@16.14.0(react@16.14.0))(react@16.14.0):
+  react-modal@3.16.3(react-dom@16.14.0(react@16.14.0))(react@16.14.0):
     dependencies:
       exenv: 1.2.2
       prop-types: 15.8.1
