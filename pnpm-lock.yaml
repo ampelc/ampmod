@@ -172,8 +172,8 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0(postcss@8.5.6)(typescript@3.9.10)(webpack@5.103.0(@swc/core@1.15.3)(webpack-cli@6.0.1))
       postcss-simple-vars:
-        specifier: ^6.0.3
-        version: 6.0.3(postcss@8.5.6)
+        specifier: ^7.0.0
+        version: 7.0.1(postcss@8.5.6)
       scratch-gui:
         specifier: workspace:^
         version: link:../gui
@@ -624,8 +624,8 @@ importers:
         specifier: 8.2.0
         version: 8.2.0(postcss@8.5.6)(typescript@3.9.10)(webpack@5.103.0(@swc/core@1.15.3)(webpack-cli@6.0.1))
       postcss-simple-vars:
-        specifier: 5.0.2
-        version: 5.0.2
+        specifier: 7.0.1
+        version: 7.0.1(postcss@8.5.6)
       raf:
         specifier: 3.4.1
         version: 3.4.1
@@ -9108,15 +9108,6 @@ packages:
   postcss-selector-parser@7.1.1:
     resolution: {integrity: sha512-orRsuYpJVw8LdAwqqLykBj9ecS5/cRHlI5+nvTo8LcCKmzDmqVORXtOIYEEQuL9D4BxtA1lm5isAqzQZCoQ6Eg==}
     engines: {node: '>=4'}
-
-  postcss-simple-vars@5.0.2:
-    resolution: {integrity: sha512-xWIufxBoINJv6JiLb7jl5oElgp+6puJwvT5zZHliUSydoLz4DADRB3NDDsYgfKVwojn4TDLiseoC65MuS8oGGg==}
-
-  postcss-simple-vars@6.0.3:
-    resolution: {integrity: sha512-fkNn4Zio8vN4vIig9IFdb8lVlxWnYR769RgvxCM6YWlFKie/nQaOcaMMMFz/s4gsfHW4/5bJW+i57zD67mQU7g==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      postcss: ^8.2.1
 
   postcss-simple-vars@7.0.1:
     resolution: {integrity: sha512-5GLLXaS8qmzHMOjVxqkk1TZPf1jMqesiI7qLhnlyERalG0sMbHIbJqrcnrpmZdKCLglHnRHoEBB61RtGTsj++A==}
@@ -22857,14 +22848,6 @@ snapshots:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
-
-  postcss-simple-vars@5.0.2:
-    dependencies:
-      postcss: 7.0.39
-
-  postcss-simple-vars@6.0.3(postcss@8.5.6):
-    dependencies:
-      postcss: 8.5.6
 
   postcss-simple-vars@7.0.1(postcss@8.5.6):
     dependencies:
