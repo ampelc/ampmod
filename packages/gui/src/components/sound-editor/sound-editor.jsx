@@ -35,6 +35,8 @@ import copyIcon from '!!../../lib/tw-recolor/build!./icon--copy.svg';
 import pasteIcon from '!!../../lib/tw-recolor/build!./icon--paste.svg';
 import copyToNewIcon from '!!../../lib/tw-recolor/build!./icon--copy-to-new.svg';
 
+import {APP_NAME} from '@ampmod/branding';
+
 const BufferedInput = BufferedInputHOC(Input);
 
 const messages = defineMessages({
@@ -365,12 +367,37 @@ const SoundEditor = props => (
         )}
         {props.format !== "wav" && (
             <div className={classNames(styles.alert, styles.tooLarge)}>
+                {props.format !== "mp3" && (
+                    <FormattedMessage
+                        defaultMessage="Scratch does not support {format} files. Uploading this project to Scratch will erase the sound."
+                        description="Message that appears for formats Scratch can't import."
+                        id="amp.unsupportedFormatAlert"
+                        values={{
+                            format: String(props.format).toUpperCase()
+                        }}
+                    />
+                )}
+
                 <FormattedMessage
                     defaultMessage="Editing this {format} sound will irreversably convert it to WAV, which increases file size to approx {wavSize} in total."
-                    description="Message that appears when editing a sound imported from a format other than WAV."
-                    id="amp.wavAlert"
-                    values={{format: String(props.format).toUpperCase(), wavSize: formatSoundSize(props.sizeAfterWav)}}
+                    description="Message that appears when editing a non-WAV sound."
+                    id="amp.wavConversionAlert"
+                    values={{
+                        format: String(props.format).toUpperCase(),
+                        wavSize: formatSoundSize(props.sizeAfterWav)
+                    }}
                 />
+
+                {props.format === "ogg" && (
+                    <FormattedMessage
+                        defaultMessage="Apple devices do not support the OGG format. In this case, {APP_NAME} will convert OGG files to WAV, which may hurt performance."
+                        description="Extra notice for OGG files"
+                        id="amp.oggNotice"
+                        values={{
+                            APP_NAME
+                        }}
+                    />
+                )}
             </div>
         )}
         {props.isStereo && (
