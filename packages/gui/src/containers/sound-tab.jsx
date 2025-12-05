@@ -244,7 +244,7 @@ class SoundTab extends React.Component {
                                   title: intl.formatMessage(messages.fileUploadSound),
                                   img: fileUploadIcon,
                                   onClick: this.handleFileUploadClick,
-                                  fileAccept: '.wav, .mp3, .ogg, .flac, .aac, .m4a',
+                                  fileAccept: '.wav, .mp3, .ogg, .oga, .flac, .aac, .m4a',
                                   fileChange: this.handleSoundUpload,
                                   fileInput: this.setFileInput,
                                   fileMultiple: true
