@@ -6,22 +6,16 @@ const base = {
     module: {
         rules: [
             {
+                test: /\.[jt]s$/,
+                loader: 'swc-loader',
                 include: [
-                    path.resolve('src')
+                    path.resolve(__dirname, 'src')
                 ],
-                test: /\.js$/,
-                loader: 'babel-loader',
                 options: {
-                    plugins: [
-                        '@babel/plugin-transform-runtime'
-                    ],
-                    presets: [
-                        ['@babel/preset-env']
-                    ],
-                    // Consider a file a "module" if import/export statements are present, or else consider it a
-                    // "script". Fixes "Cannot assign to read only property 'exports'" when using
-                    // @babel/plugin-transform-runtime with CommonJS files.
-                    sourceType: 'unambiguous'
+                    jsc: {
+                        target: 'es2022'
+                    },
+                    sourceMaps: process.env.NODE_ENV !== 'production'
                 }
             },
             {
