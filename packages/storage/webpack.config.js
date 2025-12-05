@@ -20,7 +20,7 @@ const base = {
             },
             {
                 test: /\.(png|svg|wav)$/,
-                loader: 'arraybuffer-loader'
+                type: 'asset/bytes'
             }
         ]
     },
