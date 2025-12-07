@@ -367,6 +367,7 @@ Blockly.Blocks["looks_costume"] = {
             colourSecondary: Blockly.Colours.looks.secondary,
             colourTertiary: Blockly.Colours.looks.tertiary,
             colourQuaternary: Blockly.Colours.looks.quaternary,
+            colourText: Blockly.Colours.looks.text,
             extensions: ["output_string"],
         });
     },
@@ -446,6 +447,7 @@ Blockly.Blocks["looks_backdrops"] = {
             colourSecondary: Blockly.Colours.looks.secondary,
             colourTertiary: Blockly.Colours.looks.tertiary,
             colourQuaternary: Blockly.Colours.looks.quaternary,
+            colourText: Blockly.Colours.looks.text,
             extensions: ["output_string"],
         });
     },

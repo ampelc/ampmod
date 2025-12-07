@@ -63,6 +63,7 @@ Blockly.Blocks["sound_sounds_menu"] = {
             colourSecondary: Blockly.Colours.sounds.secondary,
             colourTertiary: Blockly.Colours.sounds.tertiary,
             colourQuaternary: Blockly.Colours.sounds.quaternary,
+            colourText: Blockly.Colours.sounds.text,
             extensions: ["output_string"],
         });
     },

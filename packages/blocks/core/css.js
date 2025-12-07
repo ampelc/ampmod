@@ -464,6 +464,11 @@ Blockly.Css.CONTENT = [
     "font-size: 12pt;",
     "font-weight: 500;",
     "}",
+    ".blocklyTextUnsetFill {",
+    'font-family: "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;',
+    "font-size: 12pt;",
+    "font-weight: 500;",
+    "}",
 
     ".blocklyTextTruncated {",
     "font-size: 11pt;",

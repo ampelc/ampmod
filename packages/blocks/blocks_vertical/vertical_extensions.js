@@ -49,6 +49,7 @@ Blockly.ScratchBlocks.VerticalExtensions.colourHelper = function (category) {
             colours.secondary &&
             colours.tertiary &&
             colours.quaternary
+            // Intentionally not including "text" here
         )
     ) {
         throw new Error(
@@ -65,7 +66,8 @@ Blockly.ScratchBlocks.VerticalExtensions.colourHelper = function (category) {
             colours.primary,
             colours.secondary,
             colours.tertiary,
-            colours.quaternary
+            colours.quaternary,
+            colours.text
         );
     };
 };

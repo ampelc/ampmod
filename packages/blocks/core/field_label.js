@@ -26,6 +26,7 @@
 
 goog.provide("Blockly.FieldLabel");
 
+goog.require("Blockly.Colours");
 goog.require("Blockly.Field");
 goog.require("Blockly.Tooltip");
 goog.require("goog.dom");
@@ -86,11 +87,12 @@ Blockly.FieldLabel.prototype.init = function () {
     this.textElement_ = Blockly.utils.createSvgElement(
         "text",
         {
-            class: "blocklyText",
+            class: "blocklyTextUnsetFill",
             y: Blockly.BlockSvg.FIELD_TOP_PADDING,
             "text-anchor": "middle",
             "dominant-baseline": "middle",
             dy: goog.userAgent.EDGE_OR_IE ? Blockly.Field.IE_TEXT_OFFSET : "0",
+            fill: this.sourceBlock_.getColourText() || Blockly.Colours.blockText
         },
         null
     );

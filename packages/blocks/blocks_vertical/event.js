@@ -245,6 +245,7 @@ Blockly.Blocks["event_broadcast_menu"] = {
             colourSecondary: Blockly.Colours.event.secondary,
             colourTertiary: Blockly.Colours.event.tertiary,
             colourQuaternary: Blockly.Colours.event.quaternary,
+            colourText: Blockly.Colours.event.text,
             extensions: ["output_string"],
         });
     },

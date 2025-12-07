@@ -80,6 +80,7 @@ const blockColors = {
         quaternary: '#3aa8a4'
     },
     text: '#FFFFFF',
+    blockText: '#FFFFFF',
     workspace: '#F9F9F9',
     toolboxHover: '#4C97FF',
     toolboxSelected: '#E9EEF2',

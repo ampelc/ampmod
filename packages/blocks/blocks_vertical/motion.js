@@ -149,6 +149,7 @@ Blockly.Blocks["motion_pointtowards_menu"] = {
             colourSecondary: Blockly.Colours.motion.secondary,
             colourTertiary: Blockly.Colours.motion.tertiary,
             colourQuaternary: Blockly.Colours.motion.quaternary,
+            colourText: Blockly.Colours.motion.text,
             extensions: ["output_string"],
         });
     },
@@ -197,6 +198,7 @@ Blockly.Blocks["motion_goto_menu"] = {
             colourSecondary: Blockly.Colours.motion.secondary,
             colourTertiary: Blockly.Colours.motion.tertiary,
             colourQuaternary: Blockly.Colours.motion.quaternary,
+            colourText: Blockly.Colours.motion.text,
             extensions: ["output_string"],
         });
     },
@@ -300,6 +302,7 @@ Blockly.Blocks["motion_glideto_menu"] = {
             colourSecondary: Blockly.Colours.motion.secondary,
             colourTertiary: Blockly.Colours.motion.tertiary,
             colourQuaternary: Blockly.Colours.motion.quaternary,
+            colourText: Blockly.Colours.motion.text,
             extensions: ["output_string"],
         });
     },

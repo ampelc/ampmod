@@ -358,7 +358,8 @@ Blockly.BlockSvg.prototype.setParent = function (newParent) {
                 this.getColour(),
                 this.getColourSecondary(),
                 newParent.getColourTertiary(),
-                this.getColourQuaternary()
+                this.getColourQuaternary(),
+                this.getColourText()
             );
         }
     }
@@ -1171,19 +1172,22 @@ Blockly.BlockSvg.prototype.setDeleteStyle = function (enable) {
  *    string.
  * @param {number|string} colourQuaternary Quaternary HSV hue value, or #RRGGBB
  *    string.
- */
+ * @param {number|string} colourText Text HSV hue value, or #RRGGBB string.
+  */
 Blockly.BlockSvg.prototype.setColour = function (
     colour,
     colourSecondary,
     colourTertiary,
-    colourQuaternary
+    colourQuaternary,
+    colourText
 ) {
     Blockly.BlockSvg.superClass_.setColour.call(
         this,
         colour,
         colourSecondary,
         colourTertiary,
-        colourQuaternary
+        colourQuaternary,
+        colourText
     );
 
     if (this.rendered) {
