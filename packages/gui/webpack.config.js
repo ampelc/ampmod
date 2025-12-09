@@ -354,7 +354,7 @@ module.exports = [
             ...process.env.BUILD_TARGET === "desktop" || process.env.NODE_ENV !== "production" ? [
                 new HtmlWebpackPlugin({
                     chunks: ["editor-desktop"],
-                    template: "src/playground/simple.ejs",
+                    template: "src/playground/index.ejs",
                     filename:
                         'editor-desktop.html',
                     title: APP_NAME,
