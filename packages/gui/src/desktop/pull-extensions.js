@@ -1,7 +1,6 @@
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-import { build } from "esbuild";
 
 const REPO_URL = "https://codeberg.org/ampmod/extensions";
 const BRANCH = "pages";
@@ -33,31 +32,3 @@ for (const folder of REMOVE_FOLDERS) {
   removeRecursive(folderPath);
 }
 
-function getJsFiles(dir) {
-  let files = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (entry.name === "_app") continue;
-      files = files.concat(getJsFiles(fullPath));
-    } else if (entry.isFile() && entry.name.endsWith(".js")) {
-      files.push(fullPath);
-    }
-  }
-  return files;
-}
-
-const jsFiles = getJsFiles(TARGET_DIR);
-
-(async () => {
-  for (const file of jsFiles) {
-    const outFile = file;
-    await build({
-      entryPoints: [file],
-      outfile: outFile,
-      minify: true,
-      allowOverwrite: true,
-    });
-  }
-  console.log("Extensions pulled successfully!");
-})();
