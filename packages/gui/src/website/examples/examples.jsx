@@ -24,7 +24,7 @@ export default function ExamplesPage() {
     const firstExampleRef = React.useRef(null);
     let exdriver = {};
 
-    React.useEffect(() => {
+    /* React.useEffect(() => {
         if (firstExampleRef.current) {
             exdriver = driver({
                 showButtons: [""],
@@ -44,7 +44,7 @@ export default function ExamplesPage() {
 
             exdriver.drive();
         }
-    }, []);
+    }, []); */
 
     return (
         <>

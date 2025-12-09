@@ -350,7 +350,7 @@ const SoundEditor = props => (
                         id="tw.mono"
                     />
                 )}
-                {` (${formatSoundSize(props.size)})`}
+                {` (${formatSoundSize(props.size)} ${String(props.format).toUpperCase()})`}
             </div>
         </div>
         {/* TODO: don't know whether this should be > or >=. Using >= for now to be safe */}
@@ -360,6 +360,16 @@ const SoundEditor = props => (
                     defaultMessage="This sound may be too large to upload to Scratch."
                     description="Message that appears when a sound exceeds the Scratch sound size limit."
                     id="tw.tooLarge"
+                />
+            </div>
+        )}
+        {props.format !== "wav" && (
+            <div className={classNames(styles.alert, styles.tooLarge)}>
+                <FormattedMessage
+                    defaultMessage="Editing this {format} sound will irreversably convert it to WAV, which increases file size to approx {wavSize} in total."
+                    description="Message that appears when editing a sound imported from a format other than WAV."
+                    id="amp.wavAlert"
+                    values={{format: String(props.format).toUpperCase(), wavSize: formatSoundSize(props.sizeAfterWav)}}
                 />
             </div>
         )}
@@ -377,6 +387,7 @@ const SoundEditor = props => (
 
 SoundEditor.propTypes = {
     isStereo: PropTypes.bool.isRequired,
+    format: PropTypes.string.isRequired,
     duration: PropTypes.number.isRequired,
     size: PropTypes.number.isRequired,
     canPaste: PropTypes.bool.isRequired,

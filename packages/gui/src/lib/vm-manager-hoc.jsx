@@ -13,7 +13,7 @@ import log from './log';
 /**
  * List of fonts that could be used by security prompts.
  */
-const SECURITY_CRITICAL_FONTS = ['Helvetica Neue', 'Helvetica', 'Arial'];
+const SECURITY_CRITICAL_FONTS = ['Inter Variable', 'Helvetica Neue', 'Helvetica', 'Arial'];
 
 /*
  * Higher Order Component to manage events emitted by the VM

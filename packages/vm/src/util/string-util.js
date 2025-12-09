@@ -1,23 +1,20 @@
-import log from './log.js';
+const log = require('./log');
+
 class StringUtil {
     static withoutTrailingDigits (s) {
         let i = s.length - 1;
-        while (i >= 0 && '0123456789'.indexOf(s.charAt(i)) > -1) {
-            i--;
-        }
+        while (i >= 0 && '0123456789'.indexOf(s.charAt(i)) > -1) i--;
         return s.slice(0, i + 1);
     }
+
     static unusedName (name, existingNames) {
-        if (existingNames.indexOf(name) < 0) {
-            return name;
-        }
+        if (existingNames.indexOf(name) < 0) return name;
         name = StringUtil.withoutTrailingDigits(name);
         let i = 2;
-        while (existingNames.indexOf(name + i) >= 0) {
-            i++;
-        }
+        while (existingNames.indexOf(name + i) >= 0) i++;
         return name + i;
     }
+
     /**
      * @param {string} name
      * @param {string[]} existingNames
@@ -25,16 +22,13 @@ class StringUtil {
      */
     static caseInsensitiveUnusedName (name, existingNames) {
         const exists = needle => existingNames.some(i => i.toLowerCase() === needle.toLowerCase());
-        if (!exists(name)) {
-            return name;
-        }
+        if (!exists(name)) return name;
         name = StringUtil.withoutTrailingDigits(name);
         let i = 2;
-        while (exists(`${name}${i}`)) {
-            i++;
-        }
+        while (exists(`${name}${i}`)) i++;
         return `${name}${i}`;
     }
+
     /**
      * Split a string on the first occurrence of a split character.
      * @param {string} text - the string to split.
@@ -57,6 +51,7 @@ class StringUtil {
         }
         return [text, null];
     }
+
     /**
      * A customized version of JSON.stringify that sets Infinity/NaN to 0,
      * instead of the default (null).
@@ -112,4 +107,5 @@ class StringUtil {
         });
     }
 }
-export default StringUtil;
+
+module.exports = StringUtil;

@@ -27,7 +27,7 @@ const ModalComponent = props => {
             },
             // If the user chooses to disable animations in system settings,
             // respect that setting.
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 200
+            document.documentElement.classList.contains('amp-gui-animations-enabled') ? 200 : 0
         );
     };
 
@@ -36,7 +36,8 @@ const ModalComponent = props => {
             isOpen
             className={classNames(styles.modalContent, props.className, {
                 [styles.fullScreen]: props.fullScreen,
-                [styles.closing]: isClosing
+                [styles.closing]: isClosing,
+                [styles.noZoomAnimation]: props.noZoomAnimation
             })}
             contentLabel={props.contentLabel}
             overlayClassName={classNames(styles.modalOverlay, {

@@ -4,6 +4,7 @@ import locales from "@turbowarp/scratch-l10n";
 import styles from "./footer.css";
 import classNames from "classnames";
 import icon from "./language-icon.svg";
+import { Select } from "radix-ui";
 
 const LANGUAGE_KEY = `${lsNamespace}language`;
 
@@ -28,60 +29,49 @@ const LanguageSelect = () => {
 
     const handleSelect = locale => {
         setCurrentLocale(locale);
-        setOpen(false);
-        try {
+            try {
             localStorage.setItem(LANGUAGE_KEY, locale);
         } catch {}
         window.location.reload();
     };
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = e => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    // Scroll to selected language when dropdown opens
-    useEffect(() => {
-        if (open && selectedItemRef.current) {
-            selectedItemRef.current.scrollIntoView({ block: 'center', inline: 'nearest' });
-        }
-    }, [open]);
-
     return (
-        <div className={styles.customDropdown} ref={dropdownRef}>
-            <button
-                className={classNames(styles.dropdownToggle, open && styles.open)}
-                onClick={() => setOpen(prev => !prev)}
-                aria-label="Select language"
-            >
-                <div style={{display: "flex", gap: "6px", alignItems: "center"}}>
-                    <img src={icon} height={24} alt={"Language selection"} draggable={false} />
-                    {locales[currentLocale]?.name || currentLocale}
-                </div>
-            </button>
-            {open && (
-                <ul className={styles.dropdownMenu}>
-                    {Object.keys(locales).map(locale => (
-                        <li
-                            key={locale}
-                            ref={locale === currentLocale ? selectedItemRef : null}
-                            className={`${styles.dropdownItem} ${
-                                locale === currentLocale ? styles.dropdownItemSelected : ''
-                            }`}
-                            onClick={() => handleSelect(locale)}
-                        >
-                            {locales[locale].name || locale}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
+        <Select.Root value={currentLocale} onValueChange={handleSelect}>
+            <div className={styles.customDropdown} ref={dropdownRef}>
+                <Select.Trigger
+                    className={classNames(styles.dropdownToggle, open && styles.open)}
+                    onClick={() => setOpen(prev => !prev)}
+                    aria-label="Select language"
+                >
+                    <div style={{display: "flex", gap: "6px", alignItems: "center"}}>
+                        <img src={icon} height={24} alt={"Language selection"} draggable={false} />
+                        <Select.Value>{locales[currentLocale].name || currentLocale}</Select.Value>
+                    </div>
+                    <Select.Icon /> 
+                </Select.Trigger>
+                <Select.Portal>
+                    <Select.Content className={styles.dropdownMenu} side="top" align="center" position="popper">
+                        <Select.Viewport>
+                        <Select.Group>
+                            {Object.keys(locales).map(locale => (
+                                <Select.Item
+                                    key={locale}
+                                    ref={locale === currentLocale ? selectedItemRef : null}
+                                    value={locale}
+                                    className={styles.dropdownItem}
+                                >
+                                    <Select.ItemIndicator>
+                                        <div className={styles.checkmark} />
+                                    </Select.ItemIndicator>
+                                    {locales[locale].name || locale}
+                                </Select.Item>
+                            ))}
+                        </Select.Group>
+                        </Select.Viewport>
+                    </Select.Content>
+                </Select.Portal>
+            </div>
+        </Select.Root>
     );
 };
 

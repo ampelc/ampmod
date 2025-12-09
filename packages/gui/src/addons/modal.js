@@ -55,7 +55,7 @@ export const createEditorModal = (tab, title, {isOpen = false} = {}) => {
     // Override remove to optionally animate first
     const originalRemove = container.remove.bind(container);
     container.remove = () => {
-        const prefersMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+        const prefersMotion = document.documentElement.classList.contains('amp-gui-animations-enabled');
         if (prefersMotion) {
             // amp: We have a special modal closing class for addons
             container.classList.add('amp-addon-modalclosing');

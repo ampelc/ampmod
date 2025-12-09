@@ -1,6 +1,7 @@
-import mutationAdapter from './mutation-adapter.js';
-import html from 'htmlparser2';
-import uid from '../util/uid.js';
+const mutationAdapter = require('./mutation-adapter');
+const html = require('htmlparser2');
+const uid = require('../util/uid');
+
 /**
  * Convert and an individual block DOM to the representation tree.
  * Based on Blockly's `domToBlockHeadless_`.
@@ -14,6 +15,7 @@ const domToBlock = function (blockDOM, blocks, isTopBlock, parent) {
     if (!blockDOM.attribs.id) {
         blockDOM.attribs.id = uid();
     }
+
     // Block skeleton.
     const block = {
         id: blockDOM.attribs.id, // Block ID
@@ -27,8 +29,10 @@ const domToBlock = function (blockDOM, blocks, isTopBlock, parent) {
         x: blockDOM.attribs.x, // X position of script, if top-level.
         y: blockDOM.attribs.y // Y position of script, if top-level.
     };
+
     // Add the block to the representation tree.
     blocks[block.id] = block;
+
     // Process XML children and find enclosed blocks, fields, etc.
     for (let i = 0; i < blockDOM.children.length; i++) {
         const xmlChild = blockDOM.children[i];
@@ -48,10 +52,12 @@ const domToBlock = function (blockDOM, blocks, isTopBlock, parent) {
                 childShadowNode = grandChildNode;
             }
         }
+
         // Use shadow block only if there's no real block node.
         if (!childBlockNode && childShadowNode) {
             childBlockNode = childShadowNode;
         }
+
         // Not all Blockly-type blocks are handled here,
         // as we won't be using all of them for Scratch.
         switch (xmlChild.name.toLowerCase()) {
@@ -118,6 +124,7 @@ const domToBlock = function (blockDOM, blocks, isTopBlock, parent) {
         }
     }
 };
+
 /**
  * Convert outer blocks DOM from a Blockly CREATE event
  * to a usable form for the Scratch runtime.
@@ -141,13 +148,12 @@ const domToBlocks = function (blocksDOM) {
     // Flatten blocks object into a list.
     const blocksList = [];
     for (const b in blocks) {
-        if (!Object.prototype.hasOwnProperty.call(blocks, b)) {
-            continue;
-        }
+        if (!Object.prototype.hasOwnProperty.call(blocks, b)) continue;
         blocksList.push(blocks[b]);
     }
     return blocksList;
 };
+
 /**
  * Adapter between block creation events and block representation which can be
  * used by the Scratch runtime.
@@ -156,12 +162,10 @@ const domToBlocks = function (blocksDOM) {
  */
 const adapter = function (e) {
     // Validate input
-    if (typeof e !== 'object') {
-        return;
-    }
-    if (typeof e.xml !== 'object') {
-        return;
-    }
+    if (typeof e !== 'object') return;
+    if (typeof e.xml !== 'object') return;
+
     return domToBlocks(html.parseDOM(e.xml.outerHTML, {decodeEntities: true}));
 };
-export default adapter;
+
+module.exports = adapter;

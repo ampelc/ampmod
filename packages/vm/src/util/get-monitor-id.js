@@ -29,4 +29,5 @@ const getMonitorIdForBlockWithArgs = function (id, fields) {
     }
     return `${id}${fieldString}`;
 };
-export default getMonitorIdForBlockWithArgs;
+
+module.exports = getMonitorIdForBlockWithArgs;

@@ -1,7 +1,6 @@
 @import '../../../css/colors.css';
 @import '../../../css/units.css';
 @import '../../../css/z-index.css';
-@import '../../../css/typography.css';
 
 .header {
     display: flex;
@@ -233,4 +232,14 @@
 
 [dir='rtl'] .ampmod-logo {
     transform: scaleX(-1);
+}
+
+.main-nav ul {
+    padding-left: 0;
+    display: flex;
+    flex-direction: row;
+    gap: $margin;
+}
+.nav-item {
+    list-style-type: none;
 }

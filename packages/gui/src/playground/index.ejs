@@ -1,327 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="google" value="notranslate">
-    <% if (htmlWebpackPlugin.options.isCbp) { %>
-      <meta name="google-site-verification" content="xMC75_ZeQyXE1iaRV31N-hOLPJVubcfmiKfoiOqcNH8" /> 
-      <script>
-        (function() {
-          const lsNamespace = "<%= require('../lib/amp-localstorage-namespace').lsNamespace %>";
-          if (localStorage.getItem(`${lsNamespace}:analytics-opted-out`) !== 'true') {
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = 'https://scripts.simpleanalyticscdn.com/latest.js';
-            document.head.appendChild(script);
-          }
-        })();
-      </script>
-    <% } else { %>  
-      <meta name="robots" content="noindex, nofollow">
-    <% } %>
-    <meta name="description" content="<%= htmlWebpackPlugin.options.APP_NAME %> is a powerful block-based programming language built on Scratch 3.0 and TurboWarp." />
-    <title><%= htmlWebpackPlugin.options.title %></title>
-    <link rel="apple-touch-icon" href="<%= htmlWebpackPlugin.options.root %>images/apple-touch-icon.png">
-    <% 
-      [
-        require('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'),
-        require('@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2'),
-      ].map(font => { %>
-        <link 
-          rel="preload"
-          href="<%= font %>"
-          as="font"
-          type="font/woff2"
-        >
-    <% }); %>
-    <style>
-      .splash-screen {
-        position: fixed;
-        inset: 0;
-        z-index: 999999999999999999999999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-family: "Inter Variable", sans-serif;
-        gap: 1rem;
-      }
-      .splash-main, .splash-error-screen {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        gap: 1rem;
-        max-width: 80%;
-      }
-      .splash-error-screen {
-        align-items: flex-start;
-        justify-content: flex-start;
-        text-align: left;
-        width: 70%;
-        max-width: 700px;
-      }
-      .ampmod-colour-scheme {
-        background-color: white;
-        color: black;
-      }
-      .splash-canary-title { font-weight: bold; }
-      .splash-screen * img { vertical-align: middle; }
-      .splash-screen[hidden], .splash-main[hidden], .splash-error-screen[hidden] { display: none; }
-      .splash-screen a { color: inherit; }
-      .splash-errors {
-        font-family: monospace;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 1.2em;
-        background: black;
-        color: white;
-        max-height: 300px;
-        width: 100%;
-        overflow: auto;
-        white-space: pre-wrap;
-      }
-      .splash-reset, .splash-delete-data, .splash-copy {
-        color: inherit;
-        background: none;
-        padding: 0;
-        margin: 0;
-        border: none;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-      .loading-dots {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-      .loading-dots a {
-        width: 16px;
-        height: 16px;
-        background-color: currentColor;
-        border-radius: 100%;
-        display: inline-block;
-        animation: fade 1s infinite ease;
-        opacity: 0.1;
-      }
-
-      .loading-dots a:nth-child(1) { animation-delay: 0s; }
-      .loading-dots a:nth-child(2) { animation-delay: 0.25s; }
-      .loading-dots a:nth-child(3) { animation-delay: 0.5s; }
-
-      @keyframes fade {
-        0%, 100% { opacity: 0.1; }
-        25% { opacity: 1; }
-      }
-
-      .splash-screen[data-theme="light"] img, .ampmod-colour-scheme img { filter: invert(100%); }
-      .ampmod-logo { margin-bottom: 18px; }
-      .reload-button {
-        background: white;
-        color: black;
-        border: 1px black solid;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: bold;
-      }
-      @keyframes bounce {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
-      }
-    </style>
-  </head>
-  <body>
-    <noscript>
-      <div class="splash-screen ampmod-colour-scheme">
-        <div class="splash-error-screen">
-          <div>
-            <h1 class="splash-error-title">
-              <img src="<%= require('../components/menu-bar/tw-error.svg') %>" draggable="false" loading="lazy" height="48" /> JavaScript is disabled
-            </h1>
-            <p>
-              <%= htmlWebpackPlugin.options.APP_NAME %> requires JavaScript, but it is disabled or your browser doesn't support it. 
-              A desktop version of <%= htmlWebpackPlugin.options.APP_NAME %> will be available soon if you prefer not to load remote JavaScript.
-            </p>
-          </div>
-        </div>
-      </div>
-    </noscript>
-
-    <div class="splash-screen spash-waiting-for-js" hidden>
-      <div class="splash-main">
-        <img src="<%= require('../components/menu-bar/tw-advanced.svg') %>" draggable="false" loading="lazy" height="80" alt="AmpMod small logo" />
-        <div class="loading-dots">
-          <a></a><a></a><a></a>
-        </div>
-        <% if (htmlWebpackPlugin.options.ampmod_mode === "canary") { %>
-          <div class="splash-canary-title"><span data-amp-translation="canaryBuild"></span></div>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title><%= htmlWebpackPlugin.options.title %></title>
+            <% 
+          /* Stolen from librekitten lol
+            https://codeberg.org/LibreKitten/LibreKitten/commit/87f1b2d934aa228829ee3179fb226c411d969fba#diff-4913fa303beb5bc166ede94c92bb244f9ed68cef */
+          [
+            require('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'),
+            require('@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2'),
+          ].map(font => { %>
+            <link 
+              rel="preload"
+              href="<%= font %>"
+              as="font"
+              type="font/woff2"
+            >
+        <% }); %>
+        <% if (htmlWebpackPlugin.options.description) { %>
+          <% /* SEO to try and battle outdated GitHub mirrors. */ %>
+          <meta name="description" content="<%= htmlWebpackPlugin.options.description %>" />
+          <meta property="og:title" content="<%= htmlWebpackPlugin.options.title %>">
+          <meta property="og:description" content="<%= htmlWebpackPlugin.options.description %>">
+          <meta property="og:type" content="website">
+          <meta name="twitter:card" content="summary_large_image">
+          <meta name="twitter:title" content="<%= htmlWebpackPlugin.options.title %>">
+          <meta name="twitter:description" content="<%= htmlWebpackPlugin.options.description %>">
+          <meta name="twitter:image" content="/images/card.png">
         <% } %>
-        <div class="splash-taking-too-long" hidden>
-          <span data-amp-translation="tooLong1"></span>
-          <% if (htmlWebpackPlugin.options.ampmod_is_cbp) { %>
-            <br /><span data-amp-translation="tooLong2"></span>
-          <% } %>
-        </div>
-        <div class="splash-custom-info"></div>
-      </div>
+        <link rel="canonical" href="https://ampmod.codeberg.page">
+        <% if (htmlWebpackPlugin.options.isCbp) { %>
+          <% /* If you are forkimg, you will need to remove or replace google-site-verification,
+           and if you don't use Simple Analytics you will want to remove or replace that script too. */ %>
+          <meta name="google-site-verification" content="xMC75_ZeQyXE1iaRV31N-hOLPJVubcfmiKfoiOqcNH8" /> 
+          <script>
+          (function() {
+            var lsNamespace = "<%= require('../lib/amp-localstorage-namespace').lsNamespace %>";
+            const optedOut = localStorage.getItem(`${lsNamespace}:analytics-opted-out`) === 'true';
 
-      <div class="splash-error-screen" hidden>
-        <h1 class="splash-error-title"><img src="<%= require('../components/menu-bar/tw-error.svg') %>" draggable="false" loading="lazy" height="48" /> <span data-amp-translation="error"></span></h1>
-        <div class="splash-errors"></div>
-        <button onclick="window.location.reload()" class="reload-button"><span data-amp-translation="reload"></span></button>
-        <p><span data-amp-translation="errorText"></span></p>
-        <p><span data-amp-translation="errorTips"></span></p>
-      </div>
-    </div>
+            if (!optedOut && <%= !htmlWebpackPlugin.options.skipSimpleAnalytics %>) {
+              const script = document.createElement('script');
+              script.async = true;
+              script.src = 'https://scripts.simpleanalyticscdn.com/latest.js';
+              document.head.appendChild(script);
+            }
+          })();
+        </script>
+        <% } else { %>  
+          <meta name="robots" content="noindex, nofollow">
+        <% } %>
+        <% if (htmlWebpackPlugin.options.page) { %>
+        <script>
+          window.__PAGE__ = "<%= htmlWebpackPlugin.options.page %>";
+        </script>
+        <% } %>
+        <style>
+            body {
+                background-color: #4fa55c;
+            }
+            .splash-custom-info[hidden] {
+                display: none;
+            }
+            .splash-custom-info {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                font-family: "Inter Variable", sans-serif;
+                font-weight: bold;
+                text-align: center;
+            }
+            .splash-custom-info * {
+              vertical-align: middle;
+            }
+            .splash-custom-info a {
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <noscript>
+            <div class="splash-custom-info"><img src="<%= require('../components/menu-bar/tw-error.svg') %>" draggable="false" loading="lazy" height="30" /> <%= htmlWebpackPlugin.options.APP_NAME %> requires JavaScript.</div>
+        </noscript>
 
+        <div class="splash-custom-info" hidden><img src="<%= require('../components/menu-bar/icon--settings.svg') %>" draggable="false" loading="lazy" height="30" /><br /><span class="splash-custom-info-text"></span></div>
+
+        <div id="app"></div>
+    </body>
     <script>
-      (function () {
-        'use strict';
-        
-        const translations = <%= JSON.stringify(require("./splash-translations").default) %>;
-        const lsNamespace = "<%= require('../lib/amp-localstorage-namespace').lsNamespace %>";
-        
-        const storedLang = localStorage.getItem(lsNamespace + "language");
-        const t = translations[storedLang] || translations["en"];
-        document.documentElement.lang = storedLang || 'en';
-
-        const APP_NAME = "<%= htmlWebpackPlugin.options.APP_NAME %>";
-        const RELOADING_LINK = `<a href="javascript:window.location.reload()">${t.tooLong1_reloading}</a>`;
-        const CODEBERG_LINK = `<a href="https://status.codeberg.eu" target="_blank" rel="noreferrer">${t.codebergStatus}</a>`;
-        const FORUMS_LINK = `<a href="https://codeberg.org/ampmod/ampmod/issues">${t.errorCbLink}</a>`;
-        const ISSUE_TRACKER_LINK = `<a href="https://codeberg.org/ampmod/ampmod/issues">${t.errorCbLink}</a>`;
-        const COPY_BUTTON = `<button class="splash-copy">${t.errorCopy}</button>`;
-        const NOCACHE_BUTTON = `<button class="splash-reset">${t.nocache}</button>`;
-        const ERASE_DATA_BUTTON = `<button class="splash-delete-data">${t.eraseData}</button>`;
-
-        function interpolate(str) {
-          return str
-            .replace('{APP_NAME}', APP_NAME)
-            .replace('{reloading}', RELOADING_LINK)
-            .replace('{codebergStatus}', CODEBERG_LINK)
-            .replace('{forums}', FORUMS_LINK)
-            .replace('{issueTracker}', ISSUE_TRACKER_LINK)
-            .replace('{copy}', COPY_BUTTON)
-            .replace('{nocache}', NOCACHE_BUTTON)
-            .replace('{eraseData}', ERASE_DATA_BUTTON);
-        }
-
-        document.querySelectorAll('[data-amp-translation]').forEach(el => {
-          el.innerHTML = interpolate(t[el.getAttribute('data-amp-translation')]);
-        });
-
-        const splash = document.querySelector('.spash-waiting-for-js');
-        const canary = <%= htmlWebpackPlugin.options.ampmod_mode === "canary" %>;
-        let accent = canary ? '#FF4C4C' : '#4fa55c';
-        let theme = '';
-
-        const themeSetting = localStorage.getItem(`${lsNamespace}theme`);
-        try {
-          const parsed = JSON.parse(themeSetting);
-          theme = parsed.gui;
-          if (parsed.accent) {
-             const accentMap = {
-                'purple': '#855cd6', 'blue': '#4c97ff', 'green-old': '#59c059', 
-                'grey': '#333', 'red': '#FF4C4C', 'rainbow': '#FF4C4C'
-            };
-            accent = accentMap[parsed.accent] || accent;
-          }
-        } catch (e) { /* ignore */ }
-
-        if (!theme) {
-          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        splash.setAttribute('data-theme', theme);
-        splash.style.backgroundColor = theme === 'light' ? 'white' : accent;
-        splash.style.color = theme === 'light' ? 'black' : 'white';
-        splash.hidden = false;
-
-        const splashMain = document.querySelector('.splash-main');
-        const splashErrorScreen = document.querySelector('.splash-error-screen');
-        const splashErrors = document.querySelector('.splash-errors');
-        const splashCustomInfo = document.querySelector('.splash-custom-info');
-        
-        const showTooLongMessage = setTimeout(() => {
-          if (!splashErrorScreen.hidden) return;
-          document.querySelector('.splash-taking-too-long').hidden = false;
-        }, 20000);
-
-        let totalErrors = 0;
-        window.onerror = (event, source, line, col, err) => {
-          if (++totalErrors > 5) return;
-          
-          if (totalErrors === 1) {
-            splashMain.hidden = true;
-            splashErrorScreen.hidden = false;
-            const infoEl = document.createElement('div');
-            infoEl.textContent = "INFO FOR REPORTING: Version <%= htmlWebpackPlugin.options.ampmod_version %> with <%= htmlWebpackPlugin.options.ampmod_mode || 'default' %> mode.";
-            splashErrors.appendChild(infoEl);
-          }
-
-          const errorEl = document.createElement('div');
-          errorEl.textContent = `Error (splash) in ${source} (${line}:${col}): ${err}`;
-          splashErrors.appendChild(errorEl);
-        };
-
-        document.querySelector('.splash-reset').onclick = function () {
-          this.disabled = true;
-          function hardRefresh() {
-            const search = location.search.replace(/[?&]nocache=\d+/, '');
-            location.replace(location.pathname + search + (search ? '&' : '?') + 'nocache=' + Math.floor(Math.random() * 100000));
-          }
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistration(<%= JSON.stringify(htmlWebpackPlugin.options.root) %>)
-              .then(reg => reg ? reg.unregister() : null)
-              .then(hardRefresh)
-              .catch(hardRefresh);
-          } else {
-            hardRefresh();
-          }
-        };
-
-        document.querySelector('.splash-delete-data').onclick = function () {
-            try {
-              if (!confirm(t.eraseDataConfirm)) return;
-
-              const storagePrefix = canary ? 'canary:' : 'tw:';
-              const databasePrefix = canary ? 'Canary' : 'TW_';
-              
-              localStorage.removeItem(storagePrefix + "theme");
-              indexedDB.deleteDatabase(databasePrefix + "RestorePoints");
-              indexedDB.deleteDatabase(databasePrefix + "Backpack");
-              localStorage.removeItem(storagePrefix + "username");
-              localStorage.removeItem(storagePrefix + "language");
-              location.reload();
-            } catch (e) { /* ignore */ }
-        };
-
-        document.querySelector('.splash-copy').onclick = function () {
-          try {
-            navigator.clipboard.writeText(splashErrors.textContent);
-            this.textContent = t.errorDidCopy;
-          } catch (e) {
-            this.textContent = t.errorCopyFailed;
-          }
-          const button = this;
-          setTimeout(() => { button.textContent = t.errorCopy; }, 2000);
-        };
-
-        window.SplashEnd = () => {
-          clearTimeout(showTooLongMessage);
-          window.onerror = null;
-          splash.remove();
-        };
-
         window.SetCustomSplashInfo = (text) => {
-          splashCustomInfo.innerHTML = text;
+          document.querySelector('.splash-custom-info-text').innerHTML = text;
         };
-      })();
     </script>
-
-    <div id="app"></div>
-  </body>
 </html>

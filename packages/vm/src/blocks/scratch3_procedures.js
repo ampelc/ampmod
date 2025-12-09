@@ -6,6 +6,7 @@ class Scratch3ProcedureBlocks {
          */
         this.runtime = runtime;
     }
+
     /**
      * Retrieve the block primitives implemented by this package.
      * @return {object.<string, Function>} Mapping of opcode to Function.
@@ -19,12 +20,15 @@ class Scratch3ProcedureBlocks {
             argument_reporter_boolean: this.argumentReporterBoolean
         };
     }
+
     definition () {
         // No-op: execute the blocks.
     }
+
     call (args, util) {
         const stackFrame = util.stackFrame;
         const isReporter = !!args.mutation.return;
+
         if (stackFrame.executed) {
             if (isReporter) {
                 const returnValue = stackFrame.returnValue;
@@ -38,8 +42,10 @@ class Scratch3ProcedureBlocks {
             }
             return;
         }
+
         const procedureCode = args.mutation.proccode;
         const paramNamesIdsAndDefaults = util.getProcedureParamNamesIdsAndDefaults(procedureCode);
+
         // If null, procedure could not be found, which can happen if custom
         // block is dragged between sprites without the definition.
         // Match Scratch 2.0 behavior and noop.
@@ -49,7 +55,9 @@ class Scratch3ProcedureBlocks {
             }
             return;
         }
+
         const [paramNames, paramIds, paramDefaults] = paramNamesIdsAndDefaults;
+
         // Initialize params for the current stackFrame to {}, even if the procedure does
         // not take any arguments. This is so that `getParam` down the line does not look
         // at earlier stack frames for the values of a given parameter (#1729)
@@ -61,6 +69,7 @@ class Scratch3ProcedureBlocks {
                 util.pushParam(paramNames[i], paramDefaults[i]);
             }
         }
+
         const addonBlock = util.runtime.getAddonBlock(procedureCode);
         if (addonBlock) {
             const result = addonBlock.callback(util.thread.getAllparams(), util);
@@ -71,14 +80,18 @@ class Scratch3ProcedureBlocks {
             }
             return result;
         }
+
         stackFrame.executed = true;
+
         if (isReporter) {
             util.thread.peekStackFrame().waitingReporter = true;
             // Default return value
             stackFrame.returnValue = '';
         }
+
         util.startProcedure(procedureCode);
     }
+
     return (args, util) {
         util.stopThisScript();
         // If used outside of a custom block, there may be no stackframe.
@@ -86,6 +99,7 @@ class Scratch3ProcedureBlocks {
             util.stackFrame.returnValue = args.VALUE;
         }
     }
+
     argumentReporterStringNumber (args, util) {
         const value = util.getParam(args.VALUE);
         if (value === null) {
@@ -99,6 +113,7 @@ class Scratch3ProcedureBlocks {
         }
         return value;
     }
+
     argumentReporterBoolean (args, util) {
         const value = util.getParam(args.VALUE);
         if (value === null) {
@@ -117,4 +132,5 @@ class Scratch3ProcedureBlocks {
         return value;
     }
 }
-export default Scratch3ProcedureBlocks;
+
+module.exports = Scratch3ProcedureBlocks;

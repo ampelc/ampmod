@@ -1,4 +1,5 @@
-import JSONRPC from '../util/jsonrpc.js';
+const JSONRPC = require('../util/jsonrpc');
+
 class BT extends JSONRPC {
     /**
      * A BT peripheral socket object.  It handles connecting, over web sockets, to
@@ -12,12 +13,15 @@ class BT extends JSONRPC {
      */
     constructor (runtime, extensionId, peripheralOptions, connectCallback, resetCallback = null, messageCallback) {
         super();
+
         this._socket = runtime.getScratchLinkSocket('BT');
         this._socket.setOnOpen(this.requestPeripheral.bind(this));
         this._socket.setOnError(this._handleRequestError.bind(this));
         this._socket.setOnClose(this.handleDisconnectError.bind(this));
         this._socket.setHandleMessage(this._handleMessage.bind(this));
+
         this._sendMessage = this._socket.sendMessage.bind(this._socket);
+
         this._availablePeripherals = {};
         this._connectCallback = connectCallback;
         this._connected = false;
@@ -28,8 +32,10 @@ class BT extends JSONRPC {
         this._peripheralOptions = peripheralOptions;
         this._messageCallback = messageCallback;
         this._runtime = runtime;
+
         this._socket.open();
     }
+
     /**
      * Request connection to the peripheral.
      * If the web socket is not yet open, request when the socket promise resolves.
@@ -42,6 +48,7 @@ class BT extends JSONRPC {
         this._discoverTimeoutID = window.setTimeout(this._handleDiscoverTimeout.bind(this), 15000);
         this.sendRemoteRequest('discover', this._peripheralOptions).catch(e => this._handleRequestError(e));
     }
+
     /**
      * Try connecting to the input peripheral id, and then call the connect
      * callback if connection is successful.
@@ -63,6 +70,7 @@ class BT extends JSONRPC {
                 this._handleRequestError(e);
             });
     }
+
     /**
      * Close the websocket.
      */
@@ -70,26 +78,32 @@ class BT extends JSONRPC {
         if (this._connected) {
             this._connected = false;
         }
+
         if (this._socket.isOpen()) {
             this._socket.close();
         }
+
         if (this._discoverTimeoutID) {
             window.clearTimeout(this._discoverTimeoutID);
         }
+
         // Sets connection status icon to orange
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_DISCONNECTED);
     }
+
     /**
      * @return {bool} whether the peripheral is connected.
      */
     isConnected () {
         return this._connected;
     }
+
     sendMessage (options) {
         return this.sendRemoteRequest('send', options).catch(e => {
             this.handleDisconnectError(e);
         });
     }
+
     /**
      * Handle a received call from the socket.
      * @param {string} method - a received method label.
@@ -126,6 +140,7 @@ class BT extends JSONRPC {
             return 'nah';
         }
     }
+
     /**
      * Handle an error resulting from losing connection to a peripheral.
      *
@@ -139,25 +154,30 @@ class BT extends JSONRPC {
      */
     handleDisconnectError (/* e */) {
         // log.error(`BT error: ${JSON.stringify(e)}`);
-        if (!this._connected) {
-            return;
-        }
+
+        if (!this._connected) return;
+
         this.disconnect();
+
         if (this._resetCallback) {
             this._resetCallback();
         }
+
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_CONNECTION_LOST_ERROR, {
             message: `Scratch lost connection to`,
             extensionId: this._extensionId
         });
     }
+
     _handleRequestError (/* e */) {
         // log.error(`BT error: ${JSON.stringify(e)}`);
+
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_REQUEST_ERROR, {
             message: `Scratch lost connection to`,
             extensionId: this._extensionId
         });
     }
+
     _handleDiscoverTimeout () {
         if (this._discoverTimeoutID) {
             window.clearTimeout(this._discoverTimeoutID);
@@ -165,4 +185,5 @@ class BT extends JSONRPC {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_SCAN_TIMEOUT);
     }
 }
-export default BT;
+
+module.exports = BT;

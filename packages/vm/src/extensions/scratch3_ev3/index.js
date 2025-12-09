@@ -1,29 +1,34 @@
-import ArgumentType from '../../extension-support/argument-type.js';
-import BlockType from '../../extension-support/block-type.js';
-import Cast from '../../util/cast.js';
-import * as formatMessage from 'format-message';
-import uid from '../../util/uid.js';
-import BT from '../../io/bt.js';
-import Base64Util from '../../util/base64-util.js';
-import MathUtil from '../../util/math-util.js';
-import RateLimiter from '../../util/rateLimiter.js';
-import log from '../../util/log.js';
+const ArgumentType = require('../../extension-support/argument-type');
+const BlockType = require('../../extension-support/block-type');
+const Cast = require('../../util/cast');
+const formatMessage = require('format-message');
+const uid = require('../../util/uid');
+const BT = require('../../io/bt');
+const Base64Util = require('../../util/base64-util');
+const MathUtil = require('../../util/math-util');
+const RateLimiter = require('../../util/rateLimiter.js');
+const log = require('../../util/log');
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const blockIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDBweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDAgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDUwLjIgKDU1MDQ3KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5ldjMtYmxvY2staWNvbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJldjMtYmxvY2staWNvbiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9ImV2MyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNS41MDAwMDAsIDMuNTAwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIj4KICAgICAgICAgICAgPHJlY3QgaWQ9IlJlY3RhbmdsZS1wYXRoIiBzdHJva2U9IiM3Qzg3QTUiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgeD0iMC41IiB5PSIzLjU5IiB3aWR0aD0iMjgiIGhlaWdodD0iMjUuODEiIHJ4PSIxIj48L3JlY3Q+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtcGF0aCIgc3Ryb2tlPSIjN0M4N0E1IiBmaWxsPSIjRTZFN0U4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHg9IjIuNSIgeT0iMC41IiB3aWR0aD0iMjQiIGhlaWdodD0iMzIiIHJ4PSIxIj48L3JlY3Q+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtcGF0aCIgc3Ryb2tlPSIjN0M4N0E1IiBmaWxsPSIjRkZGRkZGIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHg9IjIuNSIgeT0iMTQuNSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjEzIj48L3JlY3Q+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNC41LDEwLjUgTDE0LjUsMTQuNSIgaWQ9IlNoYXBlIiBzdHJva2U9IiM3Qzg3QTUiIGZpbGw9IiNFNkU3RTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9wYXRoPgogICAgICAgICAgICA8cmVjdCBpZD0iUmVjdGFuZ2xlLXBhdGgiIGZpbGw9IiM0MTQ3NTciIHg9IjQuNSIgeT0iMi41IiB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHJ4PSIxIj48L3JlY3Q+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtcGF0aCIgZmlsbD0iIzdDODdBNSIgb3BhY2l0eT0iMC41IiB4PSIxMy41IiB5PSIyMC4xMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgcng9IjAuNSI+PC9yZWN0PgogICAgICAgICAgICA8cGF0aCBkPSJNOS4wNiwyMC4xMyBMMTAuNTYsMjAuMTMgQzEwLjgzNjE0MjQsMjAuMTMgMTEuMDYsMjAuMzUzODU3NiAxMS4wNiwyMC42MyBMMTEuMDYsMjEuNjMgQzExLjA2LDIxLjkwNjE0MjQgMTAuODM2MTQyNCwyMi4xMyAxMC41NiwyMi4xMyBMOS4wNiwyMi4xMyBDOC41MDc3MTUyNSwyMi4xMyA4LjA2LDIxLjY4MjI4NDcgOC4wNiwyMS4xMyBDOC4wNiwyMC41Nzc3MTUzIDguNTA3NzE1MjUsMjAuMTMgOS4wNiwyMC4xMyBaIiBpZD0iU2hhcGUiIGZpbGw9IiM3Qzg3QTUiIG9wYWNpdHk9IjAuNSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMTguOTEsMjAuMTMgTDIwLjQyLDIwLjEzIEMyMC42OTYxNDI0LDIwLjEzIDIwLjkyLDIwLjM1Mzg1NzYgMjAuOTIsMjAuNjMgTDIwLjkyLDIxLjYzIEMyMC45MiwyMS45MDYxNDI0IDIwLjY5NjE0MjQsMjIuMTMgMjAuNDIsMjIuMTMgTDE4LjkyLDIyLjEzIEMxOC4zNjc3MTUzLDIyLjEzIDE3LjkyLDIxLjY4MjI4NDcgMTcuOTIsMjEuMTMgQzE3LjkxOTk3MjYsMjAuNTgxNTk3IDE4LjM2MTYyNDUsMjAuMTM1NDg0IDE4LjkxLDIwLjEzIFoiIGlkPSJTaGFwZSIgZmlsbD0iIzdDODdBNSIgb3BhY2l0eT0iMC41IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxOS40MjAwMDAsIDIxLjEzMDAwMCkgcm90YXRlKC0xODAuMDAwMDAwKSB0cmFuc2xhdGUoLTE5LjQyMDAwMCwgLTIxLjEzMDAwMCkgIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik04LjIzLDE3LjUgTDUsMTcuNSBDNC43MjM4NTc2MywxNy41IDQuNSwxNy4yNzYxNDI0IDQuNSwxNyBMNC41LDE0LjUgTDEwLjUsMTQuNSBMOC42NSwxNy4yOCBDOC41NTQ2Njk2MSwxNy40MTc5MDgyIDguMzk3NjUwMDYsMTcuNTAwMTU2NiA4LjIzLDE3LjUgWiIgaWQ9IlNoYXBlIiBmaWxsPSIjN0M4N0E1IiBvcGFjaXR5PSIwLjUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTE4LjE1LDE4Ljg1IEwxNy42NSwxOS4zNSBDMTcuNTUyMzQxNiwxOS40NDQwNzU2IDE3LjQ5ODAzMzksMTkuNTc0NDE0MiAxNy41LDE5LjcxIEwxNy41LDIwIEMxNy41LDIwLjI3NjE0MjQgMTcuMjc2MTQyNCwyMC41IDE3LDIwLjUgTDE2LjUsMjAuNSBDMTYuMjIzODU3NiwyMC41IDE2LDIwLjI3NjE0MjQgMTYsMjAgQzE2LDE5LjcyMzg1NzYgMTUuNzc2MTQyNCwxOS41IDE1LjUsMTkuNSBMMTMuNSwxOS41IEMxMy4yMjM4NTc2LDE5LjUgMTMsMTkuNzIzODU3NiAxMywyMCBDMTMsMjAuMjc2MTQyNCAxMi43NzYxNDI0LDIwLjUgMTIuNSwyMC41IEwxMiwyMC41IEMxMS43MjM4NTc2LDIwLjUgMTEuNSwyMC4yNzYxNDI0IDExLjUsMjAgTDExLjUsMTkuNzEgQzExLjUwMTk2NjEsMTkuNTc0NDE0MiAxMS40NDc2NTg0LDE5LjQ0NDA3NTYgMTEuMzUsMTkuMzUgTDEwLjg1LDE4Ljg1IEMxMC42NTgyMTY3LDE4LjY1MjE4NjMgMTAuNjU4MjE2NywxOC4zMzc4MTM3IDEwLjg1LDE4LjE0IEwxMi4zNiwxNi42NSBDMTIuNDUwMjgwMywxNi41NTI4NjE3IDEyLjU3NzM5NjEsMTYuNDk4MzgzNSAxMi43MSwxNi41IEwxNi4yOSwxNi41IEMxNi40MjI2MDM5LDE2LjQ5ODM4MzUgMTYuNTQ5NzE5NywxNi41NTI4NjE3IDE2LjY0LDE2LjY1IEwxOC4xNSwxOC4xNCBDMTguMzQxNzgzMywxOC4zMzc4MTM3IDE4LjM0MTc4MzMsMTguNjUyMTg2MyAxOC4xNSwxOC44NSBaIiBpZD0iU2hhcGUiIGZpbGw9IiM3Qzg3QTUiIG9wYWNpdHk9IjAuNSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMTAuODUsMjMuNDUgTDExLjM1LDIyLjk1IEMxMS40NDc2NTg0LDIyLjg1NTkyNDQgMTEuNTAxOTY2MSwyMi43MjU1ODU4IDExLjUsMjIuNTkgTDExLjUsMjIuMyBDMTEuNSwyMi4wMjM4NTc2IDExLjcyMzg1NzYsMjEuOCAxMiwyMS44IEwxMi41LDIxLjggQzEyLjc3NjE0MjQsMjEuOCAxMywyMi4wMjM4NTc2IDEzLDIyLjMgQzEzLDIyLjU3NjE0MjQgMTMuMjIzODU3NiwyMi44IDEzLjUsMjIuOCBMMTUuNSwyMi44IEMxNS43NzYxNDI0LDIyLjggMTYsMjIuNTc2MTQyNCAxNiwyMi4zIEMxNiwyMi4wMjM4NTc2IDE2LjIyMzg1NzYsMjEuOCAxNi41LDIxLjggTDE3LDIxLjggQzE3LjI3NjE0MjQsMjEuOCAxNy41LDIyLjAyMzg1NzYgMTcuNSwyMi4zIEwxNy41LDIyLjU5IEMxNy40OTgwMzM5LDIyLjcyNTU4NTggMTcuNTUyMzQxNiwyMi44NTU5MjQ0IDE3LjY1LDIyLjk1IEwxOC4xNSwyMy40NSBDMTguMzQwNTcxNCwyMy42NDQ0MjE4IDE4LjM0MDU3MTQsMjMuOTU1NTc4MiAxOC4xNSwyNC4xNSBMMTYuNjQsMjUuNjUgQzE2LjU0OTcxOTcsMjUuNzQ3MTM4MyAxNi40MjI2MDM5LDI1LjgwMTYxNjUgMTYuMjksMjUuOCBMMTIuNzEsMjUuOCBDMTIuNTc3Mzk2MSwyNS44MDE2MTY1IDEyLjQ1MDI4MDMsMjUuNzQ3MTM4MyAxMi4zNiwyNS42NSBMMTAuODUsMjQuMTUgQzEwLjY1OTQyODYsMjMuOTU1NTc4MiAxMC42NTk0Mjg2LDIzLjY0NDQyMTggMTAuODUsMjMuNDUgWiIgaWQ9IlNoYXBlIiBmaWxsPSIjN0M4N0E1IiBvcGFjaXR5PSIwLjUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTIxLjUsMjcuNSBMMjYuNSwyNy41IEwyNi41LDMxLjUgQzI2LjUsMzIuMDUyMjg0NyAyNi4wNTIyODQ3LDMyLjUgMjUuNSwzMi41IEwyMS41LDMyLjUgTDIxLjUsMjcuNSBaIiBpZD0iU2hhcGUiIHN0cm9rZT0iI0NDNEMyMyIgZmlsbD0iI0YxNUEyOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48L3BhdGg+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=';
+const blockIconURI =
+    'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDBweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDAgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDUwLjIgKDU1MDQ3KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5ldjMtYmxvY2staWNvbjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPjwvZGVmcz4KICAgIDxnIGlkPSJldjMtYmxvY2staWNvbiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9ImV2MyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNS41MDAwMDAsIDMuNTAwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIj4KICAgICAgICAgICAgPHJlY3QgaWQ9IlJlY3RhbmdsZS1wYXRoIiBzdHJva2U9IiM3Qzg3QTUiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgeD0iMC41IiB5PSIzLjU5IiB3aWR0aD0iMjgiIGhlaWdodD0iMjUuODEiIHJ4PSIxIj48L3JlY3Q+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtcGF0aCIgc3Ryb2tlPSIjN0M4N0E1IiBmaWxsPSIjRTZFN0U4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHg9IjIuNSIgeT0iMC41IiB3aWR0aD0iMjQiIGhlaWdodD0iMzIiIHJ4PSIxIj48L3JlY3Q+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtcGF0aCIgc3Ryb2tlPSIjN0M4N0E1IiBmaWxsPSIjRkZGRkZGIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHg9IjIuNSIgeT0iMTQuNSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjEzIj48L3JlY3Q+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNC41LDEwLjUgTDE0LjUsMTQuNSIgaWQ9IlNoYXBlIiBzdHJva2U9IiM3Qzg3QTUiIGZpbGw9IiNFNkU3RTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9wYXRoPgogICAgICAgICAgICA8cmVjdCBpZD0iUmVjdGFuZ2xlLXBhdGgiIGZpbGw9IiM0MTQ3NTciIHg9IjQuNSIgeT0iMi41IiB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHJ4PSIxIj48L3JlY3Q+CiAgICAgICAgICAgIDxyZWN0IGlkPSJSZWN0YW5nbGUtcGF0aCIgZmlsbD0iIzdDODdBNSIgb3BhY2l0eT0iMC41IiB4PSIxMy41IiB5PSIyMC4xMyIgd2lkdGg9IjIiIGhlaWdodD0iMiIgcng9IjAuNSI+PC9yZWN0PgogICAgICAgICAgICA8cGF0aCBkPSJNOS4wNiwyMC4xMyBMMTAuNTYsMjAuMTMgQzEwLjgzNjE0MjQsMjAuMTMgMTEuMDYsMjAuMzUzODU3NiAxMS4wNiwyMC42MyBMMTEuMDYsMjEuNjMgQzExLjA2LDIxLjkwNjE0MjQgMTAuODM2MTQyNCwyMi4xMyAxMC41NiwyMi4xMyBMOS4wNiwyMi4xMyBDOC41MDc3MTUyNSwyMi4xMyA4LjA2LDIxLjY4MjI4NDcgOC4wNiwyMS4xMyBDOC4wNiwyMC41Nzc3MTUzIDguNTA3NzE1MjUsMjAuMTMgOS4wNiwyMC4xMyBaIiBpZD0iU2hhcGUiIGZpbGw9IiM3Qzg3QTUiIG9wYWNpdHk9IjAuNSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMTguOTEsMjAuMTMgTDIwLjQyLDIwLjEzIEMyMC42OTYxNDI0LDIwLjEzIDIwLjkyLDIwLjM1Mzg1NzYgMjAuOTIsMjAuNjMgTDIwLjkyLDIxLjYzIEMyMC45MiwyMS45MDYxNDI0IDIwLjY5NjE0MjQsMjIuMTMgMjAuNDIsMjIuMTMgTDE4LjkyLDIyLjEzIEMxOC4zNjc3MTUzLDIyLjEzIDE3LjkyLDIxLjY4MjI4NDcgMTcuOTIsMjEuMTMgQzE3LjkxOTk3MjYsMjAuNTgxNTk3IDE4LjM2MTYyNDUsMjAuMTM1NDg0IDE4LjkxLDIwLjEzIFoiIGlkPSJTaGFwZSIgZmlsbD0iIzdDODdBNSIgb3BhY2l0eT0iMC41IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxOS40MjAwMDAsIDIxLjEzMDAwMCkgcm90YXRlKC0xODAuMDAwMDAwKSB0cmFuc2xhdGUoLTE5LjQyMDAwMCwgLTIxLjEzMDAwMCkgIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik04LjIzLDE3LjUgTDUsMTcuNSBDNC43MjM4NTc2MywxNy41IDQuNSwxNy4yNzYxNDI0IDQuNSwxNyBMNC41LDE0LjUgTDEwLjUsMTQuNSBMOC42NSwxNy4yOCBDOC41NTQ2Njk2MSwxNy40MTc5MDgyIDguMzk3NjUwMDYsMTcuNTAwMTU2NiA4LjIzLDE3LjUgWiIgaWQ9IlNoYXBlIiBmaWxsPSIjN0M4N0E1IiBvcGFjaXR5PSIwLjUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTE4LjE1LDE4Ljg1IEwxNy42NSwxOS4zNSBDMTcuNTUyMzQxNiwxOS40NDQwNzU2IDE3LjQ5ODAzMzksMTkuNTc0NDE0MiAxNy41LDE5LjcxIEwxNy41LDIwIEMxNy41LDIwLjI3NjE0MjQgMTcuMjc2MTQyNCwyMC41IDE3LDIwLjUgTDE2LjUsMjAuNSBDMTYuMjIzODU3NiwyMC41IDE2LDIwLjI3NjE0MjQgMTYsMjAgQzE2LDE5LjcyMzg1NzYgMTUuNzc2MTQyNCwxOS41IDE1LjUsMTkuNSBMMTMuNSwxOS41IEMxMy4yMjM4NTc2LDE5LjUgMTMsMTkuNzIzODU3NiAxMywyMCBDMTMsMjAuMjc2MTQyNCAxMi43NzYxNDI0LDIwLjUgMTIuNSwyMC41IEwxMiwyMC41IEMxMS43MjM4NTc2LDIwLjUgMTEuNSwyMC4yNzYxNDI0IDExLjUsMjAgTDExLjUsMTkuNzEgQzExLjUwMTk2NjEsMTkuNTc0NDE0MiAxMS40NDc2NTg0LDE5LjQ0NDA3NTYgMTEuMzUsMTkuMzUgTDEwLjg1LDE4Ljg1IEMxMC42NTgyMTY3LDE4LjY1MjE4NjMgMTAuNjU4MjE2NywxOC4zMzc4MTM3IDEwLjg1LDE4LjE0IEwxMi4zNiwxNi42NSBDMTIuNDUwMjgwMywxNi41NTI4NjE3IDEyLjU3NzM5NjEsMTYuNDk4MzgzNSAxMi43MSwxNi41IEwxNi4yOSwxNi41IEMxNi40MjI2MDM5LDE2LjQ5ODM4MzUgMTYuNTQ5NzE5NywxNi41NTI4NjE3IDE2LjY0LDE2LjY1IEwxOC4xNSwxOC4xNCBDMTguMzQxNzgzMywxOC4zMzc4MTM3IDE4LjM0MTc4MzMsMTguNjUyMTg2MyAxOC4xNSwxOC44NSBaIiBpZD0iU2hhcGUiIGZpbGw9IiM3Qzg3QTUiIG9wYWNpdHk9IjAuNSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMTAuODUsMjMuNDUgTDExLjM1LDIyLjk1IEMxMS40NDc2NTg0LDIyLjg1NTkyNDQgMTEuNTAxOTY2MSwyMi43MjU1ODU4IDExLjUsMjIuNTkgTDExLjUsMjIuMyBDMTEuNSwyMi4wMjM4NTc2IDExLjcyMzg1NzYsMjEuOCAxMiwyMS44IEwxMi41LDIxLjggQzEyLjc3NjE0MjQsMjEuOCAxMywyMi4wMjM4NTc2IDEzLDIyLjMgQzEzLDIyLjU3NjE0MjQgMTMuMjIzODU3NiwyMi44IDEzLjUsMjIuOCBMMTUuNSwyMi44IEMxNS43NzYxNDI0LDIyLjggMTYsMjIuNTc2MTQyNCAxNiwyMi4zIEMxNiwyMi4wMjM4NTc2IDE2LjIyMzg1NzYsMjEuOCAxNi41LDIxLjggTDE3LDIxLjggQzE3LjI3NjE0MjQsMjEuOCAxNy41LDIyLjAyMzg1NzYgMTcuNSwyMi4zIEwxNy41LDIyLjU5IEMxNy40OTgwMzM5LDIyLjcyNTU4NTggMTcuNTUyMzQxNiwyMi44NTU5MjQ0IDE3LjY1LDIyLjk1IEwxOC4xNSwyMy40NSBDMTguMzQwNTcxNCwyMy42NDQ0MjE4IDE4LjM0MDU3MTQsMjMuOTU1NTc4MiAxOC4xNSwyNC4xNSBMMTYuNjQsMjUuNjUgQzE2LjU0OTcxOTcsMjUuNzQ3MTM4MyAxNi40MjI2MDM5LDI1LjgwMTYxNjUgMTYuMjksMjUuOCBMMTIuNzEsMjUuOCBDMTIuNTc3Mzk2MSwyNS44MDE2MTY1IDEyLjQ1MDI4MDMsMjUuNzQ3MTM4MyAxMi4zNiwyNS42NSBMMTAuODUsMjQuMTUgQzEwLjY1OTQyODYsMjMuOTU1NTc4MiAxMC42NTk0Mjg2LDIzLjY0NDQyMTggMTAuODUsMjMuNDUgWiIgaWQ9IlNoYXBlIiBmaWxsPSIjN0M4N0E1IiBvcGFjaXR5PSIwLjUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTIxLjUsMjcuNSBMMjYuNSwyNy41IEwyNi41LDMxLjUgQzI2LjUsMzIuMDUyMjg0NyAyNi4wNTIyODQ3LDMyLjUgMjUuNSwzMi41IEwyMS41LDMyLjUgTDIxLjUsMjcuNSBaIiBpZD0iU2hhcGUiIHN0cm9rZT0iI0NDNEMyMyIgZmlsbD0iI0YxNUEyOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48L3BhdGg+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=';
+
 /**
  * String with Ev3 expected pairing pin.
  * @readonly
  */
 const Ev3PairingPin = '1234';
+
 /**
  * A maximum number of BT message sends per second, to be enforced by the rate limiter.
  * @type {number}
  */
 const BTSendRateMax = 40;
+
 /**
  * Enum for Ev3 parameter encodings of various argument and return values.
  * Found in the 'EV3 Firmware Developer Kit', section4, page 9, at
@@ -44,6 +49,7 @@ const Ev3Encoding = {
     GLOBAL_CONSTANT_INDEX_0: 0x20, // = 0b00100000
     GLOBAL_VARIABLE_INDEX_0: 0x60 // = 0b01100000
 };
+
 /**
  * Enum for Ev3 direct command types.
  * Found in the 'EV3 Communication Developer Kit', section 4, page 24, at
@@ -56,6 +62,7 @@ const Ev3Command = {
     DIRECT_COMMAND_NO_REPLY: 0x80,
     DIRECT_REPLY: 0x02
 };
+
 /**
  * Enum for Ev3 commands opcodes.
  * Found in the 'EV3 Firmware Developer Kit', section 4, page 10, at
@@ -77,6 +84,7 @@ const Ev3Opcode = {
     OPINPUT_DEVICE_LIST: 0x98,
     OPINPUT_READSI: 0x9d
 };
+
 /**
  * Enum for Ev3 values used as arguments to various opcodes.
  * Found in the 'EV3 Firmware Developer Kit', section4, page 10-onwards, at
@@ -92,6 +100,7 @@ const Ev3Args = {
     DO_NOT_CHANGE_TYPE: 0,
     MAX_DEVICES: 32 // 'Normally 32' from pg. 46
 };
+
 /**
  * Enum for Ev3 device type numbers.
  * Found in the 'EV3 Firmware Developer Kit', section 5, page 100, at
@@ -109,6 +118,7 @@ const Ev3Device = {
     126: 'none',
     125: 'none'
 };
+
 /**
  * Enum for Ev3 device modes.
  * Found in the 'EV3 Firmware Developer Kit', section 5, page 100, at
@@ -122,6 +132,7 @@ const Ev3Mode = {
     ultrasonic: 1, // inch
     none: 0
 };
+
 /**
  * Enum for Ev3 device labels used in the Scratch blocks/UI.
  * @readonly
@@ -132,6 +143,7 @@ const Ev3Label = {
     color: 'brightness',
     ultrasonic: 'distance'
 };
+
 /**
  * Manage power, direction, and timers for one EV3 motor.
  */
@@ -151,36 +163,42 @@ class EV3Motor {
          * @private
          */
         this._parent = parent;
+
         /**
          * The zero-based index of this motor on its parent peripheral.
          * @type {int}
          * @private
          */
         this._index = index;
+
         /**
          * The type of EV3 motor this could be: 'largeMotor' or 'mediumMotor'.
          * @type {string}
          * @private
          */
         this._type = type;
+
         /**
          * This motor's current direction: 1 for "clockwise" or -1 for "counterclockwise"
          * @type {number}
          * @private
          */
         this._direction = 1;
+
         /**
          * This motor's current power level, in the range [0,100].
          * @type {number}
          * @private
          */
         this._power = 50;
+
         /**
          * This motor's current position, in the range [0,360].
          * @type {number}
          * @private
          */
         this._position = 0;
+
         /**
          * An ID for the current coast command, to help override multiple coast
          * commands sent in succession.
@@ -188,6 +206,7 @@ class EV3Motor {
          * @private
          */
         this._commandID = null;
+
         /**
          * A delay, in milliseconds, to add to coasting, to make sure that a brake
          * first takes effect if one was sent.
@@ -196,24 +215,28 @@ class EV3Motor {
          */
         this._coastDelay = 1000;
     }
+
     /**
      * @return {string} - this motor's type: 'largeMotor' or 'mediumMotor'
      */
     get type () {
         return this._type;
     }
+
     /**
      * @param {string} value - this motor's new type: 'largeMotor' or 'mediumMotor'
      */
     set type (value) {
         this._type = value;
     }
+
     /**
      * @return {int} - this motor's current direction: 1 for "clockwise" or -1 for "counterclockwise"
      */
     get direction () {
         return this._direction;
     }
+
     /**
      * @param {int} value - this motor's new direction: 1 for "clockwise" or -1 for "counterclockwise"
      */
@@ -224,24 +247,28 @@ class EV3Motor {
             this._direction = 1;
         }
     }
+
     /**
      * @return {int} - this motor's current power level, in the range [0,100].
      */
     get power () {
         return this._power;
     }
+
     /**
      * @param {int} value - this motor's new power level, in the range [0,100].
      */
     set power (value) {
         this._power = value;
     }
+
     /**
      * @return {int} - this motor's current position, in the range [-inf,inf].
      */
     get position () {
         return this._position;
     }
+
     /**
      * @param {int} array - this motor's new position, in the range [0,360].
      */
@@ -253,6 +280,7 @@ class EV3Motor {
         }
         this._position = value;
     }
+
     /**
      * Turn this motor on for a specific duration.
      * Found in the 'EV3 Firmware Developer Kit', page 56, at
@@ -270,15 +298,16 @@ class EV3Motor {
      * @param {number} milliseconds - run the motor for this long.
      */
     turnOnFor (milliseconds) {
-        if (this._power === 0) {
-            return;
-        }
+        if (this._power === 0) return;
+
         const port = this._portMask(this._index);
         let n = milliseconds;
         let speed = this._power * this._direction;
         const ramp = Ev3Args.RAMP;
+
         let byteCommand = [];
         byteCommand[0] = Ev3Opcode.OPOUTPUT_TIME_SPEED;
+
         // If speed is less than zero, make it positive and multiply the input
         // value by -1
         if (speed < 0) {
@@ -302,21 +331,25 @@ class EV3Motor {
         byteCommand = byteCommand
             .concat([Ev3Args.LAYER, port, Ev3Encoding.ONE_BYTE, dir & 0xff, Ev3Encoding.ONE_BYTE, rampup])
             .concat(runcmd.concat([Ev3Encoding.ONE_BYTE, rampdown, Ev3Args.BRAKE]));
+
         const cmd = this._parent.generateCommand(Ev3Command.DIRECT_COMMAND_NO_REPLY, byteCommand);
+
         this._parent.send(cmd);
+
         this.coastAfter(milliseconds);
     }
+
     /**
      * Set the motor to coast after a specified amount of time.
      * @param {number} time - the time in milliseconds.
      */
     coastAfter (time) {
-        if (this._power === 0) {
-            return;
-        }
+        if (this._power === 0) return;
+
         // Set the motor command id to check before starting coast
         const commandId = uid();
         this._commandID = commandId;
+
         // Send coast message
         setTimeout(() => {
             // Do not send coast if another motor command changed the command id.
@@ -326,21 +359,23 @@ class EV3Motor {
             }
         }, time + this._coastDelay); // add a delay so the brake takes effect
     }
+
     /**
      * Set the motor to coast.
      */
     coast () {
-        if (this._power === 0) {
-            return;
-        }
+        if (this._power === 0) return;
+
         const cmd = this._parent.generateCommand(Ev3Command.DIRECT_COMMAND_NO_REPLY, [
             Ev3Opcode.OPOUTPUT_STOP,
             Ev3Args.LAYER,
             this._portMask(this._index), // port output bit field
             Ev3Args.COAST
         ]);
+
         this._parent.send(cmd, false); // don't use rate limiter to ensure motor stops
     }
+
     /**
      * Generate motor run values for a given input.
      * @param  {number} run - run input.
@@ -351,9 +386,11 @@ class EV3Motor {
         if (run < 0x7fff) {
             return [Ev3Encoding.TWO_BYTES, run & 0xff, (run >> 8) & 0xff];
         }
+
         // Run forever
         return [Ev3Encoding.FOUR_BYTES, run & 0xff, (run >> 8) & 0xff, (run >> 16) & 0xff, (run >> 24) & 0xff];
     }
+
     /**
      * Return a port value for the EV3 that is in the format for 'output bit field'
      * as 1/2/4/8, generally needed for motor ports, instead of the typical 0/1/2/3.
@@ -366,6 +403,7 @@ class EV3Motor {
         return Math.pow(2, port);
     }
 }
+
 class EV3 {
     constructor (runtime, extensionId) {
         /**
@@ -375,22 +413,26 @@ class EV3 {
          */
         this._runtime = runtime;
         this._runtime.on('PROJECT_STOP_ALL', this.stopAll.bind(this));
+
         /**
          * The id of the extension this peripheral belongs to.
          */
         this._extensionId = extensionId;
+
         /**
          * A list of the names of the sensors connected in ports 1,2,3,4.
          * @type {string[]}
          * @private
          */
         this._sensorPorts = [];
+
         /**
          * A list of the names of the motors connected in ports A,B,C,D.
          * @type {string[]}
          * @private
          */
         this._motorPorts = [];
+
         /**
          * The state of all sensor values.
          * @type {string[]}
@@ -401,30 +443,35 @@ class EV3 {
             brightness: 0,
             buttons: [0, 0, 0, 0]
         };
+
         /**
          * The motors which this EV3 could possibly have connected.
          * @type {string[]}
          * @private
          */
         this._motors = [null, null, null, null];
+
         /**
          * The polling interval, in milliseconds.
          * @type {number}
          * @private
          */
         this._pollingInterval = 150;
+
         /**
          * The polling interval ID.
          * @type {number}
          * @private
          */
         this._pollingIntervalID = null;
+
         /**
          * The counter keeping track of polling cycles.
          * @type {string[]}
          * @private
          */
         this._pollingCounter = 0;
+
         /**
          * The Bluetooth socket connection for reading/writing peripheral data.
          * @type {BT}
@@ -432,6 +479,7 @@ class EV3 {
          */
         this._bt = null;
         this._runtime.registerPeripheralExtension(extensionId, this);
+
         /**
          * A rate limiter utility, to help limit the rate at which we send BT messages
          * over the socket to Scratch Link to a maximum number of sends per second.
@@ -439,20 +487,25 @@ class EV3 {
          * @private
          */
         this._rateLimiter = new RateLimiter(BTSendRateMax);
+
         this.reset = this.reset.bind(this);
         this._onConnect = this._onConnect.bind(this);
         this._onMessage = this._onMessage.bind(this);
         this._pollValues = this._pollValues.bind(this);
     }
+
     get distance () {
         let value = this._sensors.distance > 100 ? 100 : this._sensors.distance;
         value = value < 0 ? 0 : value;
         value = Math.round(100 * value) / 100;
+
         return value;
     }
+
     get brightness () {
         return this._sensors.brightness;
     }
+
     /**
      * Access a particular motor on this peripheral.
      * @param {int} index - the zero-based index of the desired motor.
@@ -461,9 +514,11 @@ class EV3 {
     motor (index) {
         return this._motors[index];
     }
+
     isButtonPressed (port) {
         return this._sensors.buttons[port] === 1;
     }
+
     beep (freq, time) {
         const cmd = this.generateCommand(Ev3Command.DIRECT_COMMAND_NO_REPLY, [
             Ev3Opcode.OPSOUND,
@@ -477,19 +532,24 @@ class EV3 {
             time,
             time >> 8
         ]);
+
         this.send(cmd);
     }
+
     stopAll () {
         this.stopAllMotors();
         this.stopSound();
     }
+
     stopSound () {
         const cmd = this.generateCommand(Ev3Command.DIRECT_COMMAND_NO_REPLY, [
             Ev3Opcode.OPSOUND,
             Ev3Opcode.OPSOUND_CMD_STOP
         ]);
+
         this.send(cmd, false); // don't use rate limiter to ensure sound stops
     }
+
     stopAllMotors () {
         this._motors.forEach(motor => {
             if (motor) {
@@ -497,6 +557,7 @@ class EV3 {
             }
         });
     }
+
     /**
      * Called by the runtime when user wants to scan for an EV3 peripheral.
      */
@@ -504,11 +565,19 @@ class EV3 {
         if (this._bt) {
             this._bt.disconnect();
         }
-        this._bt = new BT(this._runtime, this._extensionId, {
-            majorDeviceClass: 8,
-            minorDeviceClass: 1
-        }, this._onConnect, this.reset, this._onMessage);
+        this._bt = new BT(
+            this._runtime,
+            this._extensionId,
+            {
+                majorDeviceClass: 8,
+                minorDeviceClass: 1
+            },
+            this._onConnect,
+            this.reset,
+            this._onMessage
+        );
     }
+
     /**
      * Called by the runtime when user wants to connect to a certain EV3 peripheral.
      * @param {number} id - the id of the peripheral to connect to.
@@ -518,6 +587,7 @@ class EV3 {
             this._bt.connectPeripheral(id, Ev3PairingPin);
         }
     }
+
     /**
      * Called by the runtime when user wants to disconnect from the EV3 peripheral.
      */
@@ -525,8 +595,10 @@ class EV3 {
         if (this._bt) {
             this._bt.disconnect();
         }
+
         this.reset();
     }
+
     /**
      * Reset all the state and timeout/interval ids.
      */
@@ -539,11 +611,13 @@ class EV3 {
             buttons: [0, 0, 0, 0]
         };
         this._motors = [null, null, null, null];
+
         if (this._pollingIntervalID) {
             window.clearInterval(this._pollingIntervalID);
             this._pollingIntervalID = null;
         }
     }
+
     /**
      * Called by the runtime to detect whether the EV3 peripheral is connected.
      * @return {boolean} - the connected state.
@@ -555,6 +629,7 @@ class EV3 {
         }
         return connected;
     }
+
     /**
      * Send a message to the peripheral BT socket.
      * @param {Uint8Array} message - the message to send.
@@ -562,19 +637,18 @@ class EV3 {
      * @return {Promise} - a promise result of the send operation.
      */
     send (message, useLimiter = true) {
-        if (!this.isConnected()) {
-            return Promise.resolve();
-        }
+        if (!this.isConnected()) return Promise.resolve();
+
         if (useLimiter) {
-            if (!this._rateLimiter.okayToSend()) {
-                return Promise.resolve();
-            }
+            if (!this._rateLimiter.okayToSend()) return Promise.resolve();
         }
+
         return this._bt.sendMessage({
             message: Base64Util.uint8ArrayToBase64(message),
             encoding: 'base64'
         });
     }
+
     /**
      * Genrates direct commands that are sent to the EV3 as a single or compounded byte arrays.
      * See 'EV3 Communication Developer Kit', section 4, page 24 at
@@ -608,14 +682,18 @@ class EV3 {
         command[4] = type;
         command[5] = allocation & 0xff;
         command[6] = allocation >> 8 && 0xff;
+
         // Bytecodes (Bytes 7 - n)
         command = command.concat(byteCommands);
+
         // Calculate command length minus first two header bytes
         const len = command.length - 2;
         command[0] = len & 0xff;
         command[1] = len >> 8 && 0xff;
+
         return command;
     }
+
     /**
      * When the EV3 peripheral connects, start polling for sensor and motor values.
      * @private
@@ -623,6 +701,7 @@ class EV3 {
     _onConnect () {
         this._pollingIntervalID = window.setInterval(this._pollValues, this._pollingInterval);
     }
+
     /**
      * Poll the EV3 for sensor and motor input values, based on the list of
      * known connected sensors and motors. This is sent as many compound commands
@@ -639,9 +718,11 @@ class EV3 {
             window.clearInterval(this._pollingIntervalID);
             return;
         }
+
         const cmds = []; // compound command
         let allocation = 0;
         let sensorCount = 0;
+
         // Reset the list of devices every 20 counts
         if (this._pollingCounter % 20 === 0) {
             // GET DEVICE LIST
@@ -651,8 +732,10 @@ class EV3 {
             cmds[3] = Ev3Encoding.GLOBAL_VARIABLE_INDEX_0;
             cmds[4] = Ev3Encoding.GLOBAL_VARIABLE_ONE_BYTE;
             cmds[5] = Ev3Encoding.GLOBAL_CONSTANT_INDEX_0;
+
             // Command and payload lengths
             allocation = 33;
+
             this._updateDevices = true;
         } else {
             // GET SENSOR VALUES FOR CONNECTED SENSORS
@@ -670,6 +753,7 @@ class EV3 {
                 }
                 sensorCount++;
             }
+
             // GET MOTOR POSITION VALUES, EVEN IF NO MOTOR PRESENT
             for (let i = 0; i < 4; i++) {
                 cmds[index + 0] = Ev3Opcode.OPOUTPUT_GET_COUNT;
@@ -680,13 +764,18 @@ class EV3 {
                 index += 5;
                 sensorCount++;
             }
+
             // Command and payload lengths
             allocation = sensorCount * 4;
         }
+
         const cmd = this.generateCommand(Ev3Command.DIRECT_COMMAND_REPLY, cmds, allocation);
+
         this.send(cmd);
+
         this._pollingCounter++;
     }
+
     /**
      * Message handler for incoming EV3 reply messages, either a list of connected
      * devices (sensors and motors) or the values of the connected sensors and motors.
@@ -713,9 +802,11 @@ class EV3 {
     _onMessage (params) {
         const message = params.message;
         const data = Base64Util.base64ToUint8Array(message);
+
         if (data[4] !== Ev3Command.DIRECT_REPLY) {
             return;
         }
+
         if (this._updateDevices) {
             // PARSE DEVICE LIST
             for (let i = 0; i < 4; i++) {
@@ -740,6 +831,7 @@ class EV3 {
                 }
             }
             this._updateDevices = false;
+
             // eslint-disable-next-line no-undefined
         } else if (!this._sensorPorts.includes(undefined) && !this._motorPorts.includes(undefined)) {
             // PARSE SENSOR VALUES
@@ -750,6 +842,7 @@ class EV3 {
                     .buffer;
                 const view = new DataView(buffer);
                 const value = view.getFloat32(0, true);
+
                 if (Ev3Label[this._sensorPorts[i]] === 'button') {
                     // Read a button value per port
                     this._sensors.buttons[i] = value ? value : 0;
@@ -760,6 +853,7 @@ class EV3 {
                 }
                 offset += 4;
             }
+
             // PARSE MOTOR POSITION VALUES, EVEN IF NO MOTOR PRESENT
             for (let i = 0; i < 4; i++) {
                 const positionArray = [data[offset], data[offset + 1], data[offset + 2], data[offset + 3]];
@@ -771,6 +865,7 @@ class EV3 {
         }
     }
 }
+
 /**
  * Enum for motor port names.
  * Note: if changed, will break compatibility with previously saved projects.
@@ -778,6 +873,7 @@ class EV3 {
  * @enum {string}
  */
 const Ev3MotorMenu = ['A', 'B', 'C', 'D'];
+
 /**
  * Enum for sensor port names.
  * Note: if changed, will break compatibility with previously saved projects.
@@ -785,6 +881,7 @@ const Ev3MotorMenu = ['A', 'B', 'C', 'D'];
  * @enum {string}
  */
 const Ev3SensorMenu = ['1', '2', '3', '4'];
+
 class Scratch3Ev3Blocks {
     /**
      * The ID of the extension.
@@ -793,6 +890,7 @@ class Scratch3Ev3Blocks {
     static get EXTENSION_ID () {
         return 'ev3';
     }
+
     /**
      * Creates a new instance of the EV3 extension.
      * @param  {object} runtime VM runtime
@@ -804,11 +902,14 @@ class Scratch3Ev3Blocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
         // Create a new EV3 peripheral instance
         this._peripheral = new EV3(this.runtime, Scratch3Ev3Blocks.EXTENSION_ID);
+
         this._playNoteForPicker = this._playNoteForPicker.bind(this);
         this.runtime.on('PLAY_NOTE', this._playNoteForPicker);
     }
+
     /**
      * Define the EV3 extension.
      * @return {object} Extension description.
@@ -1008,10 +1109,12 @@ class Scratch3Ev3Blocks {
             }
         };
     }
+
     motorTurnClockwise (args) {
         const port = Cast.toNumber(args.PORT);
         let time = Cast.toNumber(args.TIME) * 1000;
         time = MathUtil.clamp(time, 0, 15000);
+
         return new Promise(resolve => {
             this._forEachMotor(port, motorIndex => {
                 const motor = this._peripheral.motor(motorIndex);
@@ -1020,14 +1123,17 @@ class Scratch3Ev3Blocks {
                     motor.turnOnFor(time);
                 }
             });
+
             // Run for some time even when no motor is connected
             setTimeout(resolve, time);
         });
     }
+
     motorTurnCounterClockwise (args) {
         const port = Cast.toNumber(args.PORT);
         let time = Cast.toNumber(args.TIME) * 1000;
         time = MathUtil.clamp(time, 0, 15000);
+
         return new Promise(resolve => {
             this._forEachMotor(port, motorIndex => {
                 const motor = this._peripheral.motor(motorIndex);
@@ -1036,13 +1142,16 @@ class Scratch3Ev3Blocks {
                     motor.turnOnFor(time);
                 }
             });
+
             // Run for some time even when no motor is connected
             setTimeout(resolve, time);
         });
     }
+
     motorSetPower (args) {
         const port = Cast.toNumber(args.PORT);
         const power = MathUtil.clamp(Cast.toNumber(args.POWER), 0, 100);
+
         this._forEachMotor(port, motorIndex => {
             const motor = this._peripheral.motor(motorIndex);
             if (motor) {
@@ -1050,70 +1159,90 @@ class Scratch3Ev3Blocks {
             }
         });
     }
+
     getMotorPosition (args) {
         const port = Cast.toNumber(args.PORT);
+
         if (![0, 1, 2, 3].includes(port)) {
             return;
         }
+
         const motor = this._peripheral.motor(port);
         let position = 0;
         if (motor) {
             position = MathUtil.wrapClamp(motor.position, 0, 360);
         }
+
         return position;
     }
+
     whenButtonPressed (args) {
         const port = Cast.toNumber(args.PORT);
+
         if (![0, 1, 2, 3].includes(port)) {
             return;
         }
+
         return this._peripheral.isButtonPressed(port);
     }
+
     whenDistanceLessThan (args) {
         const distance = MathUtil.clamp(Cast.toNumber(args.DISTANCE), 0, 100);
+
         return this._peripheral.distance < distance;
     }
+
     whenBrightnessLessThan (args) {
         const brightness = MathUtil.clamp(Cast.toNumber(args.DISTANCE), 0, 100);
+
         return this._peripheral.brightness < brightness;
     }
+
     buttonPressed (args) {
         const port = Cast.toNumber(args.PORT);
+
         if (![0, 1, 2, 3].includes(port)) {
             return;
         }
+
         return this._peripheral.isButtonPressed(port);
     }
+
     getDistance () {
         return this._peripheral.distance;
     }
+
     getBrightness () {
         return this._peripheral.brightness;
     }
+
     _playNoteForPicker (note, category) {
-        if (category !== this.getInfo().name) {
-            return;
-        }
+        if (category !== this.getInfo().name) return;
         this.beep({
             NOTE: note,
             TIME: 0.25
         });
     }
+
     beep (args) {
         const note = MathUtil.clamp(Cast.toNumber(args.NOTE), 47, 99); // valid EV3 sounds
         let time = Cast.toNumber(args.TIME) * 1000;
         time = MathUtil.clamp(time, 0, 3000);
+
         if (time === 0) {
             return; // don't send a beep time of 0
         }
+
         return new Promise(resolve => {
             // https://en.wikipedia.org/wiki/MIDI_tuning_standard#Frequency_values
             const freq = Math.pow(2, (note - 69 + 12) / 12) * 440;
             this._peripheral.beep(freq, time);
+
             // Run for some time even when no piezo is connected.
             setTimeout(resolve, time);
         });
     }
+
     /**
      * Call a callback for each motor indexed by the provided motor ID.
      *
@@ -1148,6 +1277,7 @@ class Scratch3Ev3Blocks {
             callback(index);
         }
     }
+
     /**
      * Formats menus into a format suitable for block menus, and loading previously
      * saved projects:
@@ -1178,4 +1308,5 @@ class Scratch3Ev3Blocks {
         return m;
     }
 }
-export default Scratch3Ev3Blocks;
+
+module.exports = Scratch3Ev3Blocks;

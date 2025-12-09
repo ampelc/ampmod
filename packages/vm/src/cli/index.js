@@ -1,11 +1,14 @@
-import fs from 'fs';
-import VirtualMachine from '../index.js';
+const fs = require('fs');
+const VirtualMachine = require('../index');
+
 /* eslint-env node */
 /* eslint-disable no-console */
+
 const file = process.argv[2];
 if (!file) {
     throw new Error('Invalid file');
 }
+
 const runProject = async buffer => {
     const vm = new VirtualMachine();
     vm.runtime.on('SAY', (target, type, text) => {
@@ -34,4 +37,5 @@ const runProject = async buffer => {
     vm.stopAll();
     vm.quit();
 };
+
 runProject(fs.readFileSync(file));

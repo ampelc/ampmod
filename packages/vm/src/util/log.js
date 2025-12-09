@@ -1,3 +1,4 @@
-import nanolog from '@turbowarp/nanolog';
+const nanolog = require('@turbowarp/nanolog');
 nanolog.enable();
-export default nanolog('vm');
+
+module.exports = nanolog('vm');

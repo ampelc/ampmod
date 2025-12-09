@@ -22,6 +22,9 @@ const render = children => {
         runAllMigrations();
     }
     if (!migrationOccurred) {
+        // TODO: customisation
+        if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches)
+            document.documentElement.classList.add('amp-gui-animations-enabled');
         ReactDOM.render(children, appTarget);
         if (window.SplashEnd) {
             window.SplashEnd();

@@ -1,10 +1,12 @@
-import * as formatMessage from 'format-message';
+const formatMessage = require('format-message');
+
 /**
  * @param {VM|null} vm
  * @returns {object}
  */
 const createTranslate = vm => {
     const namespace = formatMessage.namespace();
+
     const translate = (message, args) => {
         if (message && typeof message === 'object') {
             // already in the expected format
@@ -17,16 +19,15 @@ const createTranslate = vm => {
         }
         return namespace(message, args);
     };
+
     const generateId = defaultMessage => `_${defaultMessage}`;
+
     const getLocale = () => {
-        if (vm) {
-            return vm.getLocale();
-        }
-        if (typeof navigator !== 'undefined') {
-            return navigator.language;
-        }
+        if (vm) return vm.getLocale();
+        if (typeof navigator !== 'undefined') return navigator.language;
         return 'en';
     };
+
     let storedTranslations = {};
     translate.setup = newTranslations => {
         if (newTranslations) {
@@ -39,17 +40,22 @@ const createTranslate = vm => {
             translations: storedTranslations
         });
     };
+
     Object.defineProperty(translate, 'language', {
         configurable: true,
         enumerable: true,
         get: () => getLocale()
     });
+
     translate.setup({});
+
     if (vm) {
         vm.on('LOCALE_CHANGED', () => {
             translate.setup(null);
         });
     }
+
     return translate;
 };
-export default createTranslate;
+
+module.exports = createTranslate;

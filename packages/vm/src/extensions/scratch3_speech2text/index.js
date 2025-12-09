@@ -1,32 +1,39 @@
-import ArgumentType from '../../extension-support/argument-type.js';
-import Cast from '../../util/cast.js';
-import BlockType from '../../extension-support/block-type.js';
-import * as formatMessage from 'format-message';
-import log from '../../util/log.js';
-import DiffMatchPatch from 'diff-match-patch';
+const ArgumentType = require('../../extension-support/argument-type');
+const Cast = require('../../util/cast');
+const BlockType = require('../../extension-support/block-type');
+const formatMessage = require('format-message');
+const log = require('../../util/log');
+const DiffMatchPatch = require('diff-match-patch');
+
 /**
  * Url of icon to be displayed at the left edge of each extension block.
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const iconURI = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjRkZGRkZGIj48cGF0aCBkPSJNMTIgMTRjMS42NiAwIDIuOTktMS4zNCAyLjk5LTNMMTUgNWMwLTEuNjYtMS4zNC0zLTMtM1M5IDMuMzQgOSA1djZjMCAxLjY2IDEuMzQgMyAzIDN6bTUuMy0zYzAgMy0yLjU0IDUuMS01LjMgNS4xUzYuNyAxNCA2LjcgMTFINWMwIDMuNDEgMi43MiA2LjIzIDYgNi43MlYyMWgydi0zLjI4YzMuMjgtLjQ4IDYtMy4zIDYtNi43MmgtMS43eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4K';
+const iconURI =
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjRkZGRkZGIj48cGF0aCBkPSJNMTIgMTRjMS42NiAwIDIuOTktMS4zNCAyLjk5LTNMMTUgNWMwLTEuNjYtMS4zNC0zLTMtM1M5IDMuMzQgOSA1djZjMCAxLjY2IDEuMzQgMyAzIDN6bTUuMy0zYzAgMy0yLjU0IDUuMS01LjMgNS4xUzYuNyAxNCA2LjcgMTFINWMwIDMuNDEgMi43MiA2LjIzIDYgNi43MlYyMWgydi0zLjI4YzMuMjgtLjQ4IDYtMy4zIDYtNi43MmgtMS43eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4K';
+
 /**
  * Url of icon to be displayed in the toolbox menu for the extension category.
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const menuIconURI = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzc1NzU3NSI+CiAgICA8cGF0aCBkPSJNMTIgMTRjMS42NiAwIDIuOTktMS4zNCAyLjk5LTNMMTUgNWMwLTEuNjYtMS4zNC0zLTMtM1M5IDMuMzQgOSA1djZjMCAxLjY2IDEuMzQgMyAzIDN6bTUuMy0zYzAgMy0yLjU0IDUuMS01LjMgNS4xUzYuNyAxNCA2LjcgMTFINWMwIDMuNDEgMi43MiA2LjIzIDYgNi43MlYyMWgydi0zLjI4YzMuMjgtLjQ4IDYtMy4zIDYtNi43MmgtMS43eiIvPgogICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPgo8L3N2Zz4K';
+const menuIconURI =
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNHB4IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzc1NzU3NSI+CiAgICA8cGF0aCBkPSJNMTIgMTRjMS42NiAwIDIuOTktMS4zNCAyLjk5LTNMMTUgNWMwLTEuNjYtMS4zNC0zLTMtM1M5IDMuMzQgOSA1djZjMCAxLjY2IDEuMzQgMyAzIDN6bTUuMy0zYzAgMy0yLjU0IDUuMS01LjMgNS4xUzYuNyAxNCA2LjcgMTFINWMwIDMuNDEgMi43MiA2LjIzIDYgNi43MlYyMWgydi0zLjI4YzMuMjgtLjQ4IDYtMy4zIDYtNi43MmgtMS43eiIvPgogICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPgo8L3N2Zz4K';
+
 /**
  * The url of the speech server.
  * @type {string}
  */
 const serverURL = 'wss://speech.scratch.mit.edu';
+
 /**
  * The amount of time to wait between when we stop sending speech data to the server and when
  * we expect the transcription result marked with isFinal: true to come back from the server.
  * @type {int}
  */
 const finalResponseTimeoutDurationMs = 3000;
+
 /**
  * The max amount of time the Listen And Wait block will listen for.  It may listen for less time
  * if we get back results that are good and think the user is done talking.
@@ -35,6 +42,7 @@ const finalResponseTimeoutDurationMs = 3000;
  * @type {int}
  */
 const listenAndWaitBlockTimeoutMs = 10000;
+
 class Scratch3Speech2TextBlocks {
     constructor (runtime) {
         /**
@@ -42,6 +50,7 @@ class Scratch3Speech2TextBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
         /**
          * An array of phrases from the [when I hear] hat blocks.
          * The list of phrases in the when I hear hat blocks.  This list is sent
@@ -51,6 +60,7 @@ class Scratch3Speech2TextBlocks {
          * @private
          */
         this._phraseList = [];
+
         /**
          * The most recent transcription result received from the speech API that we decided to keep.
          * This is the value returned by the reporter block.
@@ -58,6 +68,7 @@ class Scratch3Speech2TextBlocks {
          * @private
          */
         this._currentUtterance = '';
+
         /**
          *  Similar to _currentUtterance, but set back to '' at the beginning of listening block
          *  and on green flag.
@@ -69,6 +80,7 @@ class Scratch3Speech2TextBlocks {
          * @private
          */
         this._utteranceForEdgeTrigger = null;
+
         /**
          * The list of queued `resolve` callbacks for 'Listen and Wait' blocks.
          * We only listen to for one utterance at a time.  We may encounter multiple
@@ -79,6 +91,7 @@ class Scratch3Speech2TextBlocks {
          * @private
          */
         this._speechPromises = [];
+
         /**
          * The id of the timeout that will run if we start listening and don't get any
          * transcription results back. e.g. because we didn't hear anything.
@@ -86,6 +99,7 @@ class Scratch3Speech2TextBlocks {
          * @private
          */
         this._speechTimeoutId = null;
+
         /**
          * The id of the timeout that will run to wait for after we're done listening but
          * are still waiting for a potential isFinal:true transcription result to come back.
@@ -93,12 +107,14 @@ class Scratch3Speech2TextBlocks {
          * @private
          */
         this._speechFinalResponseTimeout = null;
+
         /**
          * The ScriptProcessorNode hooked up to the audio context.
          * @type {ScriptProcessorNode}
          * @private
          */
         this._scriptNode = null;
+
         /**
          * The socket used to communicate with the speech server to send microphone data
          * and recieve transcription results.
@@ -106,24 +122,28 @@ class Scratch3Speech2TextBlocks {
          * @private
          */
         this._socket = null;
+
         /**
          * The AudioContext used to manage the microphone.
          * @type {AudioContext}
          * @private
          */
         this._context = null;
+
         /**
          * MediaStreamAudioSourceNode to handle microphone data.
          * @type {MediaStreamAudioSourceNode}
          * @private
          */
         this._sourceNode = null;
+
         /**
          * A Promise whose fulfillment handler receives a MediaStream object when the microphone has been obtained.
          * @type {Promise}
          * @private
          */
         this._audioPromise = null;
+
         /**
          * Diff Match Patch is used to do some fuzzy matching of the transcription results
          * with what is in the hat blocks.
@@ -131,6 +151,7 @@ class Scratch3Speech2TextBlocks {
         this._dmp = new DiffMatchPatch();
         // Threshold for diff match patch to use: (0.0 = perfection, 1.0 = very loose).
         this._dmp.Match_Threshold = 0.3;
+
         this._newSocketCallback = this._newSocketCallback.bind(this);
         this._setupSocketCallback = this._setupSocketCallback.bind(this);
         this._socketMessageCallback = this._socketMessageCallback.bind(this);
@@ -138,9 +159,11 @@ class Scratch3Speech2TextBlocks {
         this._onTranscriptionFromServer = this._onTranscriptionFromServer.bind(this);
         this._resetListening = this._resetListening.bind(this);
         this._stopTranscription = this._stopTranscription.bind(this);
+
         this.runtime.on('PROJECT_STOP_ALL', this._resetListening.bind(this));
         this.runtime.on('PROJECT_START', this._resetEdgeTriggerUtterance.bind(this));
     }
+
     /**
      * Scans all the 'When I hear' hat blocks for each sprite and pulls out the text.  The list
      * is sent off to the speech recognition server as hints.  This *only* reads the value out of
@@ -170,6 +193,7 @@ class Scratch3Speech2TextBlocks {
         });
         return words;
     }
+
     /**
      * Get the viewer's language code.
      * @return {string} the language code.
@@ -177,6 +201,7 @@ class Scratch3Speech2TextBlocks {
     _getViewerLanguageCode () {
         return formatMessage.setup().locale || navigator.language || navigator.userLanguage || 'en-US';
     }
+
     /**
      * Resets all things related to listening. Called on Red Stop sign button.
      *   - suspends audio processing
@@ -190,6 +215,7 @@ class Scratch3Speech2TextBlocks {
         this._closeWebsocket();
         this._resolveSpeechPromises();
     }
+
     /**
      * Reset the utterance we look for in the when I hear hat block back to
      * the empty string.
@@ -198,6 +224,7 @@ class Scratch3Speech2TextBlocks {
     _resetEdgeTriggerUtterance () {
         this._utteranceForEdgeTrigger = '';
     }
+
     /**
      * Close the connection to the socket server if it is open.
      * @private
@@ -207,6 +234,7 @@ class Scratch3Speech2TextBlocks {
             this._socket.close();
         }
     }
+
     /**
      * Call to suspend getting data from the microphone.
      * @private
@@ -227,6 +255,7 @@ class Scratch3Speech2TextBlocks {
             this._sourceNode.disconnect();
         }
     }
+
     /**
      * Resolves all the speech promises we've accumulated so far and empties out the list.
      * @private
@@ -238,6 +267,7 @@ class Scratch3Speech2TextBlocks {
         }
         this._speechPromises = [];
     }
+
     /**
      * Called when we want to stop listening (e.g. when a listen block times out)
      * but we still want to wait a little to see if we get any transcription results
@@ -252,6 +282,7 @@ class Scratch3Speech2TextBlocks {
         // Give it a couple seconds to response before giving up and assuming nothing else will come back.
         this._speechFinalResponseTimeout = setTimeout(this._resetListening, finalResponseTimeoutDurationMs);
     }
+
     /**
      * Decides whether to keep a given transcirption result.
      * @param {number} fuzzyMatchIndex Index of the fuzzy match or -1 if there is no match.
@@ -264,10 +295,13 @@ class Scratch3Speech2TextBlocks {
         // The threshold above which we decide transcription results are unlikely to change again.
         // See https://cloud.google.com/speech-to-text/docs/basics#streaming_responses.
         const stabilityThreshold = 0.85;
+
         // For responsiveness of the When I Hear hat blocks, sometimes we want to keep results that are not
         // yet marked 'isFinal' by the speech api.  Here are some signals we use.
+
         // If the result from the speech api isn't very stable and we only had a fuzzy match, we don't want to use it.
         const shouldKeepFuzzyMatch = fuzzyMatchIndex !== -1 && result.stability > stabilityThreshold;
+
         // TODO: This is for debugging. Remove when this function is finalized.
         if (shouldKeepFuzzyMatch) {
             log.info(`Fuzzy match with high stability.`);
@@ -276,6 +310,7 @@ class Scratch3Speech2TextBlocks {
             const matchPhrase = phrases.substring(fuzzyMatchIndex, fuzzyMatchIndex + normalizedTranscript.length);
             log.info(`fuzzy match: ${matchPhrase} in ${normalizedTranscript}`);
         }
+
         // If the result is in the phraseList (i.e. it matches one of the 'When I Hear' blocks), we keep it.
         // This might be aggressive... but so far seems to be a good thing.
         const shouldKeepPhraseListMatch = this._phraseList.includes(normalizedTranscript);
@@ -287,11 +322,13 @@ class Scratch3Speech2TextBlocks {
         if (result.isFinal) {
             log.info(`result is final`);
         }
+
         if (!result.isFinal && !shouldKeepPhraseListMatch && !shouldKeepFuzzyMatch) {
             return false;
         }
         return true;
     }
+
     /**
      * Normalizes text a bit to facilitate matching.  Lowercases, removes some punctuation and whitespace.
      * @param {string} text The text to normalzie
@@ -304,6 +341,7 @@ class Scratch3Speech2TextBlocks {
         text = text.trim();
         return text;
     }
+
     /**
      * Call into diff match patch library to compute whether there is a fuzzy match.
      * @param {string} text The text to search in.
@@ -325,6 +363,7 @@ class Scratch3Speech2TextBlocks {
         }
         return match;
     }
+
     /**
      * Processes the results we get back from the speech server.  Decides whether the results
      * are good enough to keep. If they are, resolves the 'Listen and Wait' blocks promise and cleans up.
@@ -334,20 +373,25 @@ class Scratch3Speech2TextBlocks {
     _processTranscriptionResult (result) {
         log.info(`Got result: ${JSON.stringify(result)}`);
         const transcriptionResult = this._normalizeText(result.alternatives[0].transcript);
+
         // Waiting for an exact match is not satisfying.  It makes it hard to catch
         // things like homonyms or things that sound similar "let us" vs "lettuce".  Using the fuzzy matching helps
         // more aggressively match the phrases that are in the "When I hear" hat blocks.
         const phrases = this._phraseList.join(' ');
         const fuzzyMatchIndex = this._computeFuzzyMatch(phrases, transcriptionResult);
+
         // If the result isn't good enough yet, return without saving and resolving the promises.
         if (!this._shouldKeepResult(fuzzyMatchIndex, result, transcriptionResult)) {
             return;
         }
+
         this._currentUtterance = transcriptionResult;
         log.info(`Keeing result: ${this._currentUtterance}`);
         this._utteranceForEdgeTrigger = transcriptionResult;
+
         // We're done listening so resolove all the promises and reset everying so we're ready for next time.
         this._resetListening();
+
         // We got results so clear out the timeouts.
         if (this._speechTimeoutId) {
             clearTimeout(this._speechTimeoutId);
@@ -358,6 +402,7 @@ class Scratch3Speech2TextBlocks {
             this._speechFinalResponseTimeout = null;
         }
     }
+
     /**
      * Handle a message from the socket. It contains transcription results.
      * @param {MessageEvent} e The message event containing data from speech server.
@@ -374,6 +419,7 @@ class Scratch3Speech2TextBlocks {
         }
         this._processTranscriptionResult(result);
     }
+
     /**
      * Decide whether the pattern given matches the text. Uses fuzzy matching
      * @param {string} pattern The pattern to look for.  Usually this is the transcription result
@@ -387,6 +433,7 @@ class Scratch3Speech2TextBlocks {
         const match = this._computeFuzzyMatch(text, pattern);
         return match !== -1;
     }
+
     /**
      * Kick off the listening process.
      * @private
@@ -397,6 +444,7 @@ class Scratch3Speech2TextBlocks {
         // Force the block to timeout if we don't get any results back/the user didn't say anything.
         this._speechTimeoutId = setTimeout(this._stopTranscription, listenAndWaitBlockTimeoutMs);
     }
+
     /**
      * Resume listening for audio and re-open the socket to send data.
      * @private
@@ -405,6 +453,7 @@ class Scratch3Speech2TextBlocks {
         this._context.resume.bind(this._context);
         this._newWebsocket();
     }
+
     /**
      * Does all setup to get microphone data and initializes the web socket.
      * that data to the speech server.
@@ -415,6 +464,7 @@ class Scratch3Speech2TextBlocks {
         this._initScriptNode();
         this._newWebsocket();
     }
+
     /**
      * Initialize the audio context and connect the microphone.
      * @private
@@ -430,10 +480,12 @@ class Scratch3Speech2TextBlocks {
         this._audioPromise = navigator.mediaDevices.getUserMedia({
             audio: true
         });
+
         this._audioPromise.then().catch(e => {
             log.error(`Problem connecting to microphone:  ${e}`);
         });
     }
+
     /**
      * Sets up the script processor and the web socket.
      * @private
@@ -443,6 +495,7 @@ class Scratch3Speech2TextBlocks {
         // Create a node that sends raw bytes across the websocket
         this._scriptNode = this._context.createScriptProcessor(4096, 1, 1);
     }
+
     /**
      * Callback called when it is time to setup the new web socket.
      * @param {Function} resolve - function to call when the web socket opens succesfully.
@@ -453,6 +506,7 @@ class Scratch3Speech2TextBlocks {
         this._socket.addEventListener('open', resolve);
         this._socket.addEventListener('error', reject);
     }
+
     /**
      * Callback called once we've initially established the web socket is open and working.
      * Sets up the callback for subsequent messages (i.e. transcription results)  and
@@ -463,6 +517,7 @@ class Scratch3Speech2TextBlocks {
         this._socket.addEventListener('message', this._onTranscriptionFromServer);
         this._startByteStream();
     }
+
     /**
      * Sets up callback for when socket and audio are initialized.
      * @private
@@ -475,6 +530,7 @@ class Scratch3Speech2TextBlocks {
                 log.error(`Problem with setup:  ${e}`);
             });
     }
+
     /**
      * Callback to handle initial setting up of a socket.
      * Currently we send a setup message (only contains sample rate) but might
@@ -484,9 +540,11 @@ class Scratch3Speech2TextBlocks {
     _setupSocketCallback (values) {
         this._micStream = values[0];
         this._socket = values[1].target;
+
         this._socket.addEventListener('error', e => {
             log.error(`Error from web socket: ${e}`);
         });
+
         // Send the initial configuration message. When the server acknowledges
         // it, start streaming the audio bytes to the server and listening for
         // transcriptions.
@@ -494,12 +552,15 @@ class Scratch3Speech2TextBlocks {
             once: true
         });
         const langCode = this._getViewerLanguageCode();
-        this._socket.send(JSON.stringify({
-            sampleRate: this._context.sampleRate,
-            phrases: this._phraseList,
-            locale: langCode
-        }));
+        this._socket.send(
+            JSON.stringify({
+                sampleRate: this._context.sampleRate,
+                phrases: this._phraseList,
+                locale: langCode
+            })
+        );
     }
+
     /**
      * Do setup so we can start streaming mic data.
      * @private
@@ -511,6 +572,7 @@ class Scratch3Speech2TextBlocks {
         this._scriptNode.addEventListener('audioprocess', this._processAudioCallback);
         this._scriptNode.connect(this._context.destination);
     }
+
     /**
      * Called when we have data from the microphone. Takes that data and ships
      * it off to the speech server for transcription.
@@ -529,6 +591,7 @@ class Scratch3Speech2TextBlocks {
         // integer.
         this._socket.send(Int16Array.from(floatSamples.map(n => n * MAX_INT)));
     }
+
     /**
      * The key to load & store a target's speech-related state.
      * @type {string}
@@ -536,6 +599,7 @@ class Scratch3Speech2TextBlocks {
     static get STATE_KEY () {
         return 'Scratch.speech';
     }
+
     /**
      * @returns {object} Metadata for this extension and its blocks.
      */
@@ -556,7 +620,8 @@ class Scratch3Speech2TextBlocks {
                         id: 'speech.listenAndWait',
                         default: 'listen and wait',
                         // eslint-disable-next-line max-len
-                        description: 'Start listening to the microphone and wait for a result from the speech recognition system.'
+                        description:
+                            'Start listening to the microphone and wait for a result from the speech recognition system.'
                     }),
                     blockType: BlockType.COMMAND
                 },
@@ -566,7 +631,8 @@ class Scratch3Speech2TextBlocks {
                         id: 'speech.whenIHear',
                         default: 'when I hear [PHRASE]',
                         // eslint-disable-next-line max-len
-                        description: 'Event that triggers when the text entered on the block is recognized by the speech recognition system.'
+                        description:
+                            'Event that triggers when the text entered on the block is recognized by the speech recognition system.'
                     }),
                     blockType: BlockType.HAT,
                     arguments: {
@@ -592,6 +658,7 @@ class Scratch3Speech2TextBlocks {
             ]
         };
     }
+
     /**
      * Start the listening process if it isn't already in progress.
      * @return {Promise} A promise that will resolve when listening is complete.
@@ -599,6 +666,7 @@ class Scratch3Speech2TextBlocks {
     listenAndWait () {
         this._phraseList = this._scanBlocksForPhraseList();
         this._resetEdgeTriggerUtterance();
+
         const speechPromise = new Promise(resolve => {
             const listeningInProgress = this._speechPromises.length > 0;
             this._speechPromises.push(resolve);
@@ -608,6 +676,7 @@ class Scratch3Speech2TextBlocks {
         });
         return speechPromise;
     }
+
     /**
      * An edge triggered hat block to listen for a specific phrase.
      * @param {object} args - the block arguments.
@@ -616,6 +685,7 @@ class Scratch3Speech2TextBlocks {
     whenIHearHat (args) {
         return this._speechMatches(args.PHRASE, this._utteranceForEdgeTrigger);
     }
+
     /**
      * Reporter for the last heard phrase/utterance.
      * @return {string} The lastest thing we heard from a listen and wait block.
@@ -624,4 +694,4 @@ class Scratch3Speech2TextBlocks {
         return this._currentUtterance;
     }
 }
-export default Scratch3Speech2TextBlocks;
+module.exports = Scratch3Speech2TextBlocks;

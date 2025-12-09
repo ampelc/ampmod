@@ -1,5 +1,6 @@
-import atob from 'atob';
-import btoa from 'btoa';
+const atob = require('atob');
+const btoa = require('btoa');
+
 class Base64Util {
     /**
      * Convert a base64 encoded string to a Uint8Array.
@@ -15,6 +16,7 @@ class Base64Util {
         }
         return array;
     }
+
     /**
      * Convert a Uint8Array to a base64 encoded string.
      * @param {Uint8Array|Array<number>} array - the array to convert.
@@ -28,6 +30,7 @@ class Base64Util {
         }
         return btoa(binary);
     }
+
     /**
      * Convert an array buffer to a base64 encoded string.
      * @param {array} buffer - an array buffer to convert.
@@ -37,4 +40,5 @@ class Base64Util {
         return Base64Util.uint8ArrayToBase64(new Uint8Array(buffer));
     }
 }
-export default Base64Util;
+
+module.exports = Base64Util;

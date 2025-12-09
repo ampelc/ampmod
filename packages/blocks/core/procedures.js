@@ -253,10 +253,10 @@ Blockly.Procedures.flyoutCategory = function (workspace) {
     workspace.procedureReturnsEnabled
   ); */
     // amp: "call and return" block
-    var inlineBlock = goog.dom.createDom("block");
+    /* var inlineBlock = goog.dom.createDom("block");
     inlineBlock.setAttribute("type", "procedures_inline");
     inlineBlock.setAttribute("gap", 12);
-    xmlList.unshift(inlineBlock);
+    xmlList.unshift(inlineBlock); */
 
     var returnBlock = goog.dom.createDom("block");
     returnBlock.setAttribute("type", Blockly.PROCEDURES_RETURN_BLOCK_TYPE);

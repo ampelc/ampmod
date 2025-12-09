@@ -1,2 +1,3 @@
-import VirtualMachine from './virtual-machine.js';
-export default VirtualMachine;
+const VirtualMachine = require('./virtual-machine');
+
+module.exports = VirtualMachine;

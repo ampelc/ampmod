@@ -1,5 +1,6 @@
 @import '../../css/units.css';
 @import '../../css/colors.css';
+@import '../../css/filters.css';
 
 .sidebar-container {
     display: flex;
@@ -23,19 +24,34 @@
 
 .filter-bar {
     display: flex;
-    flex: 1;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: flex-start;
+    width: 30px;
+    border: 0;
+    border-radius: $roundedness;
     background-color: $ui-tertiary;
     border: $ui-black-transparent 1px solid;
-    border-radius: $roundedness;
     margin: $margin;
     font-size: 0.875rem;
     height: calc(100% - calc($margin - 2));
-    width: 600px;
-    padding: calc($margin * 3);
-    overflow-y: scroll;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    justify-content: center;
+}
+.filter-bar-open {
+    display: flex;
+    width: 300px;
+}
+.filter-bar-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
     gap: 4px;
+    padding: calc($margin * 3);
+    padding-left: $margin;
 }
 
 .filter {
@@ -64,4 +80,58 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.open-button {
+    display: block;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    transform: scaleX(-1);
+    width: 30px;
+    padding-block: calc($margin * 4.5);
+}
+
+.open-button img {
+    filter: $filter-icon-white;
+}
+
+.open-button.open-button-closed {
+    width: 100%;
+    transform: scaleX(1);
+}
+
+@media (max-width: 1449px) {
+    .library-scroll-grid {
+        width: 100%; 
+        margin-left: 40px;
+    }
+    
+    .filter-bar {
+        position: absolute;
+        left: 0;
+        z-index: 10;
+        height: calc(100% - $library-header-height);
+        margin-right: 0;
+        border-left: 0;
+        border-top: 0;
+        border-bottom: 0;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .filter-bar:not(.filter-bar-open), .open-button {
+        width: 40px; /* Better for touchscreens */
+    }
+
+    .library-overlay {
+        z-index: 9;
+        position: fixed;
+        height: calc(100% - $library-header-height);
+        top: $library-header-height;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
 }

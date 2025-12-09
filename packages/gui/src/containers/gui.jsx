@@ -28,6 +28,7 @@ import storage from '../lib/storage';
 import vmListenerHOC from '../lib/vm-listener-hoc.jsx';
 import vmManagerHOC from '../lib/vm-manager-hoc.jsx';
 import cloudManagerHOC from '../lib/cloud-manager-hoc.jsx';
+import AmpDirectionProviderHOC from '../lib/amp-direction-provider-hoc.jsx';
 
 import GUIComponent from '../components/gui/gui.jsx';
 import {setIsScratchDesktop} from '../lib/isScratchDesktop.js';
@@ -219,6 +220,7 @@ const ConnectedGUI = injectIntl(connect(mapStateToProps, mapDispatchToProps)(GUI
 // ability to compose reducers.
 const WrappedGui = compose(
     LocalizationHOC,
+    AmpDirectionProviderHOC,
     ErrorBoundaryHOC('Top Level App'),
     TWThemeManagerHOC, // componentDidUpdate() needs to run very early for icons to update immediately
     TWFullScreenResizerHOC,

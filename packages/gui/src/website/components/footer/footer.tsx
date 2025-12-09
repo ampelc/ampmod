@@ -25,13 +25,9 @@ import {
 import LangSelect from "./lang-select.jsx";
 import styles from "./footer.css";
 import Localise from "../localise/localise.jsx";
+import isAprilFools from '../../../lib/amp-enable-pranks';
 
 const Footer = () => {
-    const isAprilFools = () => {
-        const now = new Date();
-        return now.getMonth() === 3 && now.getDate() === 1;
-    };
-
     return (
         <footer className={styles.footer}>
             <div className={styles.footerContent}>
@@ -148,7 +144,7 @@ const Footer = () => {
                     <small>{process.env.ampmod_version}</small>
                 </div>
             </div>
-            {isAprilFools() && <div className={styles.semicolon}>;</div>}
+            {isAprilFools && <div className={styles.semicolon}>;</div>}
         </footer>
     );
 };

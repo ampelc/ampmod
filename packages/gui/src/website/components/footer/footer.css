@@ -54,13 +54,13 @@
 }
 
 .customDropdown {
-    position: relative;
     display: inline-block;
     width: 300px;
     font-family: inherit;
 }
 
 .dropdownToggle {
+    outline: none;
     width: 100%;
     padding: 8px 12px;
     border-radius: $roundedness;
@@ -72,35 +72,13 @@
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
+    font-size: 1rem; /* fix visual oddity on FAQ page */
 }
 
-.dropdownToggle::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    width: 0.6em;
-    height: 0.6em;
-    transform: translateY(-50%);
-    margin-inline-end: 1rem;
-
-    /* The magic triangle */
-    background: currentColor; /* makes it match text color */
-    clip-path: polygon(
-        50% 100%, /* bottom center */
-        0 0,      /* top left */
-        100% 0    /* top right */
-    );
-}
-[dir=rtl] .dropdownToggle::after {
-    right: unset;
-    left: 0;
-}
-
-.dropdownToggle.open {
+.dropdownToggle[data-state="open"] {
     background: $ui-tertiary;
 }
-.dropdownToggle.open::after {
+.dropdownToggle[data-state="open"]::after {
     transform: rotate(180deg) translateY(55%); /* flip when open */
 }
 .dropdownToggle img {
@@ -108,37 +86,30 @@
 }
 
 .dropdownMenu {
-    position: absolute;
-    bottom: 100%; /* dropdown opens above */
-    left: 0;
-    width: 100%;
+    width: 300px;
     color: $menu-bar-foreground;
     background: $menu-bar-background;
     border: 1px solid $menu-bar-hover;
     border-radius: $roundedness;
+    max-height: 600px;
     margin-bottom: 2px;
-    max-height: 400px;
-    overflow-y: auto;
-    z-index: 1000;
-    list-style: none; /* hide markers */
     padding: 0;
     line-height: 1;
     gap: 0;
+    overflow: hidden;
 }
 
 .dropdownItem {
     padding: 10px 10px;
     padding-left: 35px;
+    position: relative;
     cursor: pointer;
     text-align: start;
     font-weight: bold;
     padding-inline-start: 24px;
-    position: relative;
-    transition: background-color .2s;
 }
 
-.dropdownItem::before {
-    content: '';
+.checkmark {
     position: absolute;
     inset-inline-start: 10.5px;
     top: 50%;
@@ -147,13 +118,9 @@
     height: 12px;
     border-bottom: 2px solid $menu-bar-foreground;
     border-right: 2px solid $menu-bar-foreground;
-    opacity: 0;
 }
 
-.dropdownItemSelected::before {
-    opacity: 1;
-}
-
-.dropdownItem:hover {
+.dropdownItem[data-highlighted] {
     background: $menu-bar-hover;
+    outline: none;
 }

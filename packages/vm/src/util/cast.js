@@ -1,4 +1,5 @@
-import Color from './color.js';
+const Color = require('../util/color');
+
 /**
  * @fileoverview
  * Utilities for casting and comparing Scratch data-types.
@@ -9,15 +10,14 @@ import Color from './color.js';
  * In JavaScript, 1 + Number("hello" + "world") would give you NaN.
  * Use when coercing a value before computation.
  */
+
 /**
  * Used internally by compare()
  * @param {*} val A value that evaluates to 0 in JS string-to-number conversation such as empty string, 0, or tab.
  * @returns {boolean} True if the value should not be treated as the number zero.
  */
 const isNotActuallyZero = val => {
-    if (typeof val !== 'string') {
-        return false;
-    }
+    if (typeof val !== 'string') return false;
     for (let i = 0; i < val.length; i++) {
         const code = val.charCodeAt(i);
         // '0'.charCodeAt(0) === 48
@@ -31,6 +31,7 @@ const isNotActuallyZero = val => {
     }
     return true;
 };
+
 class Cast {
     /**
      * Scratch cast to number.
@@ -58,6 +59,7 @@ class Cast {
         }
         return n;
     }
+
     /**
      * Scratch cast to boolean.
      * In Scratch 2.0, this is captured by `interp.boolArg.`
@@ -81,6 +83,7 @@ class Cast {
         // Coerce other values and numbers.
         return Boolean(value);
     }
+
     /**
      * Scratch cast to string.
      * @param {*} value Value to cast to string.
@@ -89,6 +92,7 @@ class Cast {
     static toString (value) {
         return String(value);
     }
+
     /**
      * Cast any Scratch argument to an RGB color array to be used for the renderer.
      * @param {*} value Value to convert to RGB color array.
@@ -98,6 +102,7 @@ class Cast {
         const color = Cast.toRgbColorObject(value);
         return [color.r, color.g, color.b];
     }
+
     /**
      * Cast any Scratch argument to an RGB color object to be used for the renderer.
      * @param {*} value Value to convert to RGB color object.
@@ -107,15 +112,15 @@ class Cast {
         let color;
         if (typeof value === 'string' && value.substring(0, 1) === '#') {
             color = Color.hexToRgb(value);
+
             // If the color wasn't *actually* a hex color, cast to black
-            if (!color) {
-                color = {r: 0, g: 0, b: 0, a: 255};
-            }
+            if (!color) color = {r: 0, g: 0, b: 0, a: 255};
         } else {
             color = Color.decimalToRgb(Cast.toNumber(value));
         }
         return color;
     }
+
     /**
      * Cast a non-array value to an array with the single item being the value.
      * If the value is already an array, it is returned as is.
@@ -126,6 +131,7 @@ class Cast {
         if (Array.isArray(value)) {
             return value;
         }
+
         if (typeof value === 'string') {
             try {
                 const parsed = JSON.parse(value);
@@ -138,11 +144,14 @@ class Cast {
                 return [value];
             }
         }
+
         if (!value) {
             return [];
         }
+
         return [value];
     }
+
     /**
      * Determine if a Scratch argument is a white space string (or null / empty).
      * @param {*} val value to check.
@@ -151,6 +160,7 @@ class Cast {
     static isWhiteSpace (val) {
         return val === null || (typeof val === 'string' && val.trim().length === 0);
     }
+
     /**
      * Compare two values, using Scratch cast, case-insensitive string compare, etc.
      * In Scratch 2.0, this is captured by `interp.compare.`
@@ -185,6 +195,7 @@ class Cast {
         // Compare as numbers.
         return n1 - n2;
     }
+
     /**
      * amp: Compare two values, using Scratch cast, CASE-SENsITIVE string compare, etc.
      * Do not use this unless runtime.runtimeOptions.caseSensitivity is enabled.
@@ -220,6 +231,7 @@ class Cast {
         // Compare as numbers.
         return n1 - n2;
     }
+
     /**
      * Determine if a Scratch argument number represents a round integer.
      * @param {*} val Value to check.
@@ -243,12 +255,15 @@ class Cast {
         }
         return false;
     }
+
     static get LIST_INVALID () {
         return 'INVALID';
     }
+
     static get LIST_ALL () {
         return 'ALL';
     }
+
     /**
      * Compute a 1-based index into a list, based on a Scratch argument.
      * Two special cases may be returned:
@@ -283,4 +298,5 @@ class Cast {
         return index;
     }
 }
-export default Cast;
+
+module.exports = Cast;

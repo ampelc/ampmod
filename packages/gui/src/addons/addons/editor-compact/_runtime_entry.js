@@ -3,7 +3,7 @@ import _js from "./userscript.js";
 import _css from "!css-loader!./userstyle.css";
 import _css2 from "!css-loader!./hide-labels.css";
 import _css3 from "!css-loader!./sprite-properties.css";
-import _asset from "!url-loader!./close.svg";
+import _asset from "./close.svg";
 export const resources = {
   "userscript.js": _js,
   "userstyle.css": _css,

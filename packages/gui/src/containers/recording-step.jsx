@@ -30,13 +30,19 @@ class RecordingStep extends React.Component {
             level: 0,
             levels: null
         };
+
+        this.didHaveAnimations = document.documentElement.classList.contains('amp-gui-animations-enabled');
     }
     componentDidMount() {
         this.audioRecorder = new AudioRecorder();
         this.audioRecorder.startListening(this.handleStarted, this.handleLevelUpdate, this.handleRecordingError);
+
+        // amp: Prevent potential lag from UI animations that may cause garbled recordings.
+        document.documentElement.classList.remove('amp-gui-animations-enabled');
     }
     componentWillUnmount() {
         this.audioRecorder.dispose();
+        if (this.didHaveAnimations) document.documentElement.classList.add('amp-gui-animations-enabled');
     }
     handleStarted() {
         this.setState({listening: true});

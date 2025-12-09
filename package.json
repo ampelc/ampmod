@@ -1,9 +1,9 @@
 {
     "name": "ampmod",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "The AmpMod monorepo",
     "private": true,
-    "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c",
+    "packageManager": "pnpm@10.24.0",
     "scripts": {
         "test": "pnpm --recursive run test",
         "build": "pnpm --filter ./packages/gui run build",
@@ -13,8 +13,8 @@
     "author": "AmpElectrecuted",
     "license": "GPL-3.0-only AND MPL-2.0 AND Apache-2.0 AND 0BSD",
     "devDependencies": {
-        "@swc/cli": "^0.7.8",
-        "@swc/core": "^1.15.0",
+        "@swc/cli": "^0.7.9",
+        "@swc/core": "^1.15.3",
         "@types/webpack": "^5.28.5",
         "esbuild-loader": "^4.4.0",
         "optimize-css-assets-webpack-plugin": "^6.0.1",
@@ -22,7 +22,7 @@
         "swc-loader": "^0.2.6",
         "swc-minify-webpack-plugin": "^2.1.3",
         "terser-webpack-plugin": "^4.2.3",
-        "webpack": "^5.102.1",
+        "webpack": "^5.103.0",
         "webpack-cli": "^6.0.1",
         "webpack-dev-server": "^5.2.2",
         "webpack-merge": "^6.0.1"

@@ -1,9 +1,11 @@
-import context from './tw-extension-worker-context.js';
-import jQuery from './tw-jquery-shim.js';
-import './extension-worker.js';
+const context = require('./tw-extension-worker-context');
+
+const jQuery = require('./tw-jquery-shim');
 global.$ = jQuery;
 global.jQuery = jQuery;
+
 const id = window.__WRAPPED_IFRAME_ID__;
+
 context.isWorker = false;
 context.centralDispatchService = {
     postMessage (message, transfer) {
@@ -18,7 +20,13 @@ context.centralDispatchService = {
         }
     }
 };
-window.parent.postMessage({
-    vmIframeId: id,
-    ready: true
-}, '*');
+
+require('./extension-worker');
+
+window.parent.postMessage(
+    {
+        vmIframeId: id,
+        ready: true
+    },
+    '*'
+);

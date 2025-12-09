@@ -1,17 +1,29 @@
-import log from '../util/log.js';
-import BlockType from '../extension-support/block-type.js';
-import VariablePool from './variable-pool.js';
-import jsexecute from './jsexecute.js';
-import environment from './environment.js';
-import {StackOpcode, InputOpcode, InputType} from './enums.js';
-import oldCompilerCompatibility from './old-compiler-compatibility.js';
-import {IntermediateStackBlock, IntermediateInput, IntermediateStack, IntermediateScript, IntermediateRepresentation} from './intermediate.js';
+const log = require('../util/log');
+const BlockType = require('../extension-support/block-type');
+const VariablePool = require('./variable-pool');
+const jsexecute = require('./jsexecute');
+const environment = require('./environment');
+const {StackOpcode, InputOpcode, InputType} = require('./enums.js');
+const oldCompilerCompatibility = require('./old-compiler-compatibility.js');
+
+// These imports are used by jsdoc comments but eslint doesn't know that
+/* eslint-disable no-unused-vars */
+const {
+    IntermediateStackBlock,
+    IntermediateInput,
+    IntermediateStack,
+    IntermediateScript,
+    IntermediateRepresentation
+} = require('./intermediate');
 /* eslint-enable no-unused-vars */
+
 /**
  * @fileoverview Convert intermediate representations to JavaScript functions.
  */
+
 /* eslint-disable max-len */
 /* eslint-disable prefer-template */
+
 const sanitize = string => {
     if (typeof string !== 'string') {
         log.warn(`sanitize got unexpected type: ${typeof string}`);
@@ -19,26 +31,29 @@ const sanitize = string => {
     }
     return JSON.stringify(string).slice(1, -1);
 };
+
 // Pen-related constants
 const PEN_EXT = 'runtime.ext_pen';
 const PEN_STATE = `${PEN_EXT}._getPenState(target)`;
+
 /**
  * Variable pool used for factory function names.
  */
 const factoryNameVariablePool = new VariablePool('factory');
+
 /**
  * Variable pool used for generated functions (non-generator)
  */
 const functionNameVariablePool = new VariablePool('fun');
+
 /**
  * Variable pool used for generated generator functions.
  */
 const generatorNameVariablePool = new VariablePool('gen');
+
 const isSafeInputForEqualsOptimization = (input, other) => {
     // Only optimize constants
-    if (input.opcode !== InputOpcode.CONSTANT) {
-        return false;
-    }
+    if (input.opcode !== InputOpcode.CONSTANT) return false;
     // Only optimize when the constant can always be thought of as a number
     if (input.isAlwaysType(InputType.NUMBER) || input.isAlwaysType(InputType.STRING_NUM)) {
         if (other.isSometimesType(InputType.NUMBER_NAN | InputType.STRING_NAN | InputType.BOOLEAN_INTERPRETABLE)) {
@@ -51,6 +66,7 @@ const isSafeInputForEqualsOptimization = (input, other) => {
     }
     return false;
 };
+
 /**
  * A frame contains some information about the current substack being compiled.
  */
@@ -62,6 +78,7 @@ class Frame {
          * @readonly
          */
         this.isLoop = isLoop;
+
         /**
          * Whether the current block is the last block in the stack.
          * @type {boolean}
@@ -69,6 +86,7 @@ class Frame {
         this.isLastBlock = false;
     }
 }
+
 class JSGenerator {
     /**
      * @param {IntermediateScript} script
@@ -80,27 +98,35 @@ class JSGenerator {
         this.ir = ir;
         this.target = target;
         this.source = '';
+
         this.isWarp = script.isWarp;
         this.isProcedure = script.isProcedure;
         this.warpTimer = script.warpTimer;
+
         /**
          * Stack of frames, most recent is last item.
          * @type {Frame[]}
          */
         this.frames = [];
+
         /**
          * The current Frame.
          * @type {Frame?}
          */
         this.currentFrame = null;
+
         this.localVariables = new VariablePool('a');
         this._setupVariablesPool = new VariablePool('b');
         this._setupVariables = {};
+
         this.descendedIntoModulo = false;
         this.isInHat = false;
+
         this.debug = this.target.runtime.debug;
+
         this.oldCompilerStub = new oldCompilerCompatibility.JSGeneratorStub(this);
     }
+
     /**
      * Enter a new frame
      * @param {Frame} frame New frame.
@@ -109,6 +135,7 @@ class JSGenerator {
         this.frames.push(frame);
         this.currentFrame = frame;
     }
+
     /**
      * Exit the current frame
      */
@@ -116,6 +143,7 @@ class JSGenerator {
         this.frames.pop();
         this.currentFrame = this.frames[this.frames.length - 1];
     }
+
     /**
      * @returns {boolean} true if the current block is the last command of a loop
      */
@@ -131,6 +159,7 @@ class JSGenerator {
         }
         return false;
     }
+
     /**
      * @param {IntermediateInput} block Input node to compile.
      * @returns {string} Compiled input.
@@ -140,10 +169,13 @@ class JSGenerator {
         switch (block.opcode) {
         case InputOpcode.NOP:
             return `""`;
+
         case InputOpcode.PROCEDURE_ARGUMENT:
             return `p${node.index}`;
+
         case InputOpcode.ADDON_CALL:
             return `(${this.descendAddonCall(node)})`;
+
         case InputOpcode.CAST_BOOLEAN:
             return `toBoolean(${this.descendInput(node.target)})`;
         case InputOpcode.CAST_NUMBER:
@@ -164,23 +196,28 @@ class JSGenerator {
             return `colorToList(${this.descendInput(node.target)})`;
         case InputOpcode.CAST_ARRAY:
             return `toList(${this.descendInput(node.target)})`;
+
         case InputOpcode.COMPATIBILITY_LAYER:
             // Compatibility layer inputs never use flags.
             return `(${this.generateCompatibilityLayerCall(node, false)})`;
+
         case InputOpcode.OLD_COMPILER_COMPATIBILITY_LAYER:
             return this.oldCompilerStub.descendInputFromNewCompiler(block);
+
         case InputOpcode.CONSTANT:
             if (block.isAlwaysType(InputType.NUMBER)) {
                 if (typeof node.value !== 'number') {
-                    throw new Error(`JS: '${block.type}' type constant had ${typeof node.value} type value. Expected number.`);
+                    throw new Error(
+                        `JS: '${block.type}' type constant had ${typeof node.value} type value. Expected number.`
+                    );
                 }
-                if (Object.is(node.value, -0)) {
-                    return '-0';
-                }
+                if (Object.is(node.value, -0)) return '-0';
                 return node.value.toString();
             } else if (block.isAlwaysType(InputType.BOOLEAN)) {
                 if (typeof node.value !== 'boolean') {
-                    throw new Error(`JS: '${block.type}' type constant had ${typeof node.value} type value. Expected boolean.`);
+                    throw new Error(
+                        `JS: '${block.type}' type constant had ${typeof node.value} type value. Expected boolean.`
+                    );
                 }
                 return node.value.toString();
             } else if (block.isAlwaysType(InputType.COLOR)) {
@@ -188,11 +225,15 @@ class JSGenerator {
                     throw new Error(`JS: '${block.type}' type constant was not an array.`);
                 }
                 if (node.value.length !== 3) {
-                    throw new Error(`JS: '${block.type}' type constant had an array of length '${node.value.length}'. Expected 3.`);
+                    throw new Error(
+                        `JS: '${block.type}' type constant had an array of length '${node.value.length}'. Expected 3.`
+                    );
                 }
                 for (let i = 0; i < 3; i++) {
                     if (typeof node.value[i] !== 'number') {
-                        throw new Error(`JS: '${block.type}' type constant element ${i} had a value of type '${node.value[i]}'. Expected number.`);
+                        throw new Error(
+                            `JS: '${block.type}' type constant element ${i} had a value of type '${node.value[i]}'. Expected number.`
+                        );
                     }
                 }
                 return `[${node.value[0]},${node.value[1]},${node.value[2]}]`;
@@ -200,8 +241,10 @@ class JSGenerator {
                 return `"${sanitize(node.value.toString())}"`;
             }
             throw new Error(`JS: Unknown constant input type '${block.type}'.`);
+
         case InputOpcode.SENSING_KEY_DOWN:
             return `runtime.ioDevices.keyboard.getKeyIsDown(${this.descendInput(node.key)})`;
+
         case InputOpcode.LIST_CONTAINS:
             return `listContains(${this.referenceVariable(node.list)}, ${this.descendInput(node.item)})`;
         case InputOpcode.LIST_CONTENTS:
@@ -221,6 +264,7 @@ class JSGenerator {
             return `listIndexOf(${this.referenceVariable(node.list)}, ${this.descendInput(node.item)})`;
         case InputOpcode.LIST_LENGTH:
             return `${this.referenceVariable(node.list)}.value.length`;
+
         case InputOpcode.LOOKS_SIZE_GET:
             return 'Math.round(target.size)';
         case InputOpcode.LOOKS_BACKDROP_NAME:
@@ -231,6 +275,7 @@ class JSGenerator {
             return 'target.getCostumes()[target.currentCostume].name';
         case InputOpcode.LOOKS_COSTUME_NUMBER:
             return '(target.currentCostume + 1)';
+
         case InputOpcode.MOTION_DIRECTION_GET:
             return 'target.direction';
         case InputOpcode.MOTION_X_GET:
@@ -239,12 +284,14 @@ class JSGenerator {
             return 'limitPrecision(target.y)';
         case InputOpcode.MOTION_POSITION_GET:
             return '[limitPrecision(target.x),limitPrecision(target.y)]';
+
         case InputOpcode.SENSING_MOUSE_DOWN:
             return 'runtime.ioDevices.mouse.getIsDown()';
         case InputOpcode.SENSING_MOUSE_X:
             return 'runtime.ioDevices.mouse.getScratchX()';
         case InputOpcode.SENSING_MOUSE_Y:
             return 'runtime.ioDevices.mouse.getScratchY()';
+
         case InputOpcode.OP_ABS:
             return `Math.abs(${this.descendInput(node.value)})`;
         case InputOpcode.OP_ACOS:
@@ -252,6 +299,7 @@ class JSGenerator {
         case InputOpcode.OP_ADD:
             return `(${this.descendInput(node.left)} + ${this.descendInput(node.right)})`;
         case InputOpcode.OP_EXPO:
+            if (environment.supportsSimpleExpo) return `(${this.descendInput(node.left)} ** ${this.descendInput(node.right)})`;
             return `Math.pow(${this.descendInput(node.left)}, ${this.descendInput(node.right)})`;
         case InputOpcode.OP_AND:
             return `(${this.descendInput(node.left)} && ${this.descendInput(node.right)})`;
@@ -270,9 +318,12 @@ class JSGenerator {
         case InputOpcode.OP_EQUALS_CS: {
             const left = node.left;
             const right = node.right;
+
             // When both operands are known to be numbers, we can use ===
-            if (left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
-                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
+                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.NUMBER))} === ${this.descendInput(right.toType(InputType.NUMBER))})`;
             }
             // In certain conditions, we can use === when one of the operands is known to be a safe number.
@@ -280,8 +331,10 @@ class JSGenerator {
                 return `(${this.descendInput(left.toType(InputType.NUMBER))} === ${this.descendInput(right.toType(InputType.NUMBER))})`;
             }
             // When either operand is known to never be a number, only use string comparison to avoid all number parsing.
-            if (!left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
-                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                !left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
+                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.STRING))} === ${this.descendInput(right.toType(InputType.STRING))})`;
             }
             // No compile-time optimizations possible - use fallback method.
@@ -290,9 +343,12 @@ class JSGenerator {
         case InputOpcode.OP_EQUALS: {
             const left = node.left;
             const right = node.right;
+
             // When both operands are known to be numbers, we can use ===
-            if (left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
-                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
+                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.NUMBER))} === ${this.descendInput(right.toType(InputType.NUMBER))})`;
             }
             // In certain conditions, we can use === when one of the operands is known to be a safe number.
@@ -300,8 +356,10 @@ class JSGenerator {
                 return `(${this.descendInput(left.toType(InputType.NUMBER))} === ${this.descendInput(right.toType(InputType.NUMBER))})`;
             }
             // When either operand is known to never be a number, only use string comparison to avoid all number parsing.
-            if (!left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
-                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                !left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
+                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.STRING))}.toLowerCase() === ${this.descendInput(right.toType(InputType.STRING))}.toLowerCase())`;
             }
             // No compile-time optimizations possible - use fallback method.
@@ -315,18 +373,24 @@ class JSGenerator {
             const left = node.left;
             const right = node.right;
             // When the left operand is a number and the right operand is a number or NaN, we can use >
-            if (left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
-                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN)) {
+            if (
+                left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
+                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.NUMBER))} > ${this.descendInput(right.toType(InputType.NUMBER_OR_NAN))})`;
             }
             // When the left operand is a number or NaN and the right operand is a number, we can negate <=
-            if (left.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN) &&
-                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                left.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN) &&
+                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `!(${this.descendInput(left.toType(InputType.NUMBER_OR_NAN))} <= ${this.descendInput(right.toType(InputType.NUMBER))})`;
             }
             // When either operand is known to never be a number, avoid all number parsing.
-            if (!left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
-                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                !left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
+                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.STRING))}.toLowerCase() > ${this.descendInput(right.toType(InputType.STRING))}.toLowerCase())`;
             }
             // No compile-time optimizations possible - use fallback method.
@@ -340,18 +404,24 @@ class JSGenerator {
             const left = node.left;
             const right = node.right;
             // When the left operand is a number or NaN and the right operand is a number, we can use <
-            if (left.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN) &&
-                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                left.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN) &&
+                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.NUMBER_OR_NAN))} < ${this.descendInput(right.toType(InputType.NUMBER))})`;
             }
             // When the left operand is a number and the right operand is a number or NaN, we can negate >=
-            if (left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
-                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN)) {
+            if (
+                left.isAlwaysType(InputType.NUMBER_INTERPRETABLE) &&
+                    right.isAlwaysType(InputType.NUMBER_INTERPRETABLE | InputType.NUMBER_NAN)
+            ) {
                 return `!(${this.descendInput(left.toType(InputType.NUMBER))} >= ${this.descendInput(right.toType(InputType.NUMBER_OR_NAN))})`;
             }
             // When either operand is known to never be a number, avoid all number parsing.
-            if (!left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
-                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)) {
+            if (
+                !left.isSometimesType(InputType.NUMBER_INTERPRETABLE) ||
+                    !right.isSometimesType(InputType.NUMBER_INTERPRETABLE)
+            ) {
                 return `(${this.descendInput(left.toType(InputType.STRING))}.toLowerCase() < ${this.descendInput(right.toType(InputType.STRING))}.toLowerCase())`;
             }
             // No compile-time optimizations possible - use fallback method.
@@ -360,7 +430,7 @@ class JSGenerator {
         case InputOpcode.OP_LETTER_OF:
             return `((${this.descendInput(node.string)})[${this.descendInput(node.letter)} - 1] || "")`;
         case InputOpcode.OP_SUBSTRING:
-            return `(Array.from(${this.descendInput(node.string)}).slice(${this.descendInput(node.start)} - 1, ${this.descendInput(node.end)}).join("") || "")`;
+            return `(Array.from(${this.descendInput(node.string)}).slice(${this.descendInput(node.start)} - 1, ${this.descendInput(node.end)} - 1).join("") || "")`;
         case InputOpcode.OP_LOG_E:
             return `Math.log(${this.descendInput(node.value)})`;
         case InputOpcode.OP_LOG_10:
@@ -394,6 +464,7 @@ class JSGenerator {
             return `tan(${this.descendInput(node.value)})`;
         case InputOpcode.OP_POW_10:
             return `(10 ** ${this.descendInput(node.value)})`;
+
         case InputOpcode.PROCEDURE_CALL: {
             const procedureCode = node.code;
             const procedureVariant = node.variant;
@@ -402,15 +473,18 @@ class JSGenerator {
                 // TODO still need to evaluate arguments for side effects
                 return '""';
             }
+
             // Recursion makes this complicated because:
             //  - We need to yield *between* each call in the same command block
             //  - We need to evaluate arguments *before* that yield happens
+
             const procedureReference = `thread.procedures["${sanitize(procedureVariant)}"]`;
             const args = [];
             for (const input of node.arguments) {
                 args.push(this.descendInput(input));
             }
             const joinedArgs = args.join(',');
+
             const yieldForRecursion = !this.isWarp && procedureCode === this.script.procedureCode;
             const yieldForHat = this.isInHat;
             if (yieldForRecursion || yieldForHat) {
@@ -477,7 +551,9 @@ class JSGenerator {
         }
         case InputOpcode.SENSING_OF_VAR: {
             const targetRef = this.descendTargetReference(node.object);
-            const varRef = this.evaluateOnce(`${targetRef} && ${targetRef}.lookupVariableByNameAndType("${sanitize(node.property)}", "", true)`);
+            const varRef = this.evaluateOnce(
+                `${targetRef} && ${targetRef}.lookupVariableByNameAndType("${sanitize(node.property)}", "", true)`
+            );
             return `(${varRef} ? ${varRef}.value : 0)`;
         }
         case InputOpcode.SENSING_TIME_SECOND:
@@ -490,24 +566,34 @@ class JSGenerator {
             return 'runtime.ioDevices.userData.getUsername()';
         case InputOpcode.SENSING_TIME_YEAR:
             return `(new Date().getFullYear())`;
+
         case InputOpcode.SENSING_TIMER_GET:
             return 'runtime.ioDevices.clock.projectTimer()';
+
         case InputOpcode.CONTROL_COUNTER:
             return 'runtime.ext_scratch3_control._counter';
+
         case InputOpcode.CONTROL_IS_CLONE:
             return '!target.isOriginal';
+
         case InputOpcode.TW_KEY_LAST_PRESSED:
             return 'runtime.ioDevices.keyboard.getLastKeyPressed()';
         case InputOpcode.SENSING_MOUSE_BUTTON_DOWN:
             return `runtime.ioDevices.mouse.getButtonIsDown(${this.descendInput(node.button)})`;
+
         case InputOpcode.VAR_GET:
             return `${this.referenceVariable(node.variable)}.value`;
+
         case InputOpcode.ARRAYS_DELIMITED:
             return `(${this.descendInput(node.text)}.split(${this.descendInput(node.delimiter)}))`;
         case InputOpcode.ARRAYS_RANGE:
             return `((s, e) => [...Array(Math.max(0, e - s + 1))].map((_, i) => s + i))(${this.descendInput(node.start)}, ${this.descendInput(node.end)})`;
         case InputOpcode.ARRAYS_INDEX:
-            return `(${this.descendInput(node.array)}[Math.max(0, Math.min(${this.descendInput(node.array)}.length - 1, ${this.descendInput(node.index)} - 1))]) || ""`;
+            return `((i => ${this.descendInput(node.array)}[i])(
+                ${this.descendInput(node.index)} === "last" ? ${this.descendInput(node.array)}.length - 1 :
+                ${this.descendInput(node.index)} === "random" ? Math.floor(Math.random() * ${this.descendInput(node.array)}.length) :
+                Math.max(0, Math.min(${this.descendInput(node.array)}.length - 1, ${this.descendInput(node.index)} - 1))
+            )) || ""`;
         case InputOpcode.ARRAYS_LENGTH:
             return `${this.descendInput(node.array)}.length`;
         case InputOpcode.ARRAYS_IN_FRONT_OF:
@@ -516,11 +602,13 @@ class JSGenerator {
             return `[...${this.descendInput(node.array)}, ${this.descendInput(node.item)}]`;
         case InputOpcode.ARRAYS_CONTAINS:
             return `(Array.isArray(${this.descendInput(node.array)}) ? ${this.descendInput(node.array)}.some(x => x == ${this.descendInput(node.item)}) : false)`;
+
         default:
             log.warn(`JS: Unknown input: ${block.opcode}`, node);
             throw new Error(`JS: Unknown input: ${block.opcode}`);
         }
     }
+
     /**
      * @param {IntermediateStackBlock} block Stacked block to compile.
      */
@@ -531,10 +619,12 @@ class JSGenerator {
             this.source += `${this.descendAddonCall(node)};\n`;
             break;
         }
+
         case StackOpcode.COMPATIBILITY_LAYER: {
             // If the last command in a loop returns a promise, immediately continue to the next iteration.
             // If you don't do this, the loop effectively yields twice per iteration and will run at half-speed.
             const isLastInLoop = this.isLastBlockInLoop();
+
             const blockType = node.blockType;
             if (blockType === BlockType.COMMAND || blockType === BlockType.HAT) {
                 this.source += `${this.generateCompatibilityLayerCall(node, isLastInLoop)};\n`;
@@ -556,13 +646,16 @@ class JSGenerator {
             } else {
                 throw new Error(`Unknown block type: ${blockType}`);
             }
+
             if (isLastInLoop) {
                 this.source += 'if (hasResumedFromPromise) {hasResumedFromPromise = false;continue;}\n';
             }
             break;
         }
+
         case InputOpcode.OLD_COMPILER_COMPATIBILITY_LAYER:
             return this.oldCompilerStub.descendStackedBlockFromNewCompiler(block);
+
         case StackOpcode.HAT_EDGE:
             this.isInHat = true;
             this.source += '{\n';
@@ -580,6 +673,7 @@ class JSGenerator {
             this.source += '}\n';
             this.isInHat = false;
             break;
+
         case StackOpcode.HAT_PREDICATE:
             this.isInHat = true;
             this.source += `if (!${this.descendInput(node.condition)}) {\n`;
@@ -588,6 +682,7 @@ class JSGenerator {
             this.source += 'yield;\n';
             this.isInHat = false;
             break;
+
         case StackOpcode.CONTROL_CLONE_CREATE:
             this.source += `runtime.ext_scratch3_control._createClone(${this.descendInput(node.target)}, target);\n`;
             break;
@@ -673,6 +768,7 @@ class JSGenerator {
         case StackOpcode.CONTORL_INCR_COUNTER:
             this.source += 'runtime.ext_scratch3_control._counter++;\n';
             break;
+
         case StackOpcode.EVENT_BROADCAST:
             this.source += `startHats("event_whenbroadcastreceived", { BROADCAST_OPTION: ${this.descendInput(node.broadcast)} });\n`;
             break;
@@ -680,6 +776,7 @@ class JSGenerator {
             this.source += `yield* waitThreads(startHats("event_whenbroadcastreceived", { BROADCAST_OPTION: ${this.descendInput(node.broadcast)} }));\n`;
             this.yielded();
             break;
+
         case StackOpcode.LIST_ADD: {
             const list = this.referenceVariable(node.list);
             this.source += `${list}.value.push(${this.descendInput(node.item)});\n`;
@@ -725,6 +822,7 @@ class JSGenerator {
         case StackOpcode.LIST_SHOW:
             this.source += `runtime.monitorBlocks.changeBlock({ id: "${sanitize(node.list.id)}", element: "checkbox", value: true }, runtime);\n`;
             break;
+
         case StackOpcode.LOOKS_LAYER_BACKWARD:
             if (!this.target.isStage) {
                 this.source += `target.goBackwardLayers(${this.descendInput(node.layers)});\n`;
@@ -784,6 +882,7 @@ class JSGenerator {
         case StackOpcode.LOOKS_COSTUME_SET:
             this.source += `runtime.ext_scratch3_looks._setCostume(target, ${this.descendInput(node.costume)});\n`;
             break;
+
         case StackOpcode.MOTION_X_CHANGE:
             this.source += `target.setXY(target.x + ${this.descendInput(node.dx)}, target.y);\n`;
             break;
@@ -817,8 +916,10 @@ class JSGenerator {
         case StackOpcode.MOTION_STEP:
             this.source += `runtime.ext_scratch3_motion._moveSteps(${this.descendInput(node.steps)}, target);\n`;
             break;
+
         case StackOpcode.NOP:
             break;
+
         case StackOpcode.PEN_CLEAR:
             this.source += `${PEN_EXT}.clear();\n`;
             break;
@@ -858,6 +959,7 @@ class JSGenerator {
         case StackOpcode.PEN_UP:
             this.source += `${PEN_EXT}._penUp(target);\n`;
             break;
+
         case StackOpcode.PROCEDURE_CALL: {
             const procedureCode = node.code;
             const procedureVariant = node.variant;
@@ -889,12 +991,15 @@ class JSGenerator {
         case StackOpcode.PROCEDURE_RETURN:
             this.stopScriptAndReturn(this.descendInput(node.value));
             break;
+
         case StackOpcode.SENSING_TIMER_RESET:
             this.source += 'runtime.ioDevices.clock.resetProjectTimer();\n';
             break;
+
         case StackOpcode.DEBUGGER:
             this.source += 'debugger;\n';
             break;
+
         case StackOpcode.VAR_HIDE:
             this.source += `runtime.monitorBlocks.changeBlock({ id: "${sanitize(node.variable.id)}", element: "checkbox", value: false }, runtime);\n`;
             break;
@@ -909,6 +1014,7 @@ class JSGenerator {
         case StackOpcode.VAR_SHOW:
             this.source += `runtime.monitorBlocks.changeBlock({ id: "${sanitize(node.variable.id)}", element: "checkbox", value: true }, runtime);\n`;
             break;
+
         case StackOpcode.VISUAL_REPORT: {
             const value = this.localVariables.next();
             this.source += `const ${value} = ${this.descendInput(node.input)};`;
@@ -916,11 +1022,13 @@ class JSGenerator {
             this.source += `if (${value} !== undefined) runtime.visualReport(target, "${sanitize(this.script.topBlockId)}", ${value});\n`;
             break;
         }
+
         default:
             log.warn(`JS: Unknown stacked block: ${block.opcode}`, node);
             throw new Error(`JS: Unknown stacked block: ${block.opcode}`);
         }
     }
+
     /**
      * Compiles a reference to a target.
      * @param {IntermediateInput} input The target reference. Must be a string.
@@ -930,11 +1038,10 @@ class JSGenerator {
         if (!input.isAlwaysType(InputType.STRING)) {
             throw new Error(`JS: Object references must be strings!`);
         }
-        if (input.isConstant('_stage_')) {
-            return 'stage';
-        }
+        if (input.isConstant('_stage_')) return 'stage';
         return this.evaluateOnce(`runtime.getSpriteTargetByName(${this.descendInput(input)})`);
     }
+
     /**
      * Compile a Record of input objects into a safe JS string.
      * @param {Record<string, IntermediateInput>} inputs
@@ -949,6 +1056,7 @@ class JSGenerator {
         result += '}';
         return result;
     }
+
     /**
      * @param {IntermediateStack} stack
      * @param {Frame} frame
@@ -957,14 +1065,17 @@ class JSGenerator {
         // Entering a stack -- all bets are off.
         // TODO: allow if/else to inherit values
         this.pushFrame(frame);
+
         for (let i = 0; i < stack.blocks.length; i++) {
             frame.isLastBlock = i === stack.blocks.length - 1;
             this.descendStackedBlock(stack.blocks[i]);
         }
+
         // Leaving a stack -- any assumptions made in the current stack do not apply outside of it
         // TODO: in if/else this might create an extra unused object
         this.popFrame();
     }
+
     /**
      * @param {*} node
      * @returns {string}
@@ -975,6 +1086,7 @@ class JSGenerator {
         const blockId = `"${sanitize(node.blockId)}"`;
         return `yield* executeInCompatibilityLayer(${inputs}, ${blockFunction}, ${this.isWarp}, false, ${blockId})`;
     }
+
     /**
      * @param {*} variable
      * @returns {string}
@@ -985,6 +1097,7 @@ class JSGenerator {
         }
         return this.evaluateOnce(`stage.variables["${sanitize(variable.id)}"]`);
     }
+
     /**
      * @param {string} source
      * @returns {string}
@@ -997,6 +1110,7 @@ class JSGenerator {
         this._setupVariables[source] = variable;
         return variable;
     }
+
     retire () {
         // After running retire() (sets thread status and cleans up some unused data), we need to return to the event loop.
         // When in a procedure, return will only send us back to the previous procedure, so instead we yield back to the sequencer.
@@ -1007,6 +1121,7 @@ class JSGenerator {
             this.source += 'retire(); return;\n';
         }
     }
+
     yieldLoop () {
         if (this.warpTimer) {
             this.yieldStuckOrNotWarp();
@@ -1014,6 +1129,7 @@ class JSGenerator {
             this.yieldNotWarp();
         }
     }
+
     /**
      * Write JS to yield the current thread if warp mode is disabled.
      */
@@ -1023,6 +1139,7 @@ class JSGenerator {
             this.yielded();
         }
     }
+
     /**
      * Write JS to yield the current thread if warp mode is disabled or if the script seems to be stuck.
      */
@@ -1034,18 +1151,21 @@ class JSGenerator {
         }
         this.yielded();
     }
+
     yielded () {
         if (!this.script.yields) {
             throw new Error('Script yielded but is not marked as yielding.');
         }
         // Control may have been yielded to another script -- all bets are off.
     }
+
     /**
      * Write JS to request a redraw.
      */
     requestRedraw () {
         this.source += 'runtime.requestRedraw();\n';
     }
+
     /**
      * Generate a call into the compatibility layer.
      * @param {*} node The node of the block to generate from.
@@ -1055,7 +1175,9 @@ class JSGenerator {
      */
     generateCompatibilityLayerCall (node, setFlags, frameName = null) {
         const opcode = node.opcode;
+
         let result = 'yield* executeInCompatibilityLayer({';
+
         for (const inputName of Object.keys(node.inputs)) {
             const input = node.inputs[inputName];
             const compiledInput = this.descendInput(input);
@@ -1067,12 +1189,16 @@ class JSGenerator {
         }
         const opcodeFunction = this.evaluateOnce(`runtime.getOpcodeFunction("${sanitize(opcode)}")`);
         result += `}, ${opcodeFunction}, ${this.isWarp}, ${setFlags}, "${sanitize(node.id)}", ${frameName})`;
+
         this.yielded();
+
         return result;
     }
+
     getScriptFactoryName () {
         return factoryNameVariablePool.next();
     }
+
     getScriptName (yields) {
         let name = yields ? generatorNameVariablePool.next() : functionNameVariablePool.next();
         if (this.isProcedure) {
@@ -1084,6 +1210,7 @@ class JSGenerator {
         }
         return name;
     }
+
     stopScript () {
         if (this.isProcedure) {
             this.source += 'return "";\n';
@@ -1091,6 +1218,7 @@ class JSGenerator {
             this.retire();
         }
     }
+
     /**
      * @param {string} valueJS JS code of value to return.
      */
@@ -1101,12 +1229,14 @@ class JSGenerator {
             this.retire();
         }
     }
+
     /**
      * Generate the JS to pass into eval() based on the current state of the compiler.
      * @returns {string} JS to pass into eval()
      */
     createScriptFactory () {
         let script = '';
+
         // Setup the factory
         script += `(function ${this.getScriptFactoryName()}(thread) { `;
         script += 'const target = thread.target; ';
@@ -1116,6 +1246,7 @@ class JSGenerator {
             const varName = this._setupVariables[varValue];
             script += `const ${varName} = ${varValue};\n`;
         }
+
         // Generated script
         script += 'return ';
         if (this.script.yields) {
@@ -1133,10 +1264,14 @@ class JSGenerator {
             script += args.join(',');
         }
         script += ') {\n';
+
         script += this.source;
+
         script += '}; })';
+
         return script;
     }
+
     /**
      * Compile this script.
      * @returns {Function} The factory function for the script.
@@ -1146,17 +1281,22 @@ class JSGenerator {
             this.descendStack(this.script.stack, new Frame(false));
         }
         this.stopScript();
+
         const factory = this.createScriptFactory();
         const fn = jsexecute.scopedEval(factory);
+
         if (this.debug) {
             log.info(`JS: ${this.target.getName()}: compiled ${this.script.procedureCode || 'script'}`, factory);
         }
+
         if (JSGenerator.testingApparatus) {
             JSGenerator.testingApparatus.report(this, factory);
         }
+
         return fn;
     }
 }
+
 // For extensions.
 JSGenerator.unstable_exports = {
     factoryNameVariablePool,
@@ -1168,6 +1308,8 @@ JSGenerator.unstable_exports = {
     Frame,
     sanitize
 };
+
 // Test hook used by automated snapshot testing.
 JSGenerator.testingApparatus = null;
-export default JSGenerator;
+
+module.exports = JSGenerator;

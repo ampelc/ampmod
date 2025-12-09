@@ -96,7 +96,7 @@
     backdrop-filter: blur(1px) contrast(0.8);
 }
 
-@media (prefers-reduced-motion: no-preference) {
+:global(.amp-gui-animations-enabled) {
     .modal-overlay {
         animation: fadeIn 0.15s cubic-bezier(0.445, 0.05, 0.55, 0.95);
     }
@@ -106,7 +106,7 @@
         animation: fadeOut 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
         pointer-events: none;
     }
-    .modal-content {
+    .modal-content:not(.no-zoom-animation) {
         animation: zoomFadeIn 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     .modal-content.closing,
@@ -114,7 +114,7 @@
         opacity: 0;
         animation: zoomFadeOut 0.15s cubic-bezier(0.55, 0.085, 0.68, 0.53);
     }
-    .modal-content.full-screen {
+    .modal-content.full-screen:not(.no-zoom-animation) {
         animation: slideInFromBottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     .modal-content.full-screen.closing {

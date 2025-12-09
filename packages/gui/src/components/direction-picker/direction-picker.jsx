@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Popover from 'react-popover';
+import * as Popover from '@radix-ui/react-popover';
 import {injectIntl, intlShape, defineMessages, FormattedMessage} from 'react-intl';
 
 import Label from '../forms/label.jsx';
@@ -51,50 +51,59 @@ const messages = defineMessages({
 
 const DirectionPicker = props => (
     <Label secondary above={props.labelAbove} text={directionLabel}>
-        <Popover
-            body={
+        <Popover.Root open={props.popoverOpen} onOpenChange={open => open ? props.onOpenPopover() : props.onClosePopover()}>
+            <Popover.Trigger asChild>
                 <div>
-                    <Dial direction={props.direction} onChange={props.onChangeDirection} />
-                    <ToggleButtons
-                        className={styles.buttonRow}
-                        buttons={[
-                            {
-                                handleClick: props.onClickAllAround,
-                                icon: allAroundIcon,
-                                isSelected: props.rotationStyle === RotationStyles.ALL_AROUND,
-                                title: props.intl.formatMessage(messages.allAround)
-                            },
-                            {
-                                handleClick: props.onClickLeftRight,
-                                icon: leftRightIcon,
-                                isSelected: props.rotationStyle === RotationStyles.LEFT_RIGHT,
-                                title: props.intl.formatMessage(messages.leftRight)
-                            },
-                            {
-                                handleClick: props.onClickDontRotate,
-                                icon: dontRotateIcon,
-                                isSelected: props.rotationStyle === RotationStyles.DONT_ROTATE,
-                                title: props.intl.formatMessage(messages.dontRotate)
-                            }
-                        ]}
+                    <BufferedInput
+                        small
+                        disabled={props.disabled}
+                        label={directionLabel}
+                        tabIndex="0"
+                        type="number"
+                        value={props.disabled ? '' : props.direction}
+                        onSubmit={props.onChangeDirection}
                     />
                 </div>
-            }
-            isOpen={props.popoverOpen}
-            preferPlace="above"
-            onOuterAction={props.onClosePopover}
-        >
-            <BufferedInput
-                small
-                disabled={props.disabled}
-                label={directionLabel}
-                tabIndex="0"
-                type="number"
-                value={props.disabled ? '' : props.direction}
-                onFocus={props.onOpenPopover}
-                onSubmit={props.onChangeDirection}
-            />
-        </Popover>
+            </Popover.Trigger>
+            <Popover.Portal>
+                <Popover.Content
+                    className={styles.popoverContent}
+                    sideOffset={5}
+                    side="top"
+                    align="center"
+                    onOpenAutoFocus={(event) => event.preventDefault()} 
+                    onCloseAutoFocus={(event) => event.preventDefault()} 
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <Dial direction={props.direction} onChange={props.onChangeDirection} />
+                        <ToggleButtons
+                            className={styles.buttonRow}
+                            buttons={[
+                                {
+                                    handleClick: props.onClickAllAround,
+                                    icon: allAroundIcon,
+                                    isSelected: props.rotationStyle === RotationStyles.ALL_AROUND,
+                                    title: props.intl.formatMessage(messages.allAround)
+                                },
+                                {
+                                    handleClick: props.onClickLeftRight,
+                                    icon: leftRightIcon,
+                                    isSelected: props.rotationStyle === RotationStyles.LEFT_RIGHT,
+                                    title: props.intl.formatMessage(messages.leftRight)
+                                },
+                                {
+                                    handleClick: props.onClickDontRotate,
+                                    icon: dontRotateIcon,
+                                    isSelected: props.rotationStyle === RotationStyles.DONT_ROTATE,
+                                    title: props.intl.formatMessage(messages.dontRotate)
+                                }
+                            ]}
+                        />
+                    </div>
+                    <Popover.Arrow className={styles.popoverArrow} />
+                </Popover.Content>
+            </Popover.Portal>
+        </Popover.Root>
     </Label>
 );
 

@@ -4,10 +4,12 @@
  * @param {RequestInit|undefined} [init]
  * @returns {Promise<Response>}
  */
+
 /**
  * @type {FetchFunction}
  */
 let myFetch = global.fetch;
+
 /**
  * Tell `fetchWithTimeout` to use a specific `fetch` function.
  * By default, `fetchWithTimeout` will use the global `fetch` function.
@@ -17,6 +19,7 @@ let myFetch = global.fetch;
 const setFetch = newFetch => {
     myFetch = newFetch;
 };
+
 /**
  * Fetch a remote resource like `fetch` does, but with a time limit.
  * @param {Request|string} resource Remote resource to fetch.
@@ -31,26 +34,26 @@ const fetchWithTimeout = (resource, init, timeout) => {
     const signal = controller ? controller.signal : null;
     // The fetch call races a timer.
     return Promise.race([
-        myFetch(resource, Object.assign({signal}, init)).then(response => {
-            clearTimeout(timeoutID);
-            return response;
-        }, error => {
-            clearTimeout(timeoutID);
-            throw error;
-        }),
+        myFetch(resource, Object.assign({signal}, init)).then(
+            response => {
+                clearTimeout(timeoutID);
+                return response;
+            },
+            error => {
+                clearTimeout(timeoutID);
+                throw error;
+            }
+        ),
         new Promise((resolve, reject) => {
             timeoutID = setTimeout(() => {
-                if (controller) {
-                    controller.abort();
-                }
+                if (controller) controller.abort();
                 reject(new Error(`Fetch timed out after ${timeout} ms`));
             }, timeout);
         })
     ]);
 };
-export {fetchWithTimeout};
-export {setFetch};
-export default {
+
+module.exports = {
     fetchWithTimeout,
     setFetch
 };

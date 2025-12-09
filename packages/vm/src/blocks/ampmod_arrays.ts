@@ -1,6 +1,16 @@
-import Cast from '../util/cast.js';
+const Cast = require('../util/cast');
+const Runtime = require('../engine/runtime');
 
 class AmpModArraysBlocks {
+    runtime: typeof Runtime;
+    constructor (runtime: any) {
+        /**
+         * The runtime instantiating this block package.
+         * @type {Runtime}
+         */
+        this.runtime = runtime;
+    }
+
     getPrimitives () {
         return {
             arrays_empty_array: this.emptyArray,
@@ -49,10 +59,13 @@ class AmpModArraysBlocks {
         return [args.ITEM, ...a]; // adds to start
     }
 
-    insertAt (args: { ARRAY: any; INDEX: any; ITEM: any; }) {
-        const a = [...Cast.toList(args.ARRAY)];
-        a.splice(Math.max(0, Cast.toNumber(args.INDEX) - 1), 0, args.ITEM);
-        return a;
+    insertAt(args: { ARRAY: any; INDEX: any; ITEM: any; }) {
+        const arr = [...Cast.toList(args.ARRAY)];
+        const i = args.INDEX === "last" ? arr.length :
+                args.INDEX === "random" ? Math.floor(Math.random() * (arr.length + 1)) :
+                Math.max(0, Cast.toNumber(args.INDEX) - 1);
+        arr.splice(i, 0, args.ITEM);
+        return arr;
     }
 
     range (args: { START: any; END: any; }) {
@@ -69,4 +82,4 @@ class AmpModArraysBlocks {
     }
 }
 
-export default AmpModArraysBlocks;
+module.exports = AmpModArraysBlocks;

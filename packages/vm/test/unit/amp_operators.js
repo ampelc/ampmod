@@ -24,6 +24,6 @@ test('equals - case sensitive', t => {
 });
 
 test('new line', t => {
-    t.strictEqual(blocks.newline(), '\n');
+    t.strictEqual(blocks.newline(), "\n");
     t.end();
 });

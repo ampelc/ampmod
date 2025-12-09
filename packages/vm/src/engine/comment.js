@@ -1,5 +1,11 @@
-import uid from '../util/uid.js';
-import xmlEscape from '../util/xml-escape.js';
+/**
+ * @fileoverview
+ * Object representing a Scratch Comment (block or workspace).
+ */
+
+const uid = require('../util/uid');
+const xmlEscape = require('../util/xml-escape');
+
 class Comment {
     /**
      * @param {string} id Id of the comment.
@@ -21,21 +27,29 @@ class Comment {
         this.minimized = minimized || false;
         this.blockId = null;
     }
+
     toXML () {
-        return `<comment id="${this.id}" x="${this.x}" y="${this.y}" w="${this.width}" h="${this.height}" pinned="${this.blockId !== null}" minimized="${this.minimized}">${xmlEscape(this.text)}</comment>`;
+        return `<comment id="${this.id}" x="${this.x}" y="${this.y}" w="${this.width}" h="${this.height}" pinned="${
+            this.blockId !== null
+        }" minimized="${this.minimized}">${xmlEscape(this.text)}</comment>`;
     }
+
     // TODO choose min and defaults for width and height
     static get MIN_WIDTH () {
         return 20;
     }
+
     static get MIN_HEIGHT () {
         return 20;
     }
+
     static get DEFAULT_WIDTH () {
         return 100;
     }
+
     static get DEFAULT_HEIGHT () {
         return 100;
     }
 }
-export default Comment;
+
+module.exports = Comment;

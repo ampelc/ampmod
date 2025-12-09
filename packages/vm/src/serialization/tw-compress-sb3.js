@@ -10,6 +10,7 @@ const generateId = i => {
     }
     return str;
 };
+
 class Pool {
     constructor () {
         this.generatedIds = new Map();
@@ -30,14 +31,17 @@ class Pool {
         const entries = Array.from(this.references.entries());
         // The most used original IDs should get the shortest new IDs.
         entries.sort((a, b) => b[1] - a[1]);
+
         let i = 0;
         for (const entry of entries) {
             const oldId = entry[0];
+
             let newId = generateId(i);
             while (this.skippedIds.has(newId)) {
                 i++;
                 newId = generateId(i);
             }
+
             this.generatedIds.set(oldId, newId);
             i++;
         }
@@ -49,15 +53,19 @@ class Pool {
         return originalId;
     }
 }
+
 const compress = projectData => {
     // projectData is modified in-place
+
     // The optimization here is not optimal. This is intentional.
     // We only compress block and comment IDs because we want to maintain 100% (not 99.99%; 100%) compatibility and be
     // truly lossless. Optimizing things like variable IDs will cause things such as the editor's backpack feature
     // to misbehave.
+
     // We use the same variable pool for all objects to avoid any possible issues if IDs are ever treated as unique
     // within a given project.
     const pool = new Pool();
+
     for (const target of projectData.targets) {
         // While we don't compress these IDs, we need to make sure that our compressed IDs
         // do not intersect, which could happen if the project was compressed with a
@@ -96,6 +104,7 @@ const compress = projectData => {
                 }
             }
         }
+
         for (const commentId of Object.keys(target.comments)) {
             const comment = target.comments[commentId];
             pool.addReference(commentId);
@@ -104,6 +113,7 @@ const compress = projectData => {
             }
         }
     }
+
     pool.generateNewIds();
     for (const target of projectData.targets) {
         const newBlocks = {};
@@ -133,6 +143,7 @@ const compress = projectData => {
                 }
             }
         }
+
         for (const commentId of Object.keys(target.comments)) {
             const comment = target.comments[commentId];
             newComments[pool.getNewId(commentId)] = comment;
@@ -140,8 +151,10 @@ const compress = projectData => {
                 comment.blockId = pool.getNewId(comment.blockId);
             }
         }
+
         target.blocks = newBlocks;
         target.comments = newComments;
     }
 };
-export default compress;
+
+module.exports = compress;

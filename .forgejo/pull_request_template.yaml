@@ -1,25 +1,95 @@
 name: 'PR Template'
 about: 'PR Template'
 body:
-    - type: textarea
-      id: resolves
-      attributes:
-          label: Resolves
-          description: 'What issue on the issue tracker does this resolve? Please provide a link.'
-          placeholder: 'Resolves #...'
-    - type: textarea
-      id: description
-      attributes:
-          label: Description of changes
-          description: 'What changes does this PR make?'
-          placeholder: 'This PR adds an Apple Cat logo...'
-      validations:
-          required: true
-    - type: textarea
-      id: reasons
-      attributes:
-          label: Reasons for changes
-          description: 'Please explain why this PR was made.'
-          placeholder: 'There is no logo in the menu bar...'
-      validations:
-          required: true
+  - type: markdown
+    attributes:
+      value: |
+          Checklist:
+          -------------------
+          - [x] My changes were not commited to `develop`. Create a new branch instead to avoid conflicts.
+          - [x] I have not generated the entirety of this PR using AI. I must understand the code my changes add.
+          - [x] I am not merging a full AmpMod modification into upstream. We don't accept e.g. merging your mod, let's call it AppMod, into AmpMod.
+
+  - type: markdown
+    attributes:
+      value: |
+          PR template
+          -----------
+
+  - type: textarea
+    id: resolves
+    attributes:
+      label: Resolves
+      description: 'What issue on the issue tracker does this resolve? Please provide a link.'
+      placeholder: 'Resolves #...'
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of changes
+      description: 'What changes does this PR make?'
+      placeholder: 'This PR adds an Apple Cat logo...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: reasons
+    attributes:
+      label: Reasons for changes
+      description: 'Please explain why this PR was made.'
+      placeholder: 'There is no logo in the menu bar...'
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+          Browser coverage
+          ----------------
+          Please check all the browsers you tested below.
+
+  - type: checkboxes
+    id: browser-windows
+    attributes:
+      label: Windows
+      description: 'Which browsers did you test on Windows?'
+      options:
+        - label: Chrome / Edge
+        - label: Firefox
+
+  - type: checkboxes
+    id: browser-macos
+    attributes:
+      label: macOS
+      description: 'Which browsers did you test on macOS?'
+      options:
+        - label: Safari
+        - label: Chrome / Edge
+        - label: Firefox
+
+  - type: checkboxes
+    id: browser-linux
+    attributes:
+      label: Linux
+      description: 'Which browsers did you test on Linux?'
+      options:
+        - label: Firefox
+        - label: Chrome / Edge
+
+  - type: checkboxes
+    id: browser-android-tablet
+    attributes:
+      label: Android (Tablet)
+      description: 'Which browsers did you test on Android tablets?'
+      options:
+        - label: Chrome / Edge
+        - label: Firefox
+        - label: Samsung Internet
+
+  - type: checkboxes
+    id: browser-ipados
+    attributes:
+      label: iPadOS
+      description: 'Did you test on iPadOS?'
+      options:
+        - label: Yes

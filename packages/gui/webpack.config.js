@@ -117,12 +117,14 @@ const base = {
             buffer: require.resolve("buffer/"),
         },
         alias: {
+            'react': path.resolve(__dirname, 'node_modules/react'),
+            'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
             'text-encoding$': path.resolve(__dirname, 'src/lib/tw-text-encoder'),
             'scratch-render-fonts$': path.resolve(__dirname, 'src/lib/tw-scratch-render-fonts'),
             '@ampmod/branding$': path.resolve(__dirname, 'src/lib/amp-intercept-branding'),
             'real-branding$': path.resolve(__dirname, '../branding'),
             'react/jsx-dev-runtime': 'react/jsx-dev-runtime.js',
-            'react/jsx-runtime': 'react/jsx-runtime.js' 
+            'react/jsx-runtime': 'react/jsx-runtime.js'
         }
     },
     module: {
@@ -362,7 +364,7 @@ module.exports = [
             ...(process.env.SPA
                 ? [
                     new HtmlWebpackPlugin({
-                        template: 'src/playground/simple.ejs',
+                        template: 'src/playground/index.ejs',
                         filename: 'index.html',
                         title: `${APP_NAME} - ${APP_SLOGAN}`,
                         ...htmlWebpackPluginCommon
@@ -372,7 +374,7 @@ module.exports = [
                     new HtmlWebpackPlugin({
                         chunks: ['info', 'minorpages'],
                         title: `Privacy Policy - ${APP_NAME}`,
-                        template: 'src/playground/simple.ejs',
+                        template: 'src/playground/index.ejs',
                         filename: 'privacy.html',
                         skipSimpleAnalytics: true,
                         page: 'privacy',
@@ -415,7 +417,7 @@ module.exports = [
                         ? [
                                 new HtmlWebpackPlugin({
                                     chunks: ['info', 'home'],
-                                    template: 'src/playground/simple.ejs',
+                                    template: 'src/playground/index.ejs',
                                     filename: 'index.html',
                                     title: `${APP_NAME} - ${APP_SLOGAN}`,
                                     description: APP_DESCRIPTION,
@@ -425,7 +427,7 @@ module.exports = [
                         : []),
                     new HtmlWebpackPlugin({
                         chunks: ['info', 'minorpages'],
-                        template: 'src/playground/simple.ejs',
+                        template: 'src/playground/index.ejs',
                         filename: 'new-compiler.html',
                         title: `New compiler - ${APP_NAME}`,
                         description: `${APP_NAME} 0.3 includes a rewritten compiler to make projects run up to 2 times faster than in ${APP_NAME} 0.2.2.`,
@@ -434,7 +436,7 @@ module.exports = [
                     }),
                     new HtmlWebpackPlugin({
                         chunks: ['info', 'examples-landing'],
-                        template: 'src/playground/simple.ejs',
+                        template: 'src/playground/index.ejs',
                         filename: 'examples.html',
                         title: `Examples - ${APP_NAME}`,
                         description: `Example projects for ${APP_NAME}.`,
@@ -442,7 +444,7 @@ module.exports = [
                     }),
                     new HtmlWebpackPlugin({
                         chunks: ['info', 'faq'],
-                        template: 'src/playground/simple.ejs',
+                        template: 'src/playground/index.ejs',
                         filename: 'faq.html',
                         title: `FAQ - ${APP_NAME}`,
                         description: `Frequently asked questions about ${APP_NAME}.`,
@@ -457,7 +459,7 @@ module.exports = [
                     }),
                     new HtmlWebpackPlugin({
                         chunks: ['info', 'credits'],
-                        template: 'src/playground/simple.ejs',
+                        template: 'src/playground/index.ejs',
                         filename: 'credits.html',
                         title: `Credits - ${APP_NAME}`,
                         description: `Meet the development team of ${APP_NAME}.`,
@@ -465,7 +467,7 @@ module.exports = [
                     }),
                     new HtmlWebpackPlugin({
                         chunks: ['notfound'],
-                        template: 'src/playground/simple.ejs',
+                        template: 'src/playground/index.ejs',
                         filename: '404.html',
                         title: `Not Found - ${APP_NAME}`,
                         ...htmlWebpackPluginCommon
@@ -478,15 +480,6 @@ module.exports = [
                         to: ''
                     }
                 ]
-            }),
-            new CopyWebpackPlugin({
-                patterns: [
-                    {
-                        from: "extensions/**",
-                        to: "static",
-                        context: "src/examples",
-                    },
-                ],
             }),
         ]),
     }),
@@ -529,7 +522,7 @@ module.exports = [
                   new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
                   new HtmlWebpackPlugin({
                       chunks: ['standalone'],
-                      template: 'src/playground/simple.ejs',
+                      template: 'src/playground/index.ejs',
                       filename: `AmpMod-Standalone-${monorepoPackageJson.version}-EXPERIMENTAL.html`,
                       title: `${APP_NAME} - ${APP_SLOGAN}`,
                       isEditor: true,

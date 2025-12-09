@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, {useState, useEffect} from 'react';
 
 import styles from './spinner.css';
+import { AccessibleIcon } from 'radix-ui';
 
 const SpinnerComponent = function (props) {
     const {className, level, small, large} = props;
@@ -10,27 +11,22 @@ const SpinnerComponent = function (props) {
     const [isMotionReduced, setIsMotionReduced] = useState(false);
 
     useEffect(() => {
-        const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-        setIsMotionReduced(mediaQuery.matches);
-
-        const listener = event => setIsMotionReduced(event.matches);
-
-        mediaQuery.addListener(listener);
-        return () => mediaQuery.removeListener(listener);
+        setIsMotionReduced(!document.documentElement.classList.contains('amp-gui-animations-enabled'));
     }, []);
 
     if (isMotionReduced) {
-        return <div className={classNames(className, styles.loadingText)}>loading</div>;
+        return <div className={classNames(className, styles.loadingText)}>Loading...</div>;
     }
 
     return (
-        <div
-            className={classNames(className, styles.spinner, styles[level], {
-                [styles.small]: small,
-                [styles.large]: large
-            })}
-        />
+        <AccessibleIcon.Root label="Loading...">
+            <div
+                className={classNames(className, styles.spinner, styles[level], {
+                    [styles.small]: small,
+                    [styles.large]: large
+                })}
+            />
+        </AccessibleIcon.Root>
     );
 };
 

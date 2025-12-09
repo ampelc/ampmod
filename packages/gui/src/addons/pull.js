@@ -266,7 +266,7 @@ const generateRuntimeEntry = (id, manifest, assets) => {
     }
 
     for (const assetName of assets) {
-        const importName = importSection.add(`!url-loader!./${assetName}`, 'asset');
+        const importName = importSection.add(`./${assetName}`, 'asset');
         exportSection += `  ${JSON.stringify(assetName)}: ${importName},\n`;
     }
 

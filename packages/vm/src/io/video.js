@@ -1,7 +1,9 @@
-import StageLayering from '../engine/stage-layering.js';
+const StageLayering = require('../engine/stage-layering');
+
 class Video {
     constructor (runtime) {
         this.runtime = runtime;
+
         /**
          * @typedef VideoProvider
          * @property {Function} enableVideo - Requests camera access from the user, and upon success,
@@ -11,35 +13,42 @@ class Video {
          * specified dimensions, format, and mirroring.
          */
         this.provider = null;
+
         /**
          * Id representing a Scratch Renderer skin the video is rendered to for
          * previewing.
          * @type {number}
          */
         this._skinId = -1;
+
         /**
          * Id for a drawable using the video's skin that will render as a video
          * preview.
          * @type {Drawable}
          */
         this._drawable = -1;
+
         /**
          * Store the last state of the video transparency ghost effect
          * @type {number}
          */
         this._ghost = 0;
+
         /**
          * Store a flag that allows the preview to be forced transparent.
          * @type {number}
          */
         this._forceTransparentPreview = false;
     }
+
     static get FORMAT_IMAGE_DATA () {
         return 'image-data';
     }
+
     static get FORMAT_CANVAS () {
         return 'canvas';
     }
+
     /**
      * Dimensions the video stream is analyzed at after its rendered to the
      * sample canvas.
@@ -48,6 +57,7 @@ class Video {
     static get DIMENSIONS () {
         return [480, 360];
     }
+
     /**
      * Order preview drawable is inserted at in the renderer.
      * @type {number}
@@ -55,6 +65,7 @@ class Video {
     static get ORDER () {
         return 1;
     }
+
     /**
      * Set a video provider for this device. A default implementation of
      * a video provider can be found in scratch-gui/src/lib/video/video-provider
@@ -63,6 +74,7 @@ class Video {
     setProvider (provider) {
         this.provider = provider;
     }
+
     /**
      * Request video be enabled.  Sets up video, creates video skin and enables preview.
      *
@@ -71,22 +83,20 @@ class Video {
      * @return {Promise.<Video>} resolves a promise to this IO device when video is ready.
      */
     enableVideo () {
-        if (!this.provider) {
-            return null;
-        }
+        if (!this.provider) return null;
         return this.provider.enableVideo().then(() => this._setupPreview());
     }
+
     /**
      * Disable video stream (turn video off)
      * @return {void}
      */
     disableVideo () {
         this._disablePreview();
-        if (!this.provider) {
-            return null;
-        }
+        if (!this.provider) return null;
         this.provider.disableVideo();
     }
+
     /**
      * Return frame data from the video feed in a specified dimensions, format, and mirroring.
      *
@@ -100,7 +110,12 @@ class Video {
      *
      * @return {ArrayBuffer|Canvas|string|null} Frame data in requested format, null when errors.
      */
-    getFrame ({dimensions = Video.DIMENSIONS, mirror = this.mirror, format = Video.FORMAT_IMAGE_DATA, cacheTimeout = this._frameCacheTimeout}) {
+    getFrame ({
+        dimensions = Video.DIMENSIONS,
+        mirror = this.mirror,
+        format = Video.FORMAT_IMAGE_DATA,
+        cacheTimeout = this._frameCacheTimeout
+    }) {
         if (this.provider) {
             return this.provider.getFrame({
                 dimensions,
@@ -111,6 +126,7 @@ class Video {
         }
         return null;
     }
+
     /**
      * Set the preview ghost effect
      * @param {number} ghost from 0 (visible) to 100 (invisible) - ghost effect
@@ -119,9 +135,14 @@ class Video {
         this._ghost = ghost;
         // Confirm that the default value has been changed to a valid id for the drawable
         if (this._drawable !== -1) {
-            this.runtime.renderer.updateDrawableEffect(this._drawable, 'ghost', this._forceTransparentPreview ? 100 : ghost);
+            this.runtime.renderer.updateDrawableEffect(
+                this._drawable,
+                'ghost',
+                this._forceTransparentPreview ? 100 : ghost
+            );
         }
     }
+
     _disablePreview () {
         if (this._skinId !== -1) {
             this.runtime.renderer.updateBitmapSkin(this._skinId, new ImageData(...Video.DIMENSIONS), 1);
@@ -129,11 +150,11 @@ class Video {
         }
         this._renderPreviewFrame = null;
     }
+
     _setupPreview () {
         const {renderer} = this.runtime;
-        if (!renderer) {
-            return;
-        }
+        if (!renderer) return;
+
         if (this._skinId === -1 && this._drawable === -1) {
             this._skinId = renderer.createBitmapSkin(new ImageData(...Video.DIMENSIONS), 1);
             this._drawable = renderer.createDrawable(StageLayering.VIDEO_LAYER);
@@ -147,36 +168,43 @@ class Video {
                 renderer.markDrawableAsNoninteractive(this._drawable);
             }
         }
+
         // if we haven't already created and started a preview frame render loop, do so
         if (!this._renderPreviewFrame) {
             renderer.updateDrawableEffect(this._drawable, 'ghost', this._forceTransparentPreview ? 100 : this._ghost);
             renderer.updateDrawableVisible(this._drawable, true);
+
             this._renderPreviewFrame = () => {
                 clearTimeout(this._renderPreviewTimeout);
                 if (!this._renderPreviewFrame) {
                     return;
                 }
+
                 this._renderPreviewTimeout = setTimeout(this._renderPreviewFrame, this.runtime.currentStepTime);
+
                 const imageData = this.getFrame({
                     format: Video.FORMAT_IMAGE_DATA,
                     cacheTimeout: this.runtime.currentStepTime
                 });
+
                 if (!imageData) {
                     renderer.updateBitmapSkin(this._skinId, new ImageData(...Video.DIMENSIONS), 1);
                     return;
                 }
+
                 renderer.updateBitmapSkin(this._skinId, imageData, 1);
                 this.runtime.requestRedraw();
             };
+
             this._renderPreviewFrame();
         }
     }
+
     get videoReady () {
-        if (this.provider) {
-            return this.provider.videoReady;
-        }
+        if (this.provider) return this.provider.videoReady;
         return false;
     }
+
     /**
      * Method implemented by all IO devices to allow external changes.
      * The only change available externally is hiding the preview, used e.g. to
@@ -192,4 +220,5 @@ class Video {
         this.setPreviewGhost(this._ghost);
     }
 }
-export default Video;
+
+module.exports = Video;

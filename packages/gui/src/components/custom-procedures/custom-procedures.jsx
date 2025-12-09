@@ -25,10 +25,17 @@ const CustomProcedures = props => (
         contentLabel={props.intl.formatMessage(messages.myblockModalTitle)}
         onRequestClose={props.onCancel}
         id="customProceduresModal"
+        noZoomAnimation
     >
         <Box className={styles.workspace} componentRef={props.componentRef} />
         <Box className={styles.body}>
-            <h3>Add an input</h3>
+            <h3>
+                <FormattedMessage
+                    defaultMessage="Add an input"
+                    description="Label for button to add a number/text input"
+                    id="gui.customProcedures.addAnInputNumberText"
+                />
+            </h3>
             <div className={styles.optionsRow}>
                 <div className={styles.optionCard} role="button" tabIndex="0" onClick={props.onAddTextNumber}>
                     <img className={styles.optionIcon} src={squareTextIcon} draggable={false} />

@@ -16,7 +16,7 @@
     animation: spinner 1.2s linear infinite;
 }
 .spinner-white {
-    border-color: white transparent white transparent;
+    border-color: $feedback-background transparent $feedback-background transparent;
 }
 @keyframes spinner {
     0% {

@@ -563,7 +563,7 @@ const SettingsModalComponent = props => (
                 </div>
                 <CaseSensitivity value={props.caseSensitivity} onChange={props.onCaseSensitivityChange} />
                 <Interpolation value={props.interpolation} onChange={props.onInterpolationChange} />
-                <DisableCompiler value={props.disableCompiler} onChange={props.onDisableCompilerChange} />
+                {/* <DisableCompiler value={props.disableCompiler} onChange={props.onDisableCompilerChange} /> */}
             </CollapsibleSection>
         </Box>
     </Modal>

@@ -106,7 +106,10 @@ const guiColors = {
     'menu-bar-bottom-border': '#00000022',
 
     'feedback-background': 'var(--looks-secondary)',
-    'feedback-foreground': 'white'
+    'feedback-foreground': 'white',
+
+    'menu-bar-background-classic': '',
+    'ui-modal-header-background-classic': '',
 };
 
 const blockColors = {};

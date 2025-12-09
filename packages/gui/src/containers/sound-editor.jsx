@@ -61,11 +61,13 @@ class SoundEditor extends React.Component {
         this.ref = null;
     }
     componentDidMount() {
+        this.calculateWavSize(this.props.samples, this.props.sampleRate);
         this.audioBufferPlayer = new AudioBufferPlayer(this.props.samples, this.props.sampleRate);
 
         document.addEventListener('keydown', this.handleKeyPress);
     }
     UNSAFE_componentWillReceiveProps(newProps) {
+        this.calculateWavSize(newProps.samples, newProps.sampleRate);
         if (newProps.soundId !== this.props.soundId) {
             // A different sound has been selected
             this.redoStack = [];
@@ -81,6 +83,20 @@ class SoundEditor extends React.Component {
         this.audioBufferPlayer.stop();
 
         document.removeEventListener('keydown', this.handleKeyPress);
+    }
+    calculateWavSize(samples, sampleRate) {
+        if (this.props.dataFormat === "wav") return;
+        WavEncoder.encode({
+            sampleRate: sampleRate,
+            channelData: [samples]
+        })
+            .then(wavBuffer => {
+                this.setState({sizeAfterWav: new Uint8Array(wavBuffer).byteLength});
+            })
+            .catch(e => {
+                log.error(`Error calculating WAV size: ${e.message}`);
+                this.setState({sizeAfterWav: null});
+            });
     }
     handleKeyPress(event) {
         if (event.target instanceof HTMLInputElement) {
@@ -459,8 +475,10 @@ class SoundEditor extends React.Component {
         return (
             <SoundEditorComponent
                 isStereo={this.props.isStereo}
+                format={this.props.format}
                 duration={this.props.duration}
                 size={this.props.size}
+                sizeAfterWav={this.state.sizeAfterWav}
                 canPaste={this.state.copyBuffer !== null}
                 canRedo={this.redoStack.length > 0}
                 canUndo={this.undoStack.length > 0}
@@ -518,6 +536,7 @@ const mapStateToProps = (state, {soundIndex}) => {
     const audioBuffer = state.scratchGui.vm.getSoundBuffer(index);
     return {
         isStereo: audioBuffer.numberOfChannels !== 1,
+        format: sound.asset.dataFormat || 'wav',
         duration: sound.sampleCount / sound.rate,
         size: sound.asset ? sound.asset.data.byteLength : 0,
         soundId: sound.soundId,

@@ -1,5 +1,6 @@
-import StringUtil from '../util/string-util.js';
-import log from '../util/log.js';
+const StringUtil = require('../util/string-util');
+const log = require('../util/log');
+
 /**
  * Initialize a sound from an asset asynchronously.
  * @param {!object} sound - the Scratch sound object.
@@ -26,15 +27,19 @@ const loadSoundFromAsset = function (sound, soundAsset, runtime, soundBank) {
             const soundBuffer = soundPlayer.buffer;
             sound.rate = soundBuffer.sampleRate;
             sound.sampleCount = soundBuffer.length;
+
             if (soundBank !== null) {
                 soundBank.addSoundPlayer(soundPlayer);
             }
+
             if (runtime.isPackaged) {
                 sound.asset = null;
             }
+
             return sound;
         });
 };
+
 // Handle sound loading errors by replacing the runtime sound with the
 // default sound from storage, but keeping track of the original sound metadata
 // in a `broken` field
@@ -46,23 +51,29 @@ const handleSoundLoadError = function (sound, runtime, soundBank) {
     const oldRate = sound.rate;
     const oldFormat = sound.format;
     const oldDataFormat = sound.dataFormat;
+
     // Use default asset if original fails to load
     sound.assetId = runtime.storage.defaultAssetId.Sound;
     sound.asset = runtime.storage.get(sound.assetId);
     sound.md5 = `${sound.assetId}.${sound.asset.dataFormat}`;
+
     return loadSoundFromAsset(sound, sound.asset, runtime, soundBank).then(loadedSound => {
         loadedSound.broken = {};
         loadedSound.broken.assetId = oldAssetId;
         loadedSound.broken.md5 = `${oldAssetId}.${oldDataFormat}`;
+
         // Should be null if we got here because the sound was missing
         loadedSound.broken.asset = oldAsset;
+
         loadedSound.broken.sampleCount = oldSample;
         loadedSound.broken.rate = oldRate;
         loadedSound.broken.format = oldFormat;
         loadedSound.broken.dataFormat = oldDataFormat;
+
         return loadedSound;
     });
 };
+
 /**
  * Load a sound's asset into memory asynchronously.
  * @param {!object} sound - the Scratch sound object.
@@ -81,14 +92,18 @@ const loadSound = function (sound, runtime, soundBank) {
     const md5 = idParts[0];
     const ext = idParts[1].toLowerCase();
     sound.dataFormat = ext;
-    return ((sound.asset && Promise.resolve(sound.asset)) ||
-        runtime.storage.load(runtime.storage.AssetType.Sound, md5, ext))
+    return (
+        (sound.asset && Promise.resolve(sound.asset)) ||
+        runtime.storage.load(runtime.storage.AssetType.Sound, md5, ext)
+    )
         .then(soundAsset => {
             sound.asset = soundAsset;
+
             if (!soundAsset) {
                 log.warn('Failed to find sound data: ', sound.md5);
                 return handleSoundLoadError(sound, runtime, soundBank);
             }
+
             return loadSoundFromAsset(sound, soundAsset, runtime, soundBank);
         })
         .catch(e => {
@@ -96,9 +111,8 @@ const loadSound = function (sound, runtime, soundBank) {
             return handleSoundLoadError(sound, runtime, soundBank);
         });
 };
-export {loadSound};
-export {loadSoundFromAsset};
-export default {
+
+module.exports = {
     loadSound,
     loadSoundFromAsset
 };

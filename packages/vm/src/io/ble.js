@@ -1,4 +1,5 @@
-import JSONRPC from '../util/jsonrpc.js';
+const JSONRPC = require('../util/jsonrpc');
+
 class BLE extends JSONRPC {
     /**
      * A BLE peripheral socket object.  It handles connecting, over web sockets, to
@@ -11,12 +12,15 @@ class BLE extends JSONRPC {
      */
     constructor (runtime, extensionId, peripheralOptions, connectCallback, resetCallback = null) {
         super();
+
         this._socket = runtime.getScratchLinkSocket('BLE');
         this._socket.setOnOpen(this.requestPeripheral.bind(this));
         this._socket.setOnClose(this.handleDisconnectError.bind(this));
         this._socket.setOnError(this._handleRequestError.bind(this));
         this._socket.setHandleMessage(this._handleMessage.bind(this));
+
         this._sendMessage = this._socket.sendMessage.bind(this._socket);
+
         this._availablePeripherals = {};
         this._connectCallback = connectCallback;
         this._connected = false;
@@ -26,8 +30,10 @@ class BLE extends JSONRPC {
         this._extensionId = extensionId;
         this._peripheralOptions = peripheralOptions;
         this._runtime = runtime;
+
         this._socket.open();
     }
+
     /**
      * Request connection to the peripheral.
      * If the web socket is not yet open, request when the socket promise resolves.
@@ -42,6 +48,7 @@ class BLE extends JSONRPC {
             this._handleRequestError(e);
         });
     }
+
     /**
      * Try connecting to the input peripheral id, and then call the connect
      * callback if connection is successful.
@@ -58,6 +65,7 @@ class BLE extends JSONRPC {
                 this._handleRequestError(e);
             });
     }
+
     /**
      * Close the websocket.
      */
@@ -65,21 +73,26 @@ class BLE extends JSONRPC {
         if (this._connected) {
             this._connected = false;
         }
+
         if (this._socket.isOpen()) {
             this._socket.close();
         }
+
         if (this._discoverTimeoutID) {
             window.clearTimeout(this._discoverTimeoutID);
         }
+
         // Sets connection status icon to orange
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_DISCONNECTED);
     }
+
     /**
      * @return {bool} whether the peripheral is connected.
      */
     isConnected () {
         return this._connected;
     }
+
     /**
      * Start receiving notifications from the specified ble service.
      * @param {number} serviceId - the ble service to read.
@@ -97,6 +110,7 @@ class BLE extends JSONRPC {
             this.handleDisconnectError(e);
         });
     }
+
     /**
      * Read from the specified ble service.
      * @param {number} serviceId - the ble service to read.
@@ -120,6 +134,7 @@ class BLE extends JSONRPC {
             this.handleDisconnectError(e);
         });
     }
+
     /**
      * Write data to the specified ble service.
      * @param {number} serviceId - the ble service to write.
@@ -141,6 +156,7 @@ class BLE extends JSONRPC {
             this.handleDisconnectError(e);
         });
     }
+
     /**
      * Handle a received call from the socket.
      * @param {string} method - a received method label.
@@ -178,6 +194,7 @@ class BLE extends JSONRPC {
             return 42;
         }
     }
+
     /**
      * Handle an error resulting from losing connection to a peripheral.
      *
@@ -191,25 +208,30 @@ class BLE extends JSONRPC {
      */
     handleDisconnectError (/* e */) {
         // log.error(`BLE error: ${JSON.stringify(e)}`);
-        if (!this._connected) {
-            return;
-        }
+
+        if (!this._connected) return;
+
         this.disconnect();
+
         if (this._resetCallback) {
             this._resetCallback();
         }
+
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_CONNECTION_LOST_ERROR, {
             message: `Scratch lost connection to`,
             extensionId: this._extensionId
         });
     }
+
     _handleRequestError (/* e */) {
         // log.error(`BLE error: ${JSON.stringify(e)}`);
+
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_REQUEST_ERROR, {
             message: `Scratch lost connection to`,
             extensionId: this._extensionId
         });
     }
+
     _handleDiscoverTimeout () {
         if (this._discoverTimeoutID) {
             window.clearTimeout(this._discoverTimeoutID);
@@ -217,4 +239,5 @@ class BLE extends JSONRPC {
         this._runtime.emit(this._runtime.constructor.PERIPHERAL_SCAN_TIMEOUT);
     }
 }
-export default BLE;
+
+module.exports = BLE;

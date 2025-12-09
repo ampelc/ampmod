@@ -1,4 +1,5 @@
-import Cast from '../util/cast.js';
+const Cast = require('../util/cast');
+
 /**
  * Names used internally for keys used in scratch, also known as "scratch keys".
  * @enum {string}
@@ -24,11 +25,13 @@ const KEY_NAME = {
     PAGE_UP: 'page up',
     PAGE_DOWN: 'page down'
 };
+
 /**
  * A set of the names of Scratch keys.
  * @type {Set<string>}
  */
 const KEY_NAME_SET = new Set(Object.values(KEY_NAME));
+
 class Keyboard {
     constructor (runtime) {
         /**
@@ -51,6 +54,7 @@ class Keyboard {
         this.lastKeyPressed = '';
         this._numeralKeyCodesToStringKey = new Map();
     }
+
     /**
      * Convert from a keyboard event key name to a Scratch key name.
      * @param  {string} keyString the input key string.
@@ -109,6 +113,7 @@ class Keyboard {
         // tw: toUpperCase() happens later. We need to track key case.
         return keyString;
     }
+
     /**
      * Convert from a block argument to a Scratch key name.
      * @param  {string} keyArg the input arg.
@@ -135,17 +140,21 @@ class Keyboard {
                 return KEY_NAME.DOWN;
             }
         }
+
         keyArg = Cast.toString(keyArg);
+
         // If the arg matches a special key name, return it.
         // No special keys have a name that is only 1 character long, so we can avoid the lookup
         // entirely in the most common case.
         if (keyArg.length > 1 && KEY_NAME_SET.has(keyArg)) {
             return keyArg;
         }
+
         // Use only the first character.
         if (keyArg.length > 1) {
             keyArg = keyArg[0];
         }
+
         // Check for the space character.
         if (keyArg === ' ') {
             return KEY_NAME.SPACE;
@@ -159,8 +168,10 @@ class Keyboard {
         if (keyArg === '\u001b') {
             return KEY_NAME.ESCAPE;
         }
+
         return keyArg.toUpperCase();
     }
+
     /**
      * Keyboard DOM event handler.
      * @param  {object} data Data from DOM event.
@@ -173,15 +184,11 @@ class Keyboard {
             this._keysPressed = [];
             return;
         }
-        if (!data.key) {
-            return;
-        }
+        if (!data.key) return;
         // tw: convert single letter keys to uppercase because of changes in _keyStringToScratchKey
         const scratchKeyCased = this._keyStringToScratchKey(data.key);
         const scratchKey = scratchKeyCased.length === 1 ? scratchKeyCased.toUpperCase() : scratchKeyCased;
-        if (scratchKey === '') {
-            return;
-        }
+        if (scratchKey === '') return;
         const index = this._keysPressed.indexOf(scratchKey);
         if (data.isDown) {
             // tw: track last pressed key
@@ -210,6 +217,7 @@ class Keyboard {
             this._numeralKeyCodesToStringKey.set(keyCode, scratchKey);
         }
     }
+
     /**
      * Get key down state for a specified key.
      * @param  {Any} keyArg key argument.
@@ -222,9 +230,11 @@ class Keyboard {
         const scratchKey = this._keyArgToScratchKey(keyArg);
         return this._keysPressed.indexOf(scratchKey) > -1;
     }
+
     // tw: expose last pressed key
     getLastKeyPressed () {
         return this.lastKeyPressed;
     }
 }
-export default Keyboard;
+
+module.exports = Keyboard;

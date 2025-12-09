@@ -1,0 +1,23 @@
+{
+  "baseBranchPatterns": ["develop"],
+  "extends": ["config:recommended"],
+  "gitAuthor": "AmpMod Bot <ampmod-bot@noreply.codeberg.org>",
+  "automerge": true,
+  "packageRules": [
+    {
+      "matchDatasources": ["github-actions"],
+      "enabled": false
+    },
+    {
+      "enabled": true,
+      "automerge": false,
+      "matchUpdateTypes": ["minor", "patch"],
+      "automergeType": "branch",
+      "matchPackageNames": ["*"]
+    }
+  ],
+  "prConcurrentLimit": 10,
+  "dependencyDashboard": true,
+  "timezone": "UTC",
+  "labels": ["Kind/Dependencies"]
+}

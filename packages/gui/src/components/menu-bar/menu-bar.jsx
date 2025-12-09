@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 import * as bowser from 'bowser';
 import React from 'react';
+import isAprilFools from '../../lib/amp-enable-pranks';
 
 import VM from 'scratch-vm';
 
@@ -453,7 +454,6 @@ class MenuBar extends React.Component {
             </Button>
         );
         const today = new Date();
-        const isAprilFools = today.getMonth() === 3 && today.getDate() === 1;
         // Show the About button only if we have a handler for it (like in the desktop app)
         const aboutButton = this.buildAboutMenu(this.props.onClickAbout);
         const menuBar = (

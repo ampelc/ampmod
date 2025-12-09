@@ -1,4 +1,14 @@
-import Base64Util from './base64-util.js';
+/**
+ * @fileoverview
+ * The new URL() and fetch() provided by the browser tend to buckle when dealing with URLs that are
+ * tens of megabytes in length, which can be common when working with data: URLs in extensions.
+ *
+ * To help avoid that, this file can "statically" parse some data: URLs without going through
+ * unreliable browser APIs.
+ */
+
+const Base64Util = require('./base64-util');
+
 /**
  * @param {string} url
  * @returns {Response|null}
@@ -22,4 +32,5 @@ const staticFetch = url => {
     }
     return null;
 };
-export default staticFetch;
+
+module.exports = staticFetch;

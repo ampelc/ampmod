@@ -1,67 +1,83 @@
-import * as formatMessage from 'format-message';
-import languageNames from 'scratch-translate-extension-languages' with { type: 'json' };
-import ArgumentType from '../../extension-support/argument-type.js';
-import BlockType from '../../extension-support/block-type.js';
-import Cast from '../../util/cast.js';
-import MathUtil from '../../util/math-util.js';
-import Clone from '../../util/clone.js';
-import log from '../../util/log.js';
-import {fetchWithTimeout} from '../../util/fetch-with-timeout.js';
+const formatMessage = require('format-message');
+const languageNames = require('scratch-translate-extension-languages');
+
+const ArgumentType = require('../../extension-support/argument-type');
+const BlockType = require('../../extension-support/block-type');
+const Cast = require('../../util/cast');
+const MathUtil = require('../../util/math-util');
+const Clone = require('../../util/clone');
+const log = require('../../util/log');
+const {fetchWithTimeout} = require('../../util/fetch-with-timeout');
+
 /**
  * Icon svg to be displayed in the blocks category menu, encoded as a data URI.
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const menuIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDUyLjIgKDY3MTQ1KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5FeHRlbnNpb25zL1NvZnR3YXJlL1RleHQtdG8tU3BlZWNoLU1lbnU8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZyBpZD0iRXh0ZW5zaW9ucy9Tb2Z0d2FyZS9UZXh0LXRvLVNwZWVjaC1NZW51IiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0idGV4dDJzcGVlY2giIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIuMDAwMDAwLCAyLjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik01Ljc1LDguODM0NjcxNzMgQzUuNzUsOC4zMjY5NjM0NCA1LjAwMzAwNzI3LDguMDQyMjEzNzEgNC41NTYyODAxMiw4LjQ0NDE0OTk5IEwzLjIwNjI4MDEyLDkuNTI1MzU3MDIgQzIuNjk2NzMzNzgsOS45MzM0NDk2OCAyLjAzNzQ4Njc1LDEwLjE2NTg3ODggMS4zNSwxMC4xNjU4Nzg4IEwxLjE1LDEwLjE2NTg3ODggQzAuNjMyNTk2MTY1LDEwLjE2NTg3ODggMC4yNSwxMC41MTA2MDAyIDAuMjUsMTAuOTUyMDM1NSBMMC4yNSwxMy4wNjkzOTkzIEMwLjI1LDEzLjUxMDgzNDYgMC42MzI1OTYxNjUsMTMuODU1NTU2IDEuMTUsMTMuODU1NTU2IEwxLjM1LDEzLjg1NTU1NiBDMi4wNzg3Nzg0MSwxMy44NTU1NTYgMi43MjY4NjE2MSwxNC4wNjY3NjM2IDMuMjU5ODYwNDksMTQuNDk5IEw0LjU1OTIwMTQ3LDE1LjU3OTY2MDggQzUuMDEzMDkyNzYsMTUuOTU0NTM5NiA1Ljc1LDE1LjY3MzYzNDQgNS43NSwxNS4xNDE3MTI4IEw1Ljc1LDguODM0NjcxNzMgWiIgaWQ9InNwZWFrZXIiIHN0cm9rZS1vcGFjaXR5PSIwLjE1IiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMC41IiBmaWxsPSIjNEQ0RDREIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC43MDQ4MzEzLDggQzkuNzkwNjc0NjgsOS4xMzExNDg0NyA4LjMwNjYxODQsOS43MTQyODU3MSA3LjgzMzMzMzMzLDkuNzE0Mjg1NzEgQzcuODMzMzMzMzMsOS43MTQyODU3MSA3LjUsOS43MTQyODU3MSA3LjUsOS4zODA5NTIzOCBDNy41LDkuMDg1MjI2ODQgOC4wNjIyMDE2OCw4LjkwMTk0MTY0IDguMTg5MDYwNjcsNy41Njc1NDA1OCBDNi44ODk5Njk5MSw2LjkwNjc5MDA1IDYsNS41NTczMjY4MyA2LDQgQzYsMS43OTA4NjEgNy43OTA4NjEsNC4wNTgxMjI1MWUtMTYgMTAsMCBMMTIsMCBDMTQuMjA5MTM5LC00LjA1ODEyMjUxZS0xNiAxNiwxLjc5MDg2MSAxNiw0IEMxNiw2LjIwOTEzOSAxNC4yMDkxMzksOCAxMiw4IEwxMC43MDQ4MzEzLDggWiIgaWQ9InNwZWVjaCIgZmlsbD0iIzBFQkQ4QyI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
+const menuIconURI =
+    'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjBweCIgaGVpZ2h0PSIyMHB4IiB2aWV3Qm94PSIwIDAgMjAgMjAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDUyLjIgKDY3MTQ1KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5FeHRlbnNpb25zL1NvZnR3YXJlL1RleHQtdG8tU3BlZWNoLU1lbnU8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZyBpZD0iRXh0ZW5zaW9ucy9Tb2Z0d2FyZS9UZXh0LXRvLVNwZWVjaC1NZW51IiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0idGV4dDJzcGVlY2giIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIuMDAwMDAwLCAyLjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik01Ljc1LDguODM0NjcxNzMgQzUuNzUsOC4zMjY5NjM0NCA1LjAwMzAwNzI3LDguMDQyMjEzNzEgNC41NTYyODAxMiw4LjQ0NDE0OTk5IEwzLjIwNjI4MDEyLDkuNTI1MzU3MDIgQzIuNjk2NzMzNzgsOS45MzM0NDk2OCAyLjAzNzQ4Njc1LDEwLjE2NTg3ODggMS4zNSwxMC4xNjU4Nzg4IEwxLjE1LDEwLjE2NTg3ODggQzAuNjMyNTk2MTY1LDEwLjE2NTg3ODggMC4yNSwxMC41MTA2MDAyIDAuMjUsMTAuOTUyMDM1NSBMMC4yNSwxMy4wNjkzOTkzIEMwLjI1LDEzLjUxMDgzNDYgMC42MzI1OTYxNjUsMTMuODU1NTU2IDEuMTUsMTMuODU1NTU2IEwxLjM1LDEzLjg1NTU1NiBDMi4wNzg3Nzg0MSwxMy44NTU1NTYgMi43MjY4NjE2MSwxNC4wNjY3NjM2IDMuMjU5ODYwNDksMTQuNDk5IEw0LjU1OTIwMTQ3LDE1LjU3OTY2MDggQzUuMDEzMDkyNzYsMTUuOTU0NTM5NiA1Ljc1LDE1LjY3MzYzNDQgNS43NSwxNS4xNDE3MTI4IEw1Ljc1LDguODM0NjcxNzMgWiIgaWQ9InNwZWFrZXIiIHN0cm9rZS1vcGFjaXR5PSIwLjE1IiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMC41IiBmaWxsPSIjNEQ0RDREIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC43MDQ4MzEzLDggQzkuNzkwNjc0NjgsOS4xMzExNDg0NyA4LjMwNjYxODQsOS43MTQyODU3MSA3LjgzMzMzMzMzLDkuNzE0Mjg1NzEgQzcuODMzMzMzMzMsOS43MTQyODU3MSA3LjUsOS43MTQyODU3MSA3LjUsOS4zODA5NTIzOCBDNy41LDkuMDg1MjI2ODQgOC4wNjIyMDE2OCw4LjkwMTk0MTY0IDguMTg5MDYwNjcsNy41Njc1NDA1OCBDNi44ODk5Njk5MSw2LjkwNjc5MDA1IDYsNS41NTczMjY4MyA2LDQgQzYsMS43OTA4NjEgNy43OTA4NjEsNC4wNTgxMjI1MWUtMTYgMTAsMCBMMTIsMCBDMTQuMjA5MTM5LC00LjA1ODEyMjUxZS0xNiAxNiwxLjc5MDg2MSAxNiw0IEMxNiw2LjIwOTEzOSAxNC4yMDkxMzksOCAxMiw4IEwxMC43MDQ4MzEzLDggWiIgaWQ9InNwZWVjaCIgZmlsbD0iIzBFQkQ4QyI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const blockIconURI = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDBweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDAgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDUyLjIgKDY3MTQ1KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5FeHRlbnNpb25zL1NvZnR3YXJlL1RleHQtdG8tU3BlZWNoLUJsb2NrPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGcgaWQ9IkV4dGVuc2lvbnMvU29mdHdhcmUvVGV4dC10by1TcGVlY2gtQmxvY2siIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZS1vcGFjaXR5PSIwLjE1Ij4KICAgICAgICA8ZyBpZD0idGV4dDJzcGVlY2giIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQuMDAwMDAwLCA0LjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjUsMTcuNjY5MzQzNSBDMTEuNSwxNi42NTM5MjY5IDEwLjAwNjAxNDUsMTYuMDg0NDI3NCA5LjExMjU2MDI0LDE2Ljg4ODMgTDYuNDEyNTYwMjQsMTkuMDUwNzE0IEM1LjM5MzQ2NzU1LDE5Ljg2Njg5OTQgNC4wNzQ5NzM1MSwyMC4zMzE3NTc1IDIuNywyMC4zMzE3NTc1IEwyLjMsMjAuMzMxNzU3NSBDMS4yNjUxOTIzMywyMC4zMzE3NTc1IDAuNSwyMS4wMjEyMDAzIDAuNSwyMS45MDQwNzEgTDAuNSwyNi4xMzg3OTg2IEMwLjUsMjcuMDIxNjY5MyAxLjI2NTE5MjMzLDI3LjcxMTExMiAyLjMsMjcuNzExMTEyIEwyLjcsMjcuNzExMTEyIEM0LjE1NzU1NjgyLDI3LjcxMTExMiA1LjQ1MzcyMzIyLDI4LjEzMzUyNzEgNi41MTk3MjA5OCwyOC45OTggTDkuMTE4NDAyOTMsMzEuMTU5MzIxNiBDMTAuMDI2MTg1NSwzMS45MDkwNzkzIDExLjUsMzEuMzQ3MjY4OSAxMS41LDMwLjI4MzQyNTUgTDExLjUsMTcuNjY5MzQzNSBaIiBpZD0ic3BlYWtlciIgZmlsbD0iIzRENEQ0RCI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMjEuNjQzNjA2NiwxNi41IEMxOS45NzcwMDk5LDE4LjQzNzAyMzQgMTcuMTA1MDI3NSwxOS45Mjg1NzE0IDE1LjY2NjY2NjcsMTkuOTI4NTcxNCBDMTUuNTEyNjM5NywxOS45Mjg1NzE0IDE1LjMxNjYyOTIsMTkuODk1OTAzIDE1LjEwOTcyNjUsMTkuNzkyNDUxNyBDMTQuNzM3NjAzOSwxOS42MDYzOTA0IDE0LjUsMTkuMjQ5OTg0NiAxNC41LDE4Ljc2MTkwNDggQzE0LjUsMTguNjU2ODA0MSAxNC41MTcwNTU1LDE4LjU1NDUwNzYgMTQuNTQ5NDQ2NywxOC40NTQwODQ0IEMxNC42MjU3NTQ1LDE4LjIxNzUwNjMgMTUuMTczNTcyMSwxNy40Njc1MzEgMTUuMjc3MjA3MSwxNy4yODA5ODgxIEMxNS41NDYzNTI2LDE2Ljc5NjUyNjEgMTUuNzM5MDI1LDE2LjIwNjM1NjEgMTUuODQzMjg5MSwxNS40MTYwMDM0IEMxMy4xODk3MDA1LDEzLjkyNjgzNjkgMTEuNSwxMS4xMTM5NjY4IDExLjUsOCBDMTEuNSwzLjMwNTU3OTYzIDE1LjMwNTU3OTYsLTAuNSAyMCwtMC41IEwyNCwtMC41IEMyOC42OTQ0MjA0LC0wLjUgMzIuNSwzLjMwNTU3OTYzIDMyLjUsOCBDMzIuNSwxMi42OTQ0MjA0IDI4LjY5NDQyMDQsMTYuNSAyNCwxNi41IEwyMS42NDM2MDY2LDE2LjUgWiIgaWQ9InNwZWVjaCIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
+const blockIconURI =
+    'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDBweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDAgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDUyLjIgKDY3MTQ1KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5FeHRlbnNpb25zL1NvZnR3YXJlL1RleHQtdG8tU3BlZWNoLUJsb2NrPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGcgaWQ9IkV4dGVuc2lvbnMvU29mdHdhcmUvVGV4dC10by1TcGVlY2gtQmxvY2siIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZS1vcGFjaXR5PSIwLjE1Ij4KICAgICAgICA8ZyBpZD0idGV4dDJzcGVlY2giIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQuMDAwMDAwLCA0LjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSIjMDAwMDAwIj4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjUsMTcuNjY5MzQzNSBDMTEuNSwxNi42NTM5MjY5IDEwLjAwNjAxNDUsMTYuMDg0NDI3NCA5LjExMjU2MDI0LDE2Ljg4ODMgTDYuNDEyNTYwMjQsMTkuMDUwNzE0IEM1LjM5MzQ2NzU1LDE5Ljg2Njg5OTQgNC4wNzQ5NzM1MSwyMC4zMzE3NTc1IDIuNywyMC4zMzE3NTc1IEwyLjMsMjAuMzMxNzU3NSBDMS4yNjUxOTIzMywyMC4zMzE3NTc1IDAuNSwyMS4wMjEyMDAzIDAuNSwyMS45MDQwNzEgTDAuNSwyNi4xMzg3OTg2IEMwLjUsMjcuMDIxNjY5MyAxLjI2NTE5MjMzLDI3LjcxMTExMiAyLjMsMjcuNzExMTEyIEwyLjcsMjcuNzExMTEyIEM0LjE1NzU1NjgyLDI3LjcxMTExMiA1LjQ1MzcyMzIyLDI4LjEzMzUyNzEgNi41MTk3MjA5OCwyOC45OTggTDkuMTE4NDAyOTMsMzEuMTU5MzIxNiBDMTAuMDI2MTg1NSwzMS45MDkwNzkzIDExLjUsMzEuMzQ3MjY4OSAxMS41LDMwLjI4MzQyNTUgTDExLjUsMTcuNjY5MzQzNSBaIiBpZD0ic3BlYWtlciIgZmlsbD0iIzRENEQ0RCI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMjEuNjQzNjA2NiwxNi41IEMxOS45NzcwMDk5LDE4LjQzNzAyMzQgMTcuMTA1MDI3NSwxOS45Mjg1NzE0IDE1LjY2NjY2NjcsMTkuOTI4NTcxNCBDMTUuNTEyNjM5NywxOS45Mjg1NzE0IDE1LjMxNjYyOTIsMTkuODk1OTAzIDE1LjEwOTcyNjUsMTkuNzkyNDUxNyBDMTQuNzM3NjAzOSwxOS42MDYzOTA0IDE0LjUsMTkuMjQ5OTg0NiAxNC41LDE4Ljc2MTkwNDggQzE0LjUsMTguNjU2ODA0MSAxNC41MTcwNTU1LDE4LjU1NDUwNzYgMTQuNTQ5NDQ2NywxOC40NTQwODQ0IEMxNC42MjU3NTQ1LDE4LjIxNzUwNjMgMTUuMTczNTcyMSwxNy40Njc1MzEgMTUuMjc3MjA3MSwxNy4yODA5ODgxIEMxNS41NDYzNTI2LDE2Ljc5NjUyNjEgMTUuNzM5MDI1LDE2LjIwNjM1NjEgMTUuODQzMjg5MSwxNS40MTYwMDM0IEMxMy4xODk3MDA1LDEzLjkyNjgzNjkgMTEuNSwxMS4xMTM5NjY4IDExLjUsOCBDMTEuNSwzLjMwNTU3OTYzIDE1LjMwNTU3OTYsLTAuNSAyMCwtMC41IEwyNCwtMC41IEMyOC42OTQ0MjA0LC0wLjUgMzIuNSwzLjMwNTU3OTYzIDMyLjUsOCBDMzIuNSwxMi42OTQ0MjA0IDI4LjY5NDQyMDQsMTYuNSAyNCwxNi41IEwyMS42NDM2MDY2LDE2LjUgWiIgaWQ9InNwZWVjaCIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+';
+
 /**
  * The url of the synthesis server.
  * @type {string}
  */
 const SERVER_HOST = 'https://synthesis-service.scratch.mit.edu';
+
 /**
  * How long to wait in ms before timing out requests to synthesis server.
  * @type {int}
  */
 const SERVER_TIMEOUT = 10000; // 10 seconds
+
 /**
  * Volume for playback of speech sounds, as a percentage.
  * @type {number}
  */
 const SPEECH_VOLUME = 250;
+
 /**
  * An id for one of the voices.
  */
 const ALTO_ID = 'ALTO';
+
 /**
  * An id for one of the voices.
  */
 const TENOR_ID = 'TENOR';
+
 /**
  * An id for one of the voices.
  */
 const SQUEAK_ID = 'SQUEAK';
+
 /**
  * An id for one of the voices.
  */
 const GIANT_ID = 'GIANT';
+
 /**
  * An id for one of the voices.
  */
 const KITTEN_ID = 'KITTEN';
+
 /**
  * Playback rate for the tenor voice, for cases where we have only a female gender voice.
  */
 const FEMALE_TENOR_RATE = 0.89; // -2 semitones
+
 /**
  * Playback rate for the giant voice, for cases where we have only a female gender voice.
  */
 const FEMALE_GIANT_RATE = 0.79; // -4 semitones
+
 /**
  * Language ids. The value for each language id is a valid Scratch locale.
  */
@@ -88,6 +104,7 @@ const SPANISH_419_ID = 'es-419';
 const SWEDISH_ID = 'sv';
 const TURKISH_ID = 'tr';
 const WELSH_ID = 'cy';
+
 /**
  * Class for the text2speech blocks.
  * @constructor
@@ -99,25 +116,30 @@ class Scratch3Text2SpeechBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
         /**
          * Map of soundPlayers by sound id.
          * @type {Map<string, SoundPlayer>}
          */
         this._soundPlayers = new Map();
+
         this._stopAllSpeech = this._stopAllSpeech.bind(this);
         if (this.runtime) {
             this.runtime.on('PROJECT_STOP_ALL', this._stopAllSpeech);
         }
+
         this._onTargetCreated = this._onTargetCreated.bind(this);
         if (this.runtime) {
             runtime.on('targetWasCreated', this._onTargetCreated);
         }
+
         /**
          * A list of all Scratch locales that are supported by the extension.
          * @type {Array}
          */
         this._supportedLocales = this._getSupportedLocales();
     }
+
     /**
      * An object with info for each voice.
      */
@@ -170,6 +192,7 @@ class Scratch3Text2SpeechBlocks {
             }
         };
     }
+
     /**
      * An object with information for each language.
      *
@@ -318,6 +341,7 @@ class Scratch3Text2SpeechBlocks {
             }
         };
     }
+
     /**
      * The key to load & store a target's text2speech state.
      * @return {string} The key.
@@ -325,6 +349,7 @@ class Scratch3Text2SpeechBlocks {
     static get STATE_KEY () {
         return 'Scratch.text2speech';
     }
+
     /**
      * The default state, to be used when a target has no existing state.
      * @type {Text2SpeechState}
@@ -334,6 +359,7 @@ class Scratch3Text2SpeechBlocks {
             voiceId: ALTO_ID
         };
     }
+
     /**
      * A default language to use for speech synthesis.
      * @type {string}
@@ -341,6 +367,7 @@ class Scratch3Text2SpeechBlocks {
     get DEFAULT_LANGUAGE () {
         return ENGLISH_ID;
     }
+
     /**
      * @param {Target} target - collect  state for this target.
      * @returns {Text2SpeechState} the mutable state associated with that target. This will be created if necessary.
@@ -354,6 +381,7 @@ class Scratch3Text2SpeechBlocks {
         }
         return state;
     }
+
     /**
      * When a Target is cloned, clone the state.
      * @param {Target} newTarget - the newly created target.
@@ -369,6 +397,7 @@ class Scratch3Text2SpeechBlocks {
             }
         }
     }
+
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
@@ -383,6 +412,7 @@ class Scratch3Text2SpeechBlocks {
                 description: 'hello: the default text to speak'
             });
         }
+
         return {
             globalExtensions: ['colours_looks'],
             id: 'text2speech',
@@ -454,30 +484,32 @@ class Scratch3Text2SpeechBlocks {
             }
         };
     }
+
     /**
      * Get the language code currently set in the editor, or fall back to the
      * browser locale.
      * @return {string} a Scratch locale code.
      */
     getEditorLanguage () {
-        const locale = formatMessage.setup().locale || navigator.language || navigator.userLanguage || this.DEFAULT_LANGUAGE;
+        const locale =
+            formatMessage.setup().locale || navigator.language || navigator.userLanguage || this.DEFAULT_LANGUAGE;
         return locale.toLowerCase();
     }
+
     /**
      * Get the language code currently set for the extension.
      * @returns {string} a Scratch locale code.
      */
     getCurrentLanguage () {
         const stage = this.runtime.getTargetForStage();
-        if (!stage) {
-            return this.DEFAULT_LANGUAGE;
-        }
+        if (!stage) return this.DEFAULT_LANGUAGE;
         // If no language has been set, set it to the editor locale (or default).
         if (!stage.textToSpeechLanguage) {
             this.setCurrentLanguage(this.getEditorLanguage());
         }
         return stage.textToSpeechLanguage;
     }
+
     /**
      * Set the language code for the extension.
      * It is stored in the stage so it can be saved and loaded with the project.
@@ -485,12 +517,12 @@ class Scratch3Text2SpeechBlocks {
      */
     setCurrentLanguage (locale) {
         const stage = this.runtime.getTargetForStage();
-        if (!stage) {
-            return;
-        }
+        if (!stage) return;
+
         if (this.isSupportedLanguage(locale)) {
             stage.textToSpeechLanguage = this._getExtensionLocaleForSupportedLocale(locale);
         }
+
         // Support language names dropped onto the menu via reporter block
         // such as a variable containing a language name (in any language),
         // or the translate extension's language reporter.
@@ -498,6 +530,7 @@ class Scratch3Text2SpeechBlocks {
         if (localeForDroppedName && this.isSupportedLanguage(localeForDroppedName)) {
             stage.textToSpeechLanguage = this._getExtensionLocaleForSupportedLocale(localeForDroppedName);
         }
+
         // If the language is null, set it to the default language.
         // This can occur e.g. if the extension was loaded with the editor
         // set to a language that is not in the list.
@@ -505,6 +538,7 @@ class Scratch3Text2SpeechBlocks {
             stage.textToSpeechLanguage = this.DEFAULT_LANGUAGE;
         }
     }
+
     /**
      * Get the extension locale for a supported locale, or null.
      * @param {string} locale a locale code.
@@ -518,6 +552,7 @@ class Scratch3Text2SpeechBlocks {
         }
         log.error(`cannot find extension locale for locale ${locale}`);
     }
+
     /**
      * Get the locale code used by the speech synthesis server corresponding to
      * the current language code set for the extension.
@@ -530,6 +565,7 @@ class Scratch3Text2SpeechBlocks {
         }
         return speechSynthLocale;
     }
+
     /**
      * Get an array of the locales supported by this extension.
      * @returns {Array} An array of locale strings.
@@ -537,6 +573,7 @@ class Scratch3Text2SpeechBlocks {
     _getSupportedLocales () {
         return Object.keys(this.LANGUAGE_INFO).reduce((acc, lang) => acc.concat(this.LANGUAGE_INFO[lang].locales), []);
     }
+
     /**
      * Check if a Scratch language code is in the list of supported languages for the
      * speech synthesis service.
@@ -546,6 +583,7 @@ class Scratch3Text2SpeechBlocks {
     isSupportedLanguage (languageCode) {
         return this._supportedLocales.includes(languageCode);
     }
+
     /**
      * Get the menu of voices for the "set voice" block.
      * @return {array} the text and value for each menu item.
@@ -556,6 +594,7 @@ class Scratch3Text2SpeechBlocks {
             value: voiceId
         }));
     }
+
     /**
      * Get the localized menu of languages for the "set language" block.
      * For each language:
@@ -586,6 +625,7 @@ class Scratch3Text2SpeechBlocks {
                 localizedNameMap[lang.code] = lang.name;
             });
         }
+
         return Object.keys(this.LANGUAGE_INFO).map(key => {
             let name = this.LANGUAGE_INFO[key].name;
             const localizedName = localizedNameMap[key];
@@ -600,6 +640,7 @@ class Scratch3Text2SpeechBlocks {
             };
         });
     }
+
     /**
      * Set the voice for speech synthesis for this sprite.
      * @param  {object} args Block arguments
@@ -607,7 +648,9 @@ class Scratch3Text2SpeechBlocks {
      */
     setVoice (args, util) {
         const state = this._getState(util.target);
+
         let voice = args.VOICE;
+
         // If the arg is a dropped number, treat it as a voice index
         let voiceNum = parseInt(voice, 10);
         if (!isNaN(voiceNum)) {
@@ -615,11 +658,13 @@ class Scratch3Text2SpeechBlocks {
             voiceNum = MathUtil.wrapClamp(voiceNum, 0, Object.keys(this.VOICE_INFO).length - 1);
             voice = Object.keys(this.VOICE_INFO)[voiceNum];
         }
+
         // Only set the voice if the arg is a valid voice id.
         if (Object.keys(this.VOICE_INFO).includes(voice)) {
             state.voiceId = voice;
         }
     }
+
     /**
      * Set the language for speech synthesis.
      * @param  {object} args Block arguments
@@ -627,6 +672,7 @@ class Scratch3Text2SpeechBlocks {
     setLanguage (args) {
         this.setCurrentLanguage(args.LANGUAGE);
     }
+
     /**
      * Stop all currently playing speech sounds.
      */
@@ -635,6 +681,7 @@ class Scratch3Text2SpeechBlocks {
             player.stop();
         });
     }
+
     /**
      * Convert the provided text into a sound file and then play the file.
      * @param  {object} args Block arguments
@@ -645,9 +692,12 @@ class Scratch3Text2SpeechBlocks {
         // Cast input to string
         let words = Cast.toString(args.WORDS);
         let locale = this._getSpeechSynthLocale();
+
         const state = this._getState(util.target);
+
         let gender = this.VOICE_INFO[state.voiceId].gender;
         let playbackRate = this.VOICE_INFO[state.voiceId].playbackRate;
+
         // Special case for voices where the synthesis service only provides a
         // single gender voice. In that case, always request the female voice,
         // and set special playback rates for the tenor and giant voices.
@@ -660,25 +710,29 @@ class Scratch3Text2SpeechBlocks {
                 playbackRate = FEMALE_GIANT_RATE;
             }
         }
+
         if (state.voiceId === KITTEN_ID) {
             words = words.replace(/\S+/g, 'meow');
             locale = this.LANGUAGE_INFO[this.DEFAULT_LANGUAGE].speechSynthLocale;
         }
+
         // Build up URL
         let path = `${SERVER_HOST}/synth`;
         path += `?locale=${locale}`;
         path += `&gender=${gender}`;
         path += `&text=${encodeURIComponent(words.substring(0, 128))}`;
+
         // Perform HTTP request to get audio file
         return fetchWithTimeout(path, {}, SERVER_TIMEOUT)
             .then(res => {
                 if (res.status !== 200) {
                     throw new Error(`HTTP ${res.status} error reaching translation service`);
                 }
+
                 return res.arrayBuffer();
             })
             .then(buffer => {
-            // Play the sound
+                // Play the sound
                 const sound = {
                     data: {
                         buffer
@@ -688,12 +742,15 @@ class Scratch3Text2SpeechBlocks {
             })
             .then(soundPlayer => {
                 this._soundPlayers.set(soundPlayer.id, soundPlayer);
+
                 soundPlayer.setPlaybackRate(playbackRate);
+
                 // Increase the volume
                 const engine = this.runtime.audioEngine;
                 const chain = engine.createEffectChain();
                 chain.set('volume', SPEECH_VOLUME);
                 soundPlayer.connect(chain);
+
                 soundPlayer.play();
                 return new Promise(resolve => {
                     soundPlayer.on('stop', () => {
@@ -707,4 +764,4 @@ class Scratch3Text2SpeechBlocks {
             });
     }
 }
-export default Scratch3Text2SpeechBlocks;
+module.exports = Scratch3Text2SpeechBlocks;

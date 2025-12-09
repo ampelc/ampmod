@@ -2,6 +2,7 @@ class UserData {
     constructor () {
         this._username = '';
     }
+
     /**
      * Handler for updating the username
      * @param {object} data Data posted to this ioDevice.
@@ -10,6 +11,7 @@ class UserData {
     postData (data) {
         this._username = data.username;
     }
+
     /**
      * Getter for username. Initially empty string, until set via postData.
      * @returns {!string} The current username
@@ -18,4 +20,5 @@ class UserData {
         return this._username;
     }
 }
-export default UserData;
+
+module.exports = UserData;

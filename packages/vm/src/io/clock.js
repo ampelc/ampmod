@@ -1,4 +1,5 @@
-import Timer from '../util/timer.js';
+const Timer = require('../util/timer');
+
 class Clock {
     constructor (runtime) {
         this._projectTimer = new Timer({now: () => runtime.currentMSecs});
@@ -11,23 +12,28 @@ class Clock {
          */
         this.runtime = runtime;
     }
+
     projectTimer () {
         if (this._paused || this.runtime.isPaused) {
             return this._pausedTime / 1000;
         }
         return this._projectTimer.timeElapsed() / 1000;
     }
+
     pause () {
         this._paused = true;
         this._pausedTime = this._projectTimer.timeElapsed();
     }
+
     resume () {
         this._paused = false;
         const dt = this._projectTimer.timeElapsed() - this._pausedTime;
         this._projectTimer.startTime += dt;
     }
+
     resetProjectTimer () {
         this._projectTimer.start();
     }
 }
-export default Clock;
+
+module.exports = Clock;

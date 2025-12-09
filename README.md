@@ -1,11 +1,11 @@
 # ![AmpMod](packages/gui/src/website/components/header/ampmod.svg)<br>[![CI status](https://ci.codeberg.org/api/badges/15147/status.svg)](https://ci.codeberg.org/repos/15147) [![Multiple licences, click here for more info](https://img.shields.io/badge/licence-multiple,%20click%20here-blue.svg)](LICENSE.md)
 
-This is the source code for the AmpMod editor. AmpMod (formerly UltiBlocks) is a powerful block-based programming language with things like first-class lists,
-making it easier to create larger and more complicated projects.
+This is the source code for the AmpMod editor. AmpMod (formerly UltiBlocks) is a powerful block-based programming
+language mainly focusing on adding more data types to Scratch, as well as dozens of quality-of-life changes.
 
-[![Try AmpMod now!](readme-assets/trynow.svg)](https://ampmod.codeberg.page)
+[![Try AmpMod now!](readme-assets/trynow.svg)](https://ampmod.codeberg.page) 
 
-Canary (newest commits): https://ampmod.codeberg.page/canary
+*To access the canary build which has the newest features at the cost of more bugs, see https://ampmod.codeberg.page/@canary*
 
 ## Included packages
 
@@ -19,19 +19,19 @@ The following packages are included in this monorepo:
 | `desktop`      | The desktop app for AmpMod.                              |
 | `paint`        | The paint editor for creating costumes and backdrops.    |
 | `render-fonts` | A package that contains fonts used in projects.          |
-| `branding`     | Self-explanatory. See [Forking](#forking).               |
+| `branding`     | Branding data. See [Forking](#forking).                  |
 
-Most of these packages have been published to our registry (public):
-https://codeberg.org/ampmod/-/packages
+We have an NPM registry, but it's currently outdated. We hope to update it at some point to make depending on AmpMod's
+packages much easier.
 
-## Setup
+## Development
 
-In AmpMod, `pnpm` is used instead of `npm`. If you use `npm` you will receive an error:
-```
-This project is configured to use pnpm because /path/to/ampmod/package.json has a "packageManager" field
-```
+We use `pnpm` to manage dependencies. To install `pnpm`, run `corepack enable` (Node >= 18) or `npm i -g pnpm` (Node < 18).
 
 Run `pnpm i` in the root directory to install all packages needed.
+
+`desktop`'s dependencies in particular may bloat your system. If you don't need to develop the desktop app, run `pnpm
+--filter=!turbowarp-desktop i` instead.
 
 ## Forking
 
@@ -48,4 +48,4 @@ you to follow these. However, we recommend you do so.
 
 ## Licence
 
-Licencing of each package varies; however, they are all open-source. See [LICENSE.md](LICENSE.md) for more information.
+AmpMod is free software. See [LICENSE.md](LICENSE.md) for more information.

@@ -1,37 +1,44 @@
-import Timer from '../util/timer.js';
-import Thread from './thread.js';
-import execute from './execute.js';
-import compilerExecute from '../compiler/jsexecute.js';
+const Timer = require('../util/timer');
+const Thread = require('./thread');
+const execute = require('./execute.js');
+const compilerExecute = require('../compiler/jsexecute');
+
 /**
  * Profiler frame name for stepping a single thread.
  * @const {string}
  */
 const stepThreadProfilerFrame = 'Sequencer.stepThread';
+
 /**
  * Profiler frame name for the inner loop of stepThreads.
  * @const {string}
  */
 const stepThreadsInnerProfilerFrame = 'Sequencer.stepThreads#inner';
+
 /**
  * Profiler frame name for execute.
  * @const {string}
  */
 const executeProfilerFrame = 'execute';
+
 /**
  * Profiler frame ID for stepThreadProfilerFrame.
  * @type {number}
  */
 let stepThreadProfilerId = -1;
+
 /**
  * Profiler frame ID for stepThreadsInnerProfilerFrame.
  * @type {number}
  */
 let stepThreadsInnerProfilerId = -1;
+
 /**
  * Profiler frame ID for executeProfilerFrame.
  * @type {number}
  */
 let executeProfilerId = -1;
+
 class Sequencer {
     constructor (runtime) {
         /**
@@ -39,13 +46,16 @@ class Sequencer {
          * @type {!Timer}
          */
         this.timer = new Timer();
+
         /**
          * Reference to the runtime owning this sequencer.
          * @type {!Runtime}
          */
         this.runtime = runtime;
+
         this.activeThread = null;
     }
+
     /**
      * Time to run a warp-mode thread, in ms.
      * @type {number}
@@ -53,6 +63,7 @@ class Sequencer {
     static get WARP_TIME () {
         return 500;
     }
+
     /**
      * Step through all threads in `this.runtime.threads`, running them in order.
      * @return {Array.<!Thread>} List of inactive threads after stepping.
@@ -75,16 +86,19 @@ class Sequencer {
         // 1. We must have threads in the list, and some must be active.
         // 2. Time elapsed must be less than WORK_TIME.
         // 3. Either turbo mode, or no redraw has been requested by a primitive.
-        while (this.runtime.threads.length > 0 &&
+        while (
+            this.runtime.threads.length > 0 &&
             numActiveThreads > 0 &&
             this.timer.timeElapsed() < WORK_TIME &&
-            (this.runtime.turboMode || !this.runtime.redrawRequested)) {
+            (this.runtime.turboMode || !this.runtime.redrawRequested)
+        ) {
             if (this.runtime.profiler !== null) {
                 if (stepThreadsInnerProfilerId === -1) {
                     stepThreadsInnerProfilerId = this.runtime.profiler.idByName(stepThreadsInnerProfilerFrame);
                 }
                 this.runtime.profiler.start(stepThreadsInnerProfilerId);
             }
+
             numActiveThreads = 0;
             let stoppedThread = false;
             // Attempt to run each thread one time.
@@ -107,6 +121,7 @@ class Sequencer {
                         if (stepThreadProfilerId === -1) {
                             stepThreadProfilerId = this.runtime.profiler.idByName(stepThreadProfilerFrame);
                         }
+
                         // Increment the number of times stepThread is called.
                         this.runtime.profiler.increment(stepThreadProfilerId);
                     }
@@ -126,9 +141,11 @@ class Sequencer {
             // We successfully ticked once. Prevents running STATUS_YIELD_TICK
             // threads on the next tick.
             ranFirstTick = true;
+
             if (this.runtime.profiler !== null) {
                 this.runtime.profiler.stop();
             }
+
             // Filter inactive threads from `this.runtime.threads`.
             if (stoppedThread) {
                 let nextActiveThread = 0;
@@ -145,9 +162,12 @@ class Sequencer {
                 this.runtime.threads.length = nextActiveThread;
             }
         }
+
         this.activeThread = null;
+
         return doneThreads;
     }
+
     /**
      * Step the requested thread for as long as necessary.
      * @param {!Thread} thread Thread object to step.
@@ -157,10 +177,12 @@ class Sequencer {
             compilerExecute(thread);
             return;
         }
+
         let currentBlockId = thread.peekStack();
         if (!currentBlockId) {
             // A "null block" - empty branch.
             thread.popStack();
+
             // Did the null follow a hat block?
             if (thread.stack.length === 0) {
                 thread.status = Thread.STATUS_DONE;
@@ -182,6 +204,7 @@ class Sequencer {
                 if (executeProfilerId === -1) {
                     executeProfilerId = this.runtime.profiler.idByName(executeProfilerFrame);
                 }
+
                 // Increment the number of times execute is called.
                 this.runtime.profiler.increment(executeProfilerId);
             }
@@ -213,21 +236,26 @@ class Sequencer {
                 return;
             }
             // If no control flow has happened, switch to next block.
-            if (thread.stack.length === initialStackSize &&
+            if (
+                thread.stack.length === initialStackSize &&
                 thread.peekStack() === currentBlockId &&
-                !thread.peekStackFrame().waitingReporter) {
+                !thread.peekStackFrame().waitingReporter
+            ) {
                 thread.goToNextBlock();
             }
             // If no next block has been found at this point, look on the stack.
             while (!thread.peekStack()) {
                 thread.popStack();
+
                 if (thread.stack.length === 0) {
                     // No more stack to run!
                     thread.status = Thread.STATUS_DONE;
                     return;
                 }
+
                 const stackFrame = thread.peekStackFrame();
                 isWarpMode = stackFrame.warpMode;
+
                 if (stackFrame.isLoop) {
                     // The current level of the stack is marked as a loop.
                     // Return to yield for the frame/tick in general.
@@ -252,6 +280,7 @@ class Sequencer {
             }
         }
     }
+
     /**
      * Step a thread into a block's branch.
      * @param {!Thread} thread Thread object to step to branch.
@@ -272,6 +301,7 @@ class Sequencer {
             thread.pushStack(null);
         }
     }
+
     /**
      * Step a procedure.
      * @param {!Thread} thread Thread object to step to procedure.
@@ -316,6 +346,7 @@ class Sequencer {
             }
         }
     }
+
     /**
      * Retire a thread in the middle, without considering further blocks.
      * @param {!Thread} thread Thread object to retire.
@@ -331,4 +362,5 @@ class Sequencer {
         }
     }
 }
-export default Sequencer;
+
+module.exports = Sequencer;

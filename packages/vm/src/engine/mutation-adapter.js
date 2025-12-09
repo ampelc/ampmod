@@ -1,5 +1,6 @@
-import html from 'htmlparser2';
-import decodeHtml from 'decode-html';
+const html = require('htmlparser2');
+const decodeHtml = require('decode-html');
+
 /**
  * Convert a part of a mutation DOM to a mutation VM object, recursively.
  * @param {object} dom DOM object for mutation tag.
@@ -10,9 +11,7 @@ const mutatorTagToObject = function (dom) {
     obj.tagName = dom.name;
     obj.children = [];
     for (const prop in dom.attribs) {
-        if (prop === 'xmlns') {
-            continue;
-        }
+        if (prop === 'xmlns') continue;
         obj[prop] = decodeHtml(dom.attribs[prop]);
         // Note: the capitalization of block info in the following lines is important.
         // The lowercase is read in from xml which normalizes case. The VM uses camel case everywhere else.
@@ -26,6 +25,7 @@ const mutatorTagToObject = function (dom) {
     }
     return obj;
 };
+
 /**
  * Adapter between mutator XML or DOM and block representation which can be
  * used by the Scratch runtime.
@@ -42,4 +42,5 @@ const mutationAdpater = function (mutation) {
     }
     return mutatorTagToObject(mutationParsed);
 };
-export default mutationAdpater;
+
+module.exports = mutationAdpater;

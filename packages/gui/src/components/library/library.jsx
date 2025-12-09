@@ -15,6 +15,7 @@ import SidebarNotice from '../amp-sidebar-notice/sidebar-notice.jsx';
 import {APP_NAME} from '@ampmod/branding';
 import Clippy from '../../containers/amp-clippy.jsx';
 import lsNamespace from '../../lib/amp-localstorage-namespace';
+import sidebarToggleIcon from './icon--sidebar-toggle.svg';
 
 import styles from './library.css';
 
@@ -56,7 +57,8 @@ class LibraryComponent extends React.Component {
             selectedTags: [ALL_TAG.tag],
             canDisplay: false,
             favorites,
-            initialFavorites: favorites
+            initialFavorites: favorites,
+            isSidebarOpen: window.innerWidth > 1450
         };
     }
     componentDidMount() {
@@ -175,12 +177,18 @@ class LibraryComponent extends React.Component {
         const assignOtherTag = dataArr =>
             dataArr.map(dataItem => {
                 if (typeof dataItem !== 'object' || !dataItem) return dataItem;
-                const tags = (dataItem.tags || []).map(t => t.toLowerCase());
+                const tags = (dataItem.tags || []);
                 const ignored = ['scratch', 'tw', 'ampmod'];
-                // If no tags, or only ignored tags, add 'Other'
-                if (tags.length === 0 || tags.every(t => ignored.includes(t))) {
+                const sidebarTags = this.props.tags.map(t => t.tag);
+
+                // Only ignore the ignored tags when deciding if Other is needed
+                const meaningfulTags = tags.filter(t => !ignored.includes(t));
+
+                // If there are no meaningful tags in the sidebar, add Other
+                if (!meaningfulTags.some(tag => sidebarTags.includes(tag))) {
                     return {...dataItem, tags: [...tags, 'Other']};
                 }
+
                 return dataItem;
             });
 
@@ -280,68 +288,79 @@ class LibraryComponent extends React.Component {
                 }
             });
         }
+
         return (
             <Modal fullScreen contentLabel={this.props.title} id={this.props.id} onRequestClose={this.handleClose}>
                 <Clippy messageSet={getClippyMenu()} />
                 <div className={styles.sidebarContainer}>
                     {(this.props.filterable || sidebarTags.length) && (
-                        <div className={styles.filterBar}>
-                            {this.props.filterable && (
-                                <Filter
-                                    className={classNames(styles.filterBarItem, styles.filter)}
-                                    filterQuery={this.state.filterQuery}
-                                    inputClassName={styles.filterInput}
-                                    placeholderText={this.props.intl.formatMessage(messages.filterPlaceholder)}
-                                    onChange={this.handleFilterChange}
-                                    onClear={this.handleFilterClear}
-                                />
-                            )}
-                            {this.props.filterable && sidebarTags.length > 0 && (
-                                <div className={classNames(styles.filterBarItem, styles.divider)} />
-                            )}
-                            {sidebarTags.length > 0 && (
-                                <div className={styles.tagWrapper}>
-                                    {tagListPrefix.concat(sidebarTags).map((tagProps, id) => {
-                                        if (tagProps === '---') {
-                                            return <Separator key={`separator-${id}`} />;
-                                        }
-                                        if (tagProps['heading']) {
+                        <div className={classNames(styles.filterBar, this.state.isSidebarOpen && styles.filterBarOpen)}>
+                            <button
+                                onClick={() => {this.setState({isSidebarOpen: !this.state.isSidebarOpen})}}
+                                className=
+                                    {classNames(styles.openButton, !this.state.isSidebarOpen && styles.openButtonClosed)} 
+                                aria-label={`Filter bar is ${this.state.isSidebarOpen ? 'open' : 'closed'}, select to  ${this.state.isSidebarOpen ? 'close' : 'open'}`}
+                                title={`${this.state.isSidebarOpen ? 'Close' : 'Open'} filter bar`}
+                            >
+                                <img src={sidebarToggleIcon} width={10} draggable='false' aria-hidden='true' />
+                            </button>
+                            {this.state.isSidebarOpen && <div className={styles.filterBarMain}>
+                                {this.props.filterable && (
+                                    <Filter
+                                        className={classNames(styles.filterBarItem, styles.filter)}
+                                        filterQuery={this.state.filterQuery}
+                                        inputClassName={styles.filterInput}
+                                        placeholderText={this.props.intl.formatMessage(messages.filterPlaceholder)}
+                                        onChange={this.handleFilterChange}
+                                        onClear={this.handleFilterClear}
+                                    />
+                                )}
+                                {this.props.filterable && sidebarTags.length > 0 && (
+                                    <div className={classNames(styles.filterBarItem, styles.divider)} />
+                                )}
+                                {sidebarTags.length > 0 && (
+                                    <div className={styles.tagWrapper}>
+                                        {tagListPrefix.concat(sidebarTags).map((tagProps, id) => {
+                                            if (tagProps === '---') {
+                                                return <Separator key={`separator-${id}`} />;
+                                            }
+                                            if (tagProps['heading']) {
+                                                return (
+                                                    <h4>
+                                                        {typeof tagProps.heading === 'string'
+                                                        ? tagProps.heading
+                                                        : this.props.intl.formatMessage(tagProps.heading)}
+                                                    </h4>
+                                                );
+                                            }
                                             return (
-                                                <h4>
-                                                    {typeof tagProps.heading === 'string'
-                                                    ? tagProps.heading
-                                                    : this.props.intl.formatMessage(tagProps.heading)}
-                                                </h4>
+                                                <TagButton
+                                                    active={this.state.selectedTags.includes(tagProps.tag.toLowerCase())}
+                                                    className={classNames(
+                                                        styles.filterBarItem,
+                                                        styles.tagButton,
+                                                        tagProps.className
+                                                    )}
+                                                    key={`tag-button-${id}`}
+                                                    onClick={this.handleTagClick}
+                                                    {...tagProps}
+                                                />
                                             );
-                                        }
-                                        return (
-                                            <TagButton
-                                                active={this.state.selectedTags.includes(tagProps.tag.toLowerCase())}
-                                                className={classNames(
-                                                    styles.filterBarItem,
-                                                    styles.tagButton,
-                                                    tagProps.className
-                                                )}
-                                                key={`tag-button-${id}`}
-                                                onClick={this.handleTagClick}
-                                                {...tagProps}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            )}
-                            {this.props.sidebarNotice && (
-                                <React.Fragment>
-                                    <Separator />
-                                    <SidebarNotice message={this.props.intl.formatMessage(this.props.sidebarNotice)} />
-                                </React.Fragment>
-                            )}
+                                        })}
+                                    </div>
+                                )}
+                                {this.props.sidebarNotice && (
+                                    <React.Fragment>
+                                        <Separator />
+                                        <SidebarNotice message={this.props.intl.formatMessage(this.props.sidebarNotice)} />
+                                    </React.Fragment>
+                                )}
+                            </div>}
                         </div>
                     )}
+                    {this.state.isSidebarOpen && <div className={styles.libraryOverlay} onClick={() => {this.setState({isSidebarOpen: false})}} />}
                     <div
-                        className={classNames(styles.libraryScrollGrid, {
-                            [styles.withFilterBar]: this.props.filterable || this.props.tags
-                        })}
+                        className={styles.libraryScrollGrid}
                         ref={this.setFilteredDataRef}
                     >
                         {filteredData &&

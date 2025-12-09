@@ -1,5 +1,6 @@
-import Cast from '../util/cast.js';
-import MathUtil from '../util/math-util.js';
+const Cast = require('../util/cast.js');
+const MathUtil = require('../util/math-util.js');
+
 class Scratch3OperatorsBlocks {
     constructor (runtime) {
         /**
@@ -8,6 +9,7 @@ class Scratch3OperatorsBlocks {
          */
         this.runtime = runtime;
     }
+
     /**
      * Retrieve the block primitives implemented by this package.
      * @return {object.<string, Function>} Mapping of opcode to Function.
@@ -36,24 +38,31 @@ class Scratch3OperatorsBlocks {
             operator_newline: this.newline
         };
     }
+
     add (args) {
         return Cast.toNumber(args.NUM1) + Cast.toNumber(args.NUM2);
     }
+
     subtract (args) {
         return Cast.toNumber(args.NUM1) - Cast.toNumber(args.NUM2);
     }
+
     multiply (args) {
         return Cast.toNumber(args.NUM1) * Cast.toNumber(args.NUM2);
     }
+
     divide (args) {
         return Cast.toNumber(args.NUM1) / Cast.toNumber(args.NUM2);
     }
+
     exponent (args) {
         return Cast.toNumber(args.NUM1) ** Cast.toNumber(args.NUM2);
     }
+
     lt (args) {
         return Cast.compare(args.OPERAND1, args.OPERAND2) < 0;
     }
+
     equals (args) {
         // amp: Handle case sensitivity.
         // We don't do this with lt or gt since we only expect those to be used for numbers.
@@ -62,18 +71,23 @@ class Scratch3OperatorsBlocks {
         }
         return Cast.compare(args.OPERAND1, args.OPERAND2) === 0;
     }
+
     gt (args) {
         return Cast.compare(args.OPERAND1, args.OPERAND2) > 0;
     }
+
     and (args) {
         return Cast.toBoolean(args.OPERAND1) && Cast.toBoolean(args.OPERAND2);
     }
+
     or (args) {
         return Cast.toBoolean(args.OPERAND1) || Cast.toBoolean(args.OPERAND2);
     }
+
     not (args) {
         return !Cast.toBoolean(args.OPERAND);
     }
+
     random (args) {
         return this._random(args.FROM, args.TO);
     }
@@ -83,18 +97,18 @@ class Scratch3OperatorsBlocks {
         const nTo = Cast.toNumber(to);
         const low = nFrom <= nTo ? nFrom : nTo;
         const high = nFrom <= nTo ? nTo : nFrom;
-        if (low === high) {
-            return low;
-        }
+        if (low === high) return low;
         // If both arguments are ints, truncate the result to an int.
         if (Cast.isInt(from) && Cast.isInt(to)) {
             return low + Math.floor(Math.random() * (high + 1 - low));
         }
         return Math.random() * (high - low) + low;
     }
+
     join (args) {
         return Cast.toString(args.STRING1) + Cast.toString(args.STRING2);
     }
+
     letterOf (args) {
         const index = Cast.toNumber(args.LETTER) - 1;
         const str = Cast.toString(args.STRING);
@@ -104,6 +118,7 @@ class Scratch3OperatorsBlocks {
         }
         return str.charAt(index);
     }
+
     substring (args) {
         const start = Cast.toNumber(args.START) - 1;
         const end = Cast.toNumber(args.END) - 1;
@@ -114,31 +129,35 @@ class Scratch3OperatorsBlocks {
         }
         return str.substring(start, end);
     }
+
     length (args) {
         return Cast.toString(args.STRING).length;
     }
+
     contains (args) {
         const format = function (string) {
             return Cast.toString(string).toLowerCase();
         };
         return format(args.STRING1).includes(format(args.STRING2));
     }
+
     mod (args) {
         const n = Cast.toNumber(args.NUM1);
         const modulus = Cast.toNumber(args.NUM2);
         let result = n % modulus;
         // Scratch mod uses floored division instead of truncated division.
-        if (result / modulus < 0) {
-            result += modulus;
-        }
+        if (result / modulus < 0) result += modulus;
         return result;
     }
+
     round (args) {
         return Math.round(Cast.toNumber(args.NUM));
     }
+
     newline () {
         return '\n';
     }
+
     mathop (args) {
         const operator = Cast.toString(args.OPERATOR).toLowerCase();
         const n = Cast.toNumber(args.NUM);
@@ -175,4 +194,5 @@ class Scratch3OperatorsBlocks {
         return 0;
     }
 }
-export default Scratch3OperatorsBlocks;
+
+module.exports = Scratch3OperatorsBlocks;

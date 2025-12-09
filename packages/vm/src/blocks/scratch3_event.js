@@ -1,4 +1,5 @@
-import Cast from '../util/cast.js';
+const Cast = require('../util/cast');
+
 class Scratch3EventBlocks {
     constructor (runtime) {
         /**
@@ -6,6 +7,7 @@ class Scratch3EventBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
         this.runtime.on('KEY_PRESSED', key => {
             this.runtime.startHats('event_whenkeypressed', {
                 KEY_OPTION: key
@@ -15,6 +17,7 @@ class Scratch3EventBlocks {
             });
         });
     }
+
     /**
      * Retrieve the block primitives implemented by this package.
      * @return {object.<string, Function>} Mapping of opcode to Function.
@@ -27,6 +30,7 @@ class Scratch3EventBlocks {
             event_whengreaterthan: this.hatGreaterThanPredicate
         };
     }
+
     getHats () {
         return {
             event_whenflagclicked: {
@@ -60,9 +64,11 @@ class Scratch3EventBlocks {
             }
         };
     }
+
     touchingObject (args, util) {
         return util.target.isTouchingObject(args.TOUCHINGOBJECTMENU);
     }
+
     hatGreaterThanPredicate (args, util) {
         const option = Cast.toString(args.WHENGREATERTHANMENU).toLowerCase();
         const value = Cast.toNumber(args.VALUE);
@@ -74,6 +80,7 @@ class Scratch3EventBlocks {
         }
         return false;
     }
+
     broadcast (args, util) {
         const broadcastVar = util.runtime
             .getTargetForStage()
@@ -85,6 +92,7 @@ class Scratch3EventBlocks {
             });
         }
     }
+
     broadcastAndWait (args, util) {
         if (!util.stackFrame.broadcastVar) {
             util.stackFrame.broadcastVar = util.runtime
@@ -110,7 +118,9 @@ class Scratch3EventBlocks {
             // runtime.threads. Threads that have run all their blocks, or are
             // marked done but still in runtime.threads are still considered to
             // be waiting.
-            const waiting = util.stackFrame.startedThreads.some(thread => instance.runtime.threads.indexOf(thread) !== -1);
+            const waiting = util.stackFrame.startedThreads.some(
+                thread => instance.runtime.threads.indexOf(thread) !== -1
+            );
             if (waiting) {
                 // If all threads are waiting for the next tick or later yield
                 // for a tick as well. Otherwise yield until the next loop of
@@ -124,4 +134,5 @@ class Scratch3EventBlocks {
         }
     }
 }
-export default Scratch3EventBlocks;
+
+module.exports = Scratch3EventBlocks;

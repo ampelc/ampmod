@@ -10,6 +10,7 @@ import { detectTheme } from '../lib/themes/themePersistance';
 import ErrorBoundary from '../containers/error-boundary';
 import Header from '../website/components/header/header';
 import Footer from '../website/components/footer/footer';
+import Spinner from '../components/tw-loading-spinner/spinner';
 
 const Interface = lazy(() => import(/* webpackChunkName: "interface" */ './render-interface'));
 const Embed = lazy(() => import(/* webpackChunkName: "embed" */ './embed'));
@@ -53,7 +54,7 @@ render(
   <ErrorBoundary>
     <Router basename={String(process.env.ROOT || '').replace(/\/+$/, "")} future={{ v7_startTransition: true }}>
       <Suspense fallback={
-        <div className={styles.launching} />
+        <div className={styles.launching}><Spinner bare isWhite />{process.env.ampmod_mode === "canary" && "Canary: expect bugs. Most features here will eventually be on the main site."}</div>
       }>
         <Routes>
           <Route path="/" element={<Home />} />

@@ -9,6 +9,7 @@ class VariableUtil {
         }
         return accum;
     }
+
     /**
      * Get all variable/list references in the given list of targets
      * in the project.
@@ -23,6 +24,7 @@ class VariableUtil {
             .map(t => t.blocks.getAllVariableAndListReferences(null, shouldIncludeBroadcast))
             .reduce(VariableUtil._mergeVarRefObjects, {});
     }
+
     /**
      * Give all variable references provided a new id and possibly new name.
      * @param {Array<object>} referencesToUpdate Context of the change, the object containing variable
@@ -42,4 +44,5 @@ class VariableUtil {
         });
     }
 }
-export default VariableUtil;
+
+module.exports = VariableUtil;

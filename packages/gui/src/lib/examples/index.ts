@@ -11,14 +11,14 @@ type ExampleMeta = {
 };
 
 const examples: Record<string, ExampleMeta> = {
-    "101": {
+    /* "101": {
         id: '101',
         by: 'AmpMod',
         img: require("./images/ampmod101.svg"),
         loader: () =>
             // @ts-ignore
             alert("Not implemented"),
-    },
+    }, */
     griffpatch: {
         id: 'griffpatch',
         by: 'DNin01',

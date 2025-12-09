@@ -1,5 +1,5 @@
-import immutable from 'immutable';
-const {Record} = immutable;
+const {Record} = require('immutable');
+
 const MonitorRecord = Record({
     id: null, // Block Id
     /** Present only if the monitor is sprite-specific, such as x position */
@@ -19,4 +19,5 @@ const MonitorRecord = Record({
     height: 0,
     visible: true
 });
-export default MonitorRecord;
+
+module.exports = MonitorRecord;

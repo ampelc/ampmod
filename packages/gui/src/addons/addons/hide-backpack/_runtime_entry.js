@@ -2,7 +2,7 @@
 import _js from "./userscript.js";
 import _css from "!css-loader!./border.css";
 import _css2 from "!css-loader!./button.css";
-import _asset from "!url-loader!./backpack.svg";
+import _asset from "./backpack.svg";
 export const resources = {
   "userscript.js": _js,
   "border.css": _css,

@@ -103,7 +103,7 @@
     filter: var(--menu-bar-icon-filter);
 }
 
-@media (prefers-reduced-motion: no-preference) {
+:global(.amp-gui-animations-enabled) {
     .menu-bar-item.logo:hover {
         background-color: transparent;
     }
@@ -268,7 +268,7 @@
     text-decoration: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+:global(.amp-gui-animations-enabled) {
     .menu-bar-item,
     :global(.sa-record) {
         transition:

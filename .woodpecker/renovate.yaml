@@ -1,0 +1,16 @@
+when:
+  event:
+    - cron
+    - manual
+    - push
+
+steps:
+  - name: run-renovate
+    image: renovate/renovate:latest
+    environment:
+      RENOVATE_TOKEN:
+        from_secret: cbtoken
+      GITHUB_COM_TOKEN:
+        from_secret: ghtoken
+    commands:
+      - RENOVATE_CONFIG_FILE=/woodpecker/src/codeberg.org/ampmod/ampmod/renovate.json5 RENOVATE_ENDPOINT=https://codeberg.org/api/v1/ RENOVATE_PLATFORM=forgejo renovate ampmod/ampmod

@@ -45,7 +45,7 @@ steps:
           # Set up git in a working way
           - git config --global --add safe.directory /woodpecker/src/codeberg.org/ampmod/ampmod/amp-build
           - git config --global user.email "no@thankyou.com"
-          - git config --global user.name "CI Builder"
+          - git config --global user.name "AmpMod Bot"
           # clone and move the target repo
           - git clone -b canary --depth=1 https://$CBTOKEN@codeberg.org/ampmod/pages.git amp-build
           - chmod -R a+w amp-build
@@ -73,7 +73,7 @@ steps:
           # Set up git in a working way
           - git config --global --add safe.directory /woodpecker/src/codeberg.org/ampmod/ampmod/amp-build
           - git config --global user.email "no@thankyou.com"
-          - git config --global user.name "CI Builder"
+          - git config --global user.name "AmpMod Bot"
           # Navigate to the canary build directory
           - cd ./amp-build
           # Remove all previous files, then copy in the new build

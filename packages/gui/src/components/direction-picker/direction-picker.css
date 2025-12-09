@@ -1,4 +1,55 @@
+@import '../../css/colors.css';
+@import '../../css/units.css';
+
 .button-row {
     justify-content: center;
     margin-bottom: 1rem;
+}
+
+.popover-arrow {
+    fill: $popover-background;
+}
+
+.popover-content {
+    background-color: $popover-background;
+    border: 1px solid $ui-black-transparent;
+    padding: 4px;
+    border-radius: $roundedness;
+    will-change: transform, opacity;
+
+    &[data-state='open'][data-side='top'] {
+        animation: slideFadeTop 0.3s ease forwards;
+    }
+
+    &[data-state='open'][data-side='bottom'] {
+        animation: slideFadeBottom 0.3s ease forwards;
+    }
+
+    &[data-state='open'][data-side='left'] {
+        animation: slideFadeLeft 0.3s ease forwards;
+    }
+
+    &[data-state='open'][data-side='right'] {
+        animation: slideFadeRight 0.3s ease forwards;
+    }
+}
+
+@keyframes slideFadeTop {
+    from { opacity: 0; transform: translateY(-40px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideFadeBottom {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideFadeLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideFadeRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
 }

@@ -1,5 +1,6 @@
-import uid from '../util/uid.js';
-import frameSource from './tw-load-script-as-plain-text!./tw-iframe-extension-worker-entry';
+const uid = require('../util/uid');
+const frameSource = require('./tw-load-script-as-plain-text!./tw-iframe-extension-worker-entry');
+
 const none = "'none'";
 const featurePolicy = {
     'accelerometer': none,
@@ -26,15 +27,19 @@ const featurePolicy = {
     'web-share': none,
     'interest-cohort': none
 };
-const generateAllow = () => Object.entries(featurePolicy)
-    .map(([name, permission]) => `${name} ${permission}`)
-    .join('; ');
+
+const generateAllow = () =>
+    Object.entries(featurePolicy)
+        .map(([name, permission]) => `${name} ${permission}`)
+        .join('; ');
+
 class IframeExtensionWorker {
     constructor () {
         this.id = uid();
         this.isRemote = true;
         this.ready = false;
         this.queuedMessages = [];
+
         this.iframe = document.createElement('iframe');
         this.iframe.className = 'tw-custom-extension-frame';
         this.iframe.dataset.id = this.id;
@@ -43,15 +48,20 @@ class IframeExtensionWorker {
         this.iframe.sandbox = 'allow-scripts';
         this.iframe.allow = generateAllow();
         document.body.appendChild(this.iframe);
+
         window.addEventListener('message', this._onWindowMessage.bind(this));
-        const blob = new Blob([
-            // eslint-disable-next-line max-len
-            `<!DOCTYPE html><body><script>window.__WRAPPED_IFRAME_ID__=${JSON.stringify(this.id)};${frameSource}</script></body>`
-        ], {
-            type: 'text/html; charset=utf-8'
-        });
+        const blob = new Blob(
+            [
+                // eslint-disable-next-line max-len
+                `<!DOCTYPE html><body><script>window.__WRAPPED_IFRAME_ID__=${JSON.stringify(this.id)};${frameSource}</script></body>`
+            ],
+            {
+                type: 'text/html; charset=utf-8'
+            }
+        );
         this.iframe.src = URL.createObjectURL(blob);
     }
+
     _onWindowMessage (e) {
         if (!e.data || e.data.vmIframeId !== this.id) {
             return;
@@ -69,9 +79,11 @@ class IframeExtensionWorker {
             });
         }
     }
+
     onmessage () {
         // Should be overridden
     }
+
     postMessage (data, transfer) {
         if (this.ready) {
             if (transfer) {
@@ -84,4 +96,5 @@ class IframeExtensionWorker {
         }
     }
 }
-export default IframeExtensionWorker;
+
+module.exports = IframeExtensionWorker;

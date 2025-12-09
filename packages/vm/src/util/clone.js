@@ -13,4 +13,5 @@ class Clone {
         return JSON.parse(JSON.stringify(original));
     }
 }
-export default Clone;
+
+module.exports = Clone;

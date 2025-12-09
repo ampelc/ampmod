@@ -1,43 +1,53 @@
-import * as formatMessage from 'format-message';
-import ArgumentType from '../../extension-support/argument-type.js';
-import BlockType from '../../extension-support/block-type.js';
-import Cast from '../../util/cast.js';
+const formatMessage = require('format-message');
+const ArgumentType = require('../../extension-support/argument-type');
+const BlockType = require('../../extension-support/block-type');
+const Cast = require('../../util/cast');
+
 /**
  * Icon svg to be displayed at the left edge of each extension block, encoded as a data URI.
  * @type {string}
  */
 // eslint-disable-next-line max-len
-const blockIconURI = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHN0eWxlPi5zdDJ7ZmlsbDpyZWR9LnN0M3tmaWxsOiNlMGUwZTB9LnN0NHtmaWxsOm5vbmU7c3Ryb2tlOiM2NjY7c3Ryb2tlLXdpZHRoOi41O3N0cm9rZS1taXRlcmxpbWl0OjEwfTwvc3R5bGU+PHBhdGggZD0iTTM1IDI4SDVhMSAxIDAgMCAxLTEtMVYxMmMwLS42LjQtMSAxLTFoMzBjLjUgMCAxIC40IDEgMXYxNWMwIC41LS41IDEtMSAxeiIgZmlsbD0iI2ZmZiIgaWQ9IkxheWVyXzYiLz48ZyBpZD0iTGF5ZXJfNCI+PHBhdGggY2xhc3M9InN0MiIgZD0iTTQgMjVoMzJ2Mi43SDR6TTEzIDI0aC0yLjJhMSAxIDAgMCAxLTEtMXYtOS43YzAtLjYuNC0xIDEtMUgxM2MuNiAwIDEgLjQgMSAxVjIzYzAgLjYtLjUgMS0xIDF6Ii8+PHBhdGggY2xhc3M9InN0MiIgZD0iTTYuMSAxOS4zdi0yLjJjMC0uNS40LTEgMS0xaDkuN2MuNSAwIDEgLjUgMSAxdjIuMmMwIC41LS41IDEtMSAxSDcuMWExIDEgMCAwIDEtMS0xeiIvPjxjaXJjbGUgY2xhc3M9InN0MiIgY3g9IjIyLjgiIGN5PSIxOC4yIiByPSIzLjQiLz48Y2lyY2xlIGNsYXNzPSJzdDIiIGN4PSIzMC42IiBjeT0iMTguMiIgcj0iMy40Ii8+PHBhdGggY2xhc3M9InN0MiIgZD0iTTQuMiAyN2gzMS45di43SDQuMnoiLz48L2c+PGcgaWQ9IkxheWVyXzUiPjxjaXJjbGUgY2xhc3M9InN0MyIgY3g9IjIyLjgiIGN5PSIxOC4yIiByPSIyLjMiLz48Y2lyY2xlIGNsYXNzPSJzdDMiIGN4PSIzMC42IiBjeT0iMTguMiIgcj0iMi4zIi8+PHBhdGggY2xhc3M9InN0MyIgZD0iTTEyLjUgMjIuOWgtMS4yYy0uMyAwLS41LS4yLS41LS41VjE0YzAtLjMuMi0uNS41LS41aDEuMmMuMyAwIC41LjIuNS41djguNGMwIC4zLS4yLjUtLjUuNXoiLz48cGF0aCBjbGFzcz0ic3QzIiBkPSJNNy4yIDE4Ljd2LTEuMmMwLS4zLjItLjUuNS0uNWg4LjRjLjMgMCAuNS4yLjUuNXYxLjJjMCAuMy0uMi41LS41LjVINy43Yy0uMyAwLS41LS4yLS41LS41ek00IDI2aDMydjJINHoiLz48L2c+PGcgaWQ9IkxheWVyXzMiPjxwYXRoIGNsYXNzPSJzdDQiIGQ9Ik0zNS4yIDI3LjlINC44YTEgMSAwIDAgMS0xLTFWMTIuMWMwLS42LjUtMSAxLTFoMzAuNWMuNSAwIDEgLjQgMSAxVjI3YTEgMSAwIDAgMS0xLjEuOXoiLz48cGF0aCBjbGFzcz0ic3Q0IiBkPSJNMzUuMiAyNy45SDQuOGExIDEgMCAwIDEtMS0xVjEyLjFjMC0uNi41LTEgMS0xaDMwLjVjLjUgMCAxIC40IDEgMVYyN2ExIDEgMCAwIDEtMS4xLjl6Ii8+PC9nPjwvc3ZnPg==';
+const blockIconURI =
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHN0eWxlPi5zdDJ7ZmlsbDpyZWR9LnN0M3tmaWxsOiNlMGUwZTB9LnN0NHtmaWxsOm5vbmU7c3Ryb2tlOiM2NjY7c3Ryb2tlLXdpZHRoOi41O3N0cm9rZS1taXRlcmxpbWl0OjEwfTwvc3R5bGU+PHBhdGggZD0iTTM1IDI4SDVhMSAxIDAgMCAxLTEtMVYxMmMwLS42LjQtMSAxLTFoMzBjLjUgMCAxIC40IDEgMXYxNWMwIC41LS41IDEtMSAxeiIgZmlsbD0iI2ZmZiIgaWQ9IkxheWVyXzYiLz48ZyBpZD0iTGF5ZXJfNCI+PHBhdGggY2xhc3M9InN0MiIgZD0iTTQgMjVoMzJ2Mi43SDR6TTEzIDI0aC0yLjJhMSAxIDAgMCAxLTEtMXYtOS43YzAtLjYuNC0xIDEtMUgxM2MuNiAwIDEgLjQgMSAxVjIzYzAgLjYtLjUgMS0xIDF6Ii8+PHBhdGggY2xhc3M9InN0MiIgZD0iTTYuMSAxOS4zdi0yLjJjMC0uNS40LTEgMS0xaDkuN2MuNSAwIDEgLjUgMSAxdjIuMmMwIC41LS41IDEtMSAxSDcuMWExIDEgMCAwIDEtMS0xeiIvPjxjaXJjbGUgY2xhc3M9InN0MiIgY3g9IjIyLjgiIGN5PSIxOC4yIiByPSIzLjQiLz48Y2lyY2xlIGNsYXNzPSJzdDIiIGN4PSIzMC42IiBjeT0iMTguMiIgcj0iMy40Ii8+PHBhdGggY2xhc3M9InN0MiIgZD0iTTQuMiAyN2gzMS45di43SDQuMnoiLz48L2c+PGcgaWQ9IkxheWVyXzUiPjxjaXJjbGUgY2xhc3M9InN0MyIgY3g9IjIyLjgiIGN5PSIxOC4yIiByPSIyLjMiLz48Y2lyY2xlIGNsYXNzPSJzdDMiIGN4PSIzMC42IiBjeT0iMTguMiIgcj0iMi4zIi8+PHBhdGggY2xhc3M9InN0MyIgZD0iTTEyLjUgMjIuOWgtMS4yYy0uMyAwLS41LS4yLS41LS41VjE0YzAtLjMuMi0uNS41LS41aDEuMmMuMyAwIC41LjIuNS41djguNGMwIC4zLS4yLjUtLjUuNXoiLz48cGF0aCBjbGFzcz0ic3QzIiBkPSJNNy4yIDE4Ljd2LTEuMmMwLS4zLjItLjUuNS0uNWg4LjRjLjMgMCAuNS4yLjUuNXYxLjJjMCAuMy0uMi41LS41LjVINy43Yy0uMyAwLS41LS4yLS41LS41ek00IDI2aDMydjJINHoiLz48L2c+PGcgaWQ9IkxheWVyXzMiPjxwYXRoIGNsYXNzPSJzdDQiIGQ9Ik0zNS4yIDI3LjlINC44YTEgMSAwIDAgMS0xLTFWMTIuMWMwLS42LjUtMSAxLTFoMzAuNWMuNSAwIDEgLjQgMSAxVjI3YTEgMSAwIDAgMS0xLjEuOXoiLz48cGF0aCBjbGFzcz0ic3Q0IiBkPSJNMzUuMiAyNy45SDQuOGExIDEgMCAwIDEtMS0xVjEyLjFjMC0uNi41LTEgMS0xaDMwLjVjLjUgMCAxIC40IDEgMVYyN2ExIDEgMCAwIDEtMS4xLjl6Ii8+PC9nPjwvc3ZnPg==';
+
 /**
  * Length of the buffer to store key presses for the "when keys pressed in order" hat
  * @type {number}
  */
 const KEY_BUFFER_LENGTH = 100;
+
 /**
  * Timeout in milliseconds to reset the completed flag for a sequence.
  * @type {number}
  */
 const SEQUENCE_HAT_TIMEOUT = 100;
+
 /**
  * An id for the space key on a keyboard.
  */
 const KEY_ID_SPACE = 'SPACE';
+
 /**
  * An id for the left arrow key on a keyboard.
  */
 const KEY_ID_LEFT = 'LEFT';
+
 /**
  * An id for the right arrow key on a keyboard.
  */
 const KEY_ID_RIGHT = 'RIGHT';
+
 /**
  * An id for the up arrow key on a keyboard.
  */
 const KEY_ID_UP = 'UP';
+
 /**
  * An id for the down arrow key on a keyboard.
  */
 const KEY_ID_DOWN = 'DOWN';
+
 /**
  * Names used by keyboard io for keys used in scratch.
  * @enum {string}
@@ -49,6 +59,7 @@ const SCRATCH_KEY_NAME = {
     [KEY_ID_RIGHT]: 'right arrow',
     [KEY_ID_DOWN]: 'down arrow'
 };
+
 /**
  * Class for the makey makey blocks in Scratch 3.0
  * @constructor
@@ -60,20 +71,25 @@ class Scratch3MakeyMakeyBlocks {
          * @type {Runtime}
          */
         this.runtime = runtime;
+
         /**
          * A toggle that alternates true and false each frame, so that an
          * edge-triggered hat can trigger on every other frame.
          * @type {boolean}
          */
         this.frameToggle = false;
+
         // Set an interval that toggles the frameToggle every frame.
         setInterval(() => {
             this.frameToggle = !this.frameToggle;
         }, this.runtime.currentStepTime);
+
         this.keyPressed = this.keyPressed.bind(this);
         this.runtime.on('KEY_PRESSED', this.keyPressed);
+
         this._clearkeyPressBuffer = this._clearkeyPressBuffer.bind(this);
         this.runtime.on('PROJECT_STOP_ALL', this._clearkeyPressBuffer);
+
         /*
          * An object containing a set of sequence objects.
          * These are the key sequences currently being detected by the "when
@@ -86,12 +102,14 @@ class Scratch3MakeyMakeyBlocks {
          * @type {object}
          */
         this.sequences = {};
+
         /*
          * An array of the key codes of recently pressed keys.
          * @type {array}
          */
         this.keyPressBuffer = [];
     }
+
     /*
      * Localized short-form names of the space bar and arrow keys, for use in the
      * displayed menu items of the "when keys pressed in order" block.
@@ -126,6 +144,7 @@ class Scratch3MakeyMakeyBlocks {
             })
         };
     }
+
     /*
      * An array of strings of KEY_IDs representing the default set of
      * key sequences for use by the "when keys pressed in order" block.
@@ -145,6 +164,7 @@ class Scratch3MakeyMakeyBlocks {
                 `${KEY_ID_LEFT} ${KEY_ID_RIGHT} ${KEY_ID_LEFT} ${KEY_ID_RIGHT}`
         ];
     }
+
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
@@ -247,6 +267,7 @@ class Scratch3MakeyMakeyBlocks {
             }
         };
     }
+
     /*
      * Build the menu of key sequences.
      * @param {array} sequencesArray an array of strings of KEY_IDs.
@@ -255,6 +276,7 @@ class Scratch3MakeyMakeyBlocks {
     buildSequenceMenu (sequencesArray) {
         return sequencesArray.map(str => this.getMenuItemForSequenceString(str));
     }
+
     /*
      * Create a menu item for a sequence string.
      * @param {string} sequenceString a string of KEY_IDs.
@@ -268,6 +290,7 @@ class Scratch3MakeyMakeyBlocks {
             value: sequenceString
         };
     }
+
     /*
      * Check whether a keyboard key is currently pressed.
      * Also, toggle the results of the test on alternate frames, so that the
@@ -286,6 +309,7 @@ class Scratch3MakeyMakeyBlocks {
         const isDown = util.ioQuery('keyboard', 'getKeyIsDown', [key]);
         return isDown && this.frameToggle;
     }
+
     /*
      * A function called on the KEY_PRESSED event, to update the key press
      * buffer and check if any of the key sequences have been completed.
@@ -329,12 +353,14 @@ class Scratch3MakeyMakeyBlocks {
             }
         }
     }
+
     /**
      * Clear the key press buffer.
      */
     _clearkeyPressBuffer () {
         this.keyPressBuffer = [];
     }
+
     /*
      * Add a key sequence to the set currently being checked on each key press.
      * @param {string} sequenceString a string of space-separated KEY_IDs.
@@ -350,6 +376,7 @@ class Scratch3MakeyMakeyBlocks {
             completed: false
         };
     }
+
     /*
      * Check whether a key sequence was recently completed.
      * @param {object} args The block arguments.
@@ -362,7 +389,8 @@ class Scratch3MakeyMakeyBlocks {
             return;
         }
         this.addSequence(sequenceString, sequenceArray);
+
         return this.sequences[sequenceString].completed;
     }
 }
-export default Scratch3MakeyMakeyBlocks;
+module.exports = Scratch3MakeyMakeyBlocks;
