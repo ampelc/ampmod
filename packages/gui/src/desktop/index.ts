@@ -4,9 +4,13 @@ import path from 'path';
 import { fileURLToPath } from 'node:url';
 import { APP_NAME } from '@ampmod/branding';
 import { setupProtocols } from './protocols.js';
+import { createRequire } from 'node:module';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const require = createRequire(import.meta.url);
+const { version } = require("./../../../../package.json");
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -54,6 +58,13 @@ const createWindow = () => {
       callback({ redirectURL: localPath });
     }
   );
+
+  win.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+    // Mods: If you modify AmpMod, change the referer and user agent, BUT change the user agent to "AmpMod/fork [fork name]/${version}"
+    details.requestHeaders['User-Agent'] += ` AmpMod/${version}`;
+    details.requestHeaders['Referer'] = 'https://ampmod.codeberg.page/desktop-referer.html';
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
 
   win.webContents.on('before-input-event', (event, input) => {
     if ((input.control && input.shift && input.key.toLowerCase() === 'i') || input.key === 'F12') {
