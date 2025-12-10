@@ -183,7 +183,7 @@ ipcMain.on('open-desktop-settings', () => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    show: true,
+    show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
@@ -192,13 +192,14 @@ ipcMain.on('open-desktop-settings', () => {
 
   win.setMenu(null);
   win.loadURL('amp-gui://./desktop-settings.html');
+  win.once('ready-to-show', () => win.show());
 });
 
 ipcMain.on('open-addon-settings', () => {
   const win = new BrowserWindow({
     width: 850,
     height: 900,
-    show: true,
+    show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
@@ -208,13 +209,14 @@ ipcMain.on('open-addon-settings', () => {
   win.setMenu(null);
   buildContextMenu(win);
   win.loadURL('amp-gui://./addons.html');
+  win.once('ready-to-show', () => win.show());
 });
 
 ipcMain.on('open-addon', (_event, addonId) => {
   const win = new BrowserWindow({
     width: 850,
     height: 900,
-    show: true,
+    show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
@@ -224,6 +226,7 @@ ipcMain.on('open-addon', (_event, addonId) => {
   win.setMenu(null);
   buildContextMenu(win);
   win.loadURL(`amp-gui://./addons.html#${addonId}`);
+  win.once('ready-to-show', () => win.show());
 });
 
 ipcMain.on('open-about', () => {
