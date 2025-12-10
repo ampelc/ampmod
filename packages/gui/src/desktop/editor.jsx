@@ -91,6 +91,12 @@ class Interface extends React.Component {
                         backpackVisible
                         backpackHost="_local_"
                         isScratchDesktop
+                        onClickAbout={[
+                            { title: `Use ${APP_NAME} online`, onClick: () => location.replace('https://ampmod.codeberg.page')},
+                            { title: `${APP_NAME} Wiki (external)`, onClick: () => location.replace('https://ampmod.miraheze.org')},
+                            { title: 'About', onClick: () => window._AMP_INTERNAL_API.openAbout()},
+
+                        ]}
                         {...props}
                     />
                 </div>

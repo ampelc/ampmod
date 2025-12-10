@@ -7,6 +7,8 @@ import { setupProtocols } from './protocols.js';
 import { createRequire } from 'node:module';
 import { buildContextMenu } from './utilities/build-context-menu.ts';
 import { buildOfflineGallery } from './utilities/build-offline-gallery.ts';
+import fs from 'fs';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -119,11 +121,10 @@ const createWindow = () => {
 
   win.webContents.on('will-navigate', (event, url) => {
     const u = new URL(url);
+    const segments = u.pathname.split('/').filter(Boolean);
 
-    if (u.hostname === "ampmod.codeberg.page") {
+    if (u.hostname === "ampmod.codeberg.page" && segments[0] === "extensions") {
       event.preventDefault();
-
-      const segments = u.pathname.split('/').filter(Boolean);
 
       const newWin = new BrowserWindow({
         width: 450,
@@ -131,7 +132,7 @@ const createWindow = () => {
         show: true,
         title: APP_NAME,
         webPreferences: {
-          preload: path.join(__dirname, "preload.cjs"),
+          preload: path.join(__dirname, "preload-infoPages.cjs"),
           contextIsolation: true
         }
       });
@@ -146,13 +147,8 @@ const createWindow = () => {
         shell.openExternal(url);
       });
   
-      if (segments[0] === "extensions") {
-        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}`;
-        newWin.loadURL(galleryURL);
-      } else {
-        const localURL = `amp-gui://./${segments.join('/')}`;
-        newWin.loadURL(localURL);
-      }
+      const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}`;
+      newWin.loadURL(galleryURL);
 
       return;
     }
@@ -228,4 +224,60 @@ ipcMain.on('open-addon', (_event, addonId) => {
   win.setMenu(null);
   buildContextMenu(win);
   win.loadURL(`amp-gui://./addons.html#${addonId}`);
+});
+
+ipcMain.on('open-about', () => {
+  const win = new BrowserWindow({
+    width: 700,
+    height: 450,
+    resizable: false,
+    show: true,
+    webPreferences: {
+      preload: path.join(__dirname, "preload-about.cjs"),
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  win.setMenu(null);
+  win.loadURL(`desktop-info://./about.html`);
+  win.webContents.on('will-navigate', (event, url) => {
+    event.preventDefault();
+    shell.openExternal(url);
+  });
+});
+
+ipcMain.on('version', event => {
+  event.returnValue = version;
+});
+
+function getDistro() {
+  if (process.platform === 'linux') {
+    try {
+      const data = fs.readFileSync('/etc/os-release', 'utf8');
+      const name = data.match(/^NAME="?(.+?)"?$/m)?.[1];
+      const version = data.match(/^VERSION="?(.+?)"?$/m)?.[1];
+      return `${name} ${version}`;
+    } catch {
+      return `Linux ${os.release()}`;
+    }
+  }
+
+  if (process.platform === 'darwin') {
+    return `macOS ${os.release()}`;
+  }
+
+  if (process.platform === 'win32') {
+    return `Windows ${os.release()}`;
+  }
+
+  return `Unknown ${os.release()}`;
+}
+
+ipcMain.on('get-system-info', event => {
+  const electronVersion = process.versions.electron;
+  const distro = getDistro();
+  const arch = process.arch;
+
+  event.returnValue = `Electron v${electronVersion}, ${distro} ${arch}`;
 });

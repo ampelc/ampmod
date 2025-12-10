@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>About - AmpMod</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        *{margin:0; padding: 0;}
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #4fa55c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 20px 20px 20px;
+        }
+
+        .text {
+            text-align: left;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        a {
+          color: inherit;
+        }
+
+        button {
+            background: white;
+            color: #4fa55c;
+            padding: 5px 10px;
+            font-weight: bold;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            background-image: url('desktop-info://./logo.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .bottom-bar {
+            height: 40px;
+            background-color: rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            padding: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="text">
+            <h1>AmpMod</h1>
+            <p>Block-based programming, amplified.</p>
+            <p>Version <span id="version"></span></p>
+            <p><small id="sysinfo"></small></p>
+            <button onclick="window.close()">OK</button>
+            <script>
+              window.document.getElementById('version').innerText = window._AMP_INTERNAL_API.version();
+              window.document.getElementById('sysinfo').innerText = window._AMP_INTERNAL_API.sysinfo();
+          </script>
+        </div>
+        <div class="logo"></div>
+    </div>
+    <div class="bottom-bar">
+        <span>AmpMod is free software. <a href="https://codeberg.org/ampmod/ampmod">Contribute on Codeberg.</a></span>
+    </div>
+</body>
+</html>

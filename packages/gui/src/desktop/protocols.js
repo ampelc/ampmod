@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 protocol.registerSchemesAsPrivileged([
   { scheme: 'amp-gui', privileges: { standard: true, supportFetchAPI: true, secure: true } },
   { scheme: 'ampmod-extension-gallery', privileges: { standard: true, supportFetchAPI: true, secure: true } },
+  { scheme: 'desktop-info', privileges: { standard: true, supportFetchAPI: true, secure: true } },
 ]);
 
 const MIME_TYPES = {
@@ -58,6 +59,12 @@ export const setupProtocols = () => {
         headers: { 'content-type': 'text/html' }
       });
     }
+  });
+  protocol.registerFileProtocol('desktop-info', (request, callback) => {
+    let url = request.url.replace('desktop-info://', '');
+    url = url.replace(/^\/+|\/+$/g, '');
+    const filePath = path.join(__dirname, 'pages', url);
+    callback({ path: filePath });
   });
   protocol.handle('ampmod-extension-gallery', async (request) => {
     try {

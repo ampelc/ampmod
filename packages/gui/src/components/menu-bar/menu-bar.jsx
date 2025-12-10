@@ -393,11 +393,24 @@ class MenuBar extends React.Component {
                 onOpen={this.props.onRequestOpenAbout}
                 onClose={this.props.onRequestCloseAbout}
             >
-                <img className={styles.aboutIcon} src={aboutIcon} draggable={false} />
+                <img
+                    src={
+                        process.env.ampmod_mode === 'canary'
+                            ? ampmodCanaryIcon
+                            : isAprilFools
+                                ? lampmodIcon
+                                : ampmodIcon
+                    }
+                    draggable={false}
+                    className={styles.aboutIcon}
+                    height={25}
+                    className="no-sa-compact-hide"
+                    alt="AmpMod"
+                />
                 <MenuBarMenu
                     className={classNames(styles.menuBarMenu)}
                     open={this.props.aboutMenuOpen}
-                    place={this.props.isRtl ? 'right' : 'left'}
+                    place={this.props.isRtl ? 'left' : 'right'}
                 >
                     {onClickAbout.map(itemProps => (
                         <MenuItem
