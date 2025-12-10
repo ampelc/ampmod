@@ -1,0 +1,83 @@
+@import '../../css/colors.css';
+@import '../../css/units.css';
+
+/* Buttons */
+.button {
+    border: none;
+    background-color: $motion-primary;
+    color: white;
+    border-radius: $roundedness;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: $motion-tertiary;
+}
+
+.dangerButton {
+    background-color: $red-primary;
+    color: white;
+
+    &:hover {
+        background-color: $red-tertiary;
+    }
+}
+
+/* Settings container */
+.settingsContainer {
+    max-width: 700px;
+    margin: auto;
+    padding: $margin;
+    background-color: $page-background;
+    border-radius: $roundedness;
+    box-shadow: $shadow;
+}
+
+/* Headings and description */
+.header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: $margin;
+    color: $page-foreground;
+}
+
+.description {
+    font-size: 1rem;
+    margin-bottom: $margin;
+    color: $text-primary;
+}
+
+/* Individual settings item */
+.settingItem {
+    margin-bottom: $margin;
+}
+
+/* Checkbox labels */
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+    color: $text-primary;
+}
+
+.toggleInput {
+    margin-right: $margin;
+}
+
+/* Label text */
+.labelText {
+    user-select: none;
+}
+
+/* Notes under settings */
+.note {
+    font-size: 0.875rem;
+    color: $text-primary-transparent;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}

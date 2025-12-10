@@ -315,7 +315,12 @@ module.exports = [
                 './src/website/design.css'
             ],
             'editor': './src/playground/editor.jsx',
-            'editor-desktop': './src/desktop/render-editor.jsx',
+            ...(process.env.BUILD_TARGET === "desktop" || process.env.NODE_ENV !== "production"
+                ? {
+                    'editor-desktop': './src/desktop/render-editor.jsx',
+                    'desktop-settings': './src/desktop/settings/settings.jsx',
+                }
+                : {}),
             'fullscreen': './src/playground/fullscreen.jsx',
             'embed': './src/playground/embed.jsx',
             'addon-settings': './src/playground/addon-settings.jsx',
@@ -358,6 +363,14 @@ module.exports = [
                     filename:
                         'editor-desktop.html',
                     title: APP_NAME,
+                    ...htmlWebpackPluginCommon
+                }),
+                new HtmlWebpackPlugin({
+                    chunks: ["desktop-settings"],
+                    template: "src/playground/index.ejs",
+                    filename:
+                        'desktop-settings.html',
+                    title: `Desktop Settings - ${APP_NAME}`,
                     ...htmlWebpackPluginCommon
                 }),
             ] : [],

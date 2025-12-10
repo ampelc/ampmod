@@ -194,7 +194,8 @@ ipcMain.on('open-desktop-settings', () => {
     }
   });
 
-  win.loadURL('amp-gui://./settings.html');
+  win.setMenu(null);
+  win.loadURL('amp-gui://./desktop-settings.html');
 });
 
 ipcMain.on('open-addon-settings', () => {
