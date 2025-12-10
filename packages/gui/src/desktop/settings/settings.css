@@ -35,6 +35,9 @@
     background-color: $page-background;
     border-radius: $roundedness;
     box-shadow: $shadow;
+
+    /* To make it feel more like a native app */
+    user-select: none;
 }
 
 /* Headings and description */
