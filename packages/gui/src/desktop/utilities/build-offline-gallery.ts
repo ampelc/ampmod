@@ -1,0 +1,48 @@
+import { shell, BrowserWindow } from 'electron';
+import { APP_NAME } from '@ampmod/branding';
+import path from 'path';
+import { fileURLToPath } from 'node:url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const buildOfflineGallery = win => {
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    const u = new URL(url);
+
+    // hack so the tile on the extension library linking to our gallery online works
+    if (u.pathname === "/extensions/" || u.pathname === "/extensions") {
+      shell.openExternal(url);
+      return { action: "deny" };
+    }
+
+    if (u.hostname === "ampmod.codeberg.page") {
+      const segments = u.pathname.split('/').filter(Boolean);
+
+      const newWin = new BrowserWindow({
+        width: 700,
+        height: 800,
+        show: true,
+        title: APP_NAME,
+        webPreferences: {
+          preload: path.join(__dirname, "../preload-infoPages.cjs"),
+          contextIsolation: true,
+        }
+      });
+
+      newWin.setMenu(null);
+
+      if (segments[0] === "extensions") {
+        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}.html`;
+        newWin.loadURL(galleryURL);
+      } else {
+        const localURL = `amp-gui://./${segments.join('/')}`;
+        newWin.loadURL(localURL);
+      }
+
+      return { action: "deny" };
+    }
+
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+}

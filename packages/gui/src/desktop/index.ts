@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { APP_NAME } from '@ampmod/branding';
 import { setupProtocols } from './protocols.js';
 import { createRequire } from 'node:module';
+import { buildContextMenu } from './utilities/build-context-menu.ts';
+import { buildOfflineGallery } from './utilities/build-offline-gallery.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -115,46 +117,6 @@ const createWindow = () => {
     });
   });
 
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    const u = new URL(url);
-
-    // hack so the tile on the extension library linking to our gallery online works
-    if (u.pathname === "/extensions/" || u.pathname === "/extensions") {
-      shell.openExternal(url);
-      return { action: "deny" };
-    }
-
-    if (u.hostname === "ampmod.codeberg.page") {
-      const segments = u.pathname.split('/').filter(Boolean);
-
-      const newWin = new BrowserWindow({
-        width: 700,
-        height: 800,
-        show: true,
-        title: APP_NAME,
-        webPreferences: {
-          preload: path.join(__dirname, "preload-infoPages.cjs"),
-          contextIsolation: true,
-        }
-      });
-
-      newWin.setMenu(null);
-
-      if (segments[0] === "extensions") {
-        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}.html`;
-        newWin.loadURL(galleryURL);
-      } else {
-        const localURL = `amp-gui://./${segments.join('/')}`;
-        newWin.loadURL(localURL);
-      }
-
-      return { action: "deny" };
-    }
-
-    shell.openExternal(url);
-    return { action: 'deny' };
-  });
-
   win.webContents.on('will-navigate', (event, url) => {
     const u = new URL(url);
 
@@ -202,6 +164,9 @@ const createWindow = () => {
     }
   });
 
+  buildContextMenu(win);
+  buildOfflineGallery(win);
+
   win.loadURL('amp-gui://./editor-desktop.html');
 };
 
@@ -229,5 +194,37 @@ ipcMain.on('open-desktop-settings', () => {
     }
   });
 
-  win.loadURL('amp-gui://settings/settings.html');
+  win.loadURL('amp-gui://./settings.html');
+});
+
+ipcMain.on('open-addon-settings', () => {
+  const win = new BrowserWindow({
+    width: 850,
+    height: 900,
+    show: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  win.setMenu(null);
+  buildContextMenu(win);
+  win.loadURL('amp-gui://./addons.html');
+});
+
+ipcMain.on('open-addon', (_event, addonId) => {
+  const win = new BrowserWindow({
+    width: 850,
+    height: 900,
+    show: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  win.setMenu(null);
+  buildContextMenu(win);
+  win.loadURL(`amp-gui://./addons.html#${addonId}`);
 });

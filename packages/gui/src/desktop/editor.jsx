@@ -53,11 +53,13 @@ if (AddonChannels.changeChannel) {
     });
 }
 
-const handleClickAddonSettings = addonId => {
-    // addonId might be a string of the addon to focus on, undefined, or an event (treat like undefined)
-    const path = process.env.ROUTING_STYLE === 'wildcard' ? 'addons' : 'addons.html';
-    const url = `${process.env.ROOT}${path}${typeof addonId === 'string' ? `#${addonId}` : ''}`;
-    window.open(url);
+const handleClickAddonSettings = (addonId) => {
+    // Electron passes objects to this for some strange reason
+    if (typeof addonId === 'string') {
+        window._AMP_INTERNAL_API.openAddon(addonId);
+        return;
+    }
+    window._AMP_INTERNAL_API.openAddonSettings();
 };
 
 class Interface extends React.Component {
@@ -84,7 +86,7 @@ class Interface extends React.Component {
                         onClickAddonSettings={handleClickAddonSettings}
                         onUpdateProjectTitle={this.handleUpdateProjectTitle}
                         onClickDesktopSettings={() => {
-                            window.electronAPI.openDesktopSettings();
+                            window._AMP_INTERNAL_API.openDesktopSettings();
                         }}
                         backpackVisible
                         backpackHost="_local_"
