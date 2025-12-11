@@ -192,7 +192,7 @@ ipcMain.on('open-desktop-settings', () => {
     }
   });
 
-  // win.setMenu(null);
+  win.setMenu(null);
   win.loadURL('amp-gui://./desktop-settings.html');
   win.once('ready-to-show', () => win.show());
 });
