@@ -97,6 +97,11 @@ const DesktopSettings = () => {
         </label>
       </div>
       <div>
+        <button className={styles.button} onClick={() => {api.openUserData()}}>
+          Open Data Folder
+        </button>
+      </div>
+      <div>
         <button className={`${styles.button} ${styles.dangerButton}`} onClick={handleReset}>
           Reset
         </button>

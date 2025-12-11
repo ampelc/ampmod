@@ -166,6 +166,7 @@ const createWindow = () => {
   win.loadURL('amp-gui://./editor-desktop.html');
 };
 
+app.setName(APP_NAME.replaceAll(' ', '-'));
 app.whenReady().then(() => {
   setupProtocols();
   createWindow();
@@ -185,12 +186,13 @@ ipcMain.on('open-desktop-settings', () => {
     height: 600,
     show: false,
     webPreferences: {
+      preload: path.join(__dirname, "settings/preload.cjs"),
       nodeIntegration: false,
       contextIsolation: true
     }
   });
 
-  win.setMenu(null);
+  // win.setMenu(null);
   win.loadURL('amp-gui://./desktop-settings.html');
   win.once('ready-to-show', () => win.show());
 });
@@ -283,4 +285,8 @@ ipcMain.on('get-system-info', event => {
   const arch = process.arch;
 
   event.returnValue = `Electron v${electronVersion}, ${distro} ${arch}`;
+});
+
+ipcMain.on('open-user-data', () => {
+  shell.openPath(app.getPath('userData'));
 });
