@@ -22,6 +22,10 @@ const root = process.env.ROOT || '';
 if (root.length > 0 && !root.endsWith('/')) {
     throw new Error('If ROOT is defined, it must have a trailing slash.');
 }
+const aw3root = process.env.AW3ROOT || '';
+if (aw3root.length > 0 && !aw3root.endsWith('/')) {
+    throw new Error('If AW3ROOT is defined, it must have a trailing slash.');
+}
 
 if (process.env.ENABLE_SERVICE_WORKER) {
     console.warn(
@@ -247,6 +251,7 @@ const base = {
                 process.env.DISABLE_SERVICE_WORKER || ""
             ),
             "process.env.ROOT": JSON.stringify(root),
+            "process.env.AW3ROOT": JSON.stringify(aw3root),
             "process.env.AW3": Boolean(process.env.AW3),
             "process.env.SPA": Boolean(process.env.SPA),
             "process.env.ROUTING_STYLE": JSON.stringify(

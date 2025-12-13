@@ -8,8 +8,7 @@ import {setAuthor, setDescription} from '../reducers/tw';
 
 export const fetchProjectMeta = async projectId => {
     const urls = [
-        `https://trampoline.turbowarp.org/api/projects/${projectId}`,
-        `https://trampoline.turbowarp.xyz/api/projects/${projectId}`
+        `${process.env.AW3ROOT}projects/${projectId}/editor-data`
     ];
     let firstError;
     for (const url of urls) {

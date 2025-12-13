@@ -110,6 +110,7 @@ import ampmodIcon from './tw-advanced.svg';
 import ampmodCanaryIcon from './ampmod-canary.svg';
 import lampmodIcon from './lampmod.svg';
 import SmartLink from '../../website/components/smart-link/smart-link';
+import AccountNav from '../../containers/account-nav.jsx';
 
 const ariaMessages = defineMessages({
     tutorials: {
@@ -554,7 +555,7 @@ class MenuBar extends React.Component {
                                 />
                             </a>
                         }
-                        {(this.props.canChangeTheme || this.props.canChangeLanguage) && (
+                        {(this.props.canChangeTheme || this.props.canChangeLanguage) && !process.env.AW3 && (
                             <SettingsMenu
                                 canChangeLanguage={this.props.canChangeLanguage}
                                 canChangeTheme={this.props.canChangeTheme}
@@ -996,6 +997,19 @@ class MenuBar extends React.Component {
                             </a>
                         </div>
                     )}
+                    <AccountNav
+                        className={classNames(
+                            styles.menuBarItem,
+                            styles.hoverable,
+                            {[styles.active]: this.props.accountMenuOpen}
+                        )}
+                        isOpen={this.props.accountMenuOpen}
+                        isRtl={this.props.isRtl}
+                        menuBarMenuClassName={classNames(styles.menuBarMenu)}
+                        onClick={this.props.onClickAccount}
+                        onClose={this.props.onRequestCloseAccount}
+                        onLogOut={this.props.onLogOut}
+                    />
                 </div>
             </Box>
         );

@@ -33,7 +33,7 @@ const AccountNavComponent = ({
     username
 }) => (
     <React.Fragment>
-        <div className={classNames(styles.userInfo, className)} onMouseUp={onClick}>
+        <div className={classNames(styles.userInfo, className)} onMouseUp={isOpen ? onClose : onClick}>
             {thumbnailUrl ? <UserAvatar className={styles.avatar} imageUrl={thumbnailUrl} /> : null}
             <span className={styles.profileName}>{username}</span>
             <div className={styles.dropdownCaretPosition}>
@@ -52,14 +52,14 @@ const AccountNavComponent = ({
                 <FormattedMessage
                     defaultMessage="Profile"
                     description="Text to link to my user profile, in the account navigation menu"
-                    id="gui.accountMenu.profile"
+                    id="amp.profile"
                 />
             </MenuItemContainer>
             <MenuItemContainer href="/mystuff/">
                 <FormattedMessage
                     defaultMessage="My Stuff"
                     description="Text to link to list of my projects, in the account navigation menu"
-                    id="gui.accountMenu.myStuff"
+                    id="amp.myStuff"
                 />
             </MenuItemContainer>
             {isEducator ? (
@@ -80,11 +80,11 @@ const AccountNavComponent = ({
                     />
                 </MenuItemContainer>
             ) : null}
-            <MenuItemContainer href="/accounts/settings/">
+            <MenuItemContainer href="/settings">
                 <FormattedMessage
-                    defaultMessage="Account settings"
-                    description="Text to link to my account settings, in the account navigation menu"
-                    id="gui.accountMenu.accountSettings"
+                    defaultMessage="Settings"
+                    description="Settings menu"
+                    id="gui.menuBar.settings"
                 />
             </MenuItemContainer>
             <MenuSection>
@@ -92,7 +92,7 @@ const AccountNavComponent = ({
                     <FormattedMessage
                         defaultMessage="Sign out"
                         description="Text to link to sign out, in the account navigation menu"
-                        id="gui.accountMenu.signOut"
+                        id="amp.signOut"
                     />
                 </MenuItemContainer>
             </MenuSection>

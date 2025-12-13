@@ -23,32 +23,6 @@ import storage from './storage';
 import VM from 'scratch-vm';
 import {fetchProjectMeta} from './tw-project-meta-fetcher-hoc.jsx';
 
-// TW: Temporary hack for project tokens
-const fetchProjectToken = async projectId => {
-    if (projectId === '0') {
-        return null;
-    }
-    // Parse ?token=abcdef
-    const searchParams = new URLSearchParams(location.search);
-    if (searchParams.has('token')) {
-        return searchParams.get('token');
-    }
-    // Parse #1?token=abcdef
-    const hashParams = new URLSearchParams(location.hash.split('?')[1]);
-    if (hashParams.has('token')) {
-        return hashParams.get('token');
-    }
-    try {
-        const metadata = await fetchProjectMeta(projectId);
-        return metadata.project_token;
-    } catch (e) {
-        log.error(e);
-        throw new Error(
-            'Cannot access project token. Project is probably unshared. See https://docs.turbowarp.org/unshared-projects'
-        );
-    }
-};
-
 /* Higher Order Component to provide behavior for loading projects by id. If
  * there's no id, the default project is loaded.
  * @param {React.Component} WrappedComponent component to receive projectData prop
@@ -141,11 +115,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                     })
                     .then(buffer => ({data: buffer}));
             } else {
-                // TW: Temporary hack for project tokens
-                assetPromise = fetchProjectToken(projectId).then(token => {
-                    storage.setProjectToken(token);
-                    return storage.load(storage.AssetType.Project, projectId, storage.DataFormat.JSON);
-                });
+                assetPromise = storage.load(storage.AssetType.Project, projectId, storage.DataFormat.JSON);
             }
 
             return assetPromise
@@ -208,8 +178,8 @@ const ProjectFetcherHOC = function (WrappedComponent) {
     };
 
     ProjectFetcherComponent.defaultProps = {
-        assetHost: 'https://assets.scratch.mit.edu',
-        projectHost: 'https://projects.scratch.mit.edu'
+        assetHost: `${process.env.AW3ROOT}apz/assetsapi`,
+        projectHost: `${process.env.AW3ROOT}apz/projectsapi`
     };
 
     const mapStateToProps = state => ({

@@ -14,6 +14,8 @@ const RenderGUI = props => {
             basePath={process.env.ROOT}
             canEditTitle
             enableCommunity={!window.isPwa}
+            canChangeTheme={!process.env.AW3}
+            canShare={process.env.AW3}
             {...props}
         />
     );
