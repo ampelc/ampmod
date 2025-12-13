@@ -33,6 +33,8 @@
     background-image: $menu-bar-background-image;
     color: $menu-bar-foreground;
     border-bottom: 1px $menu-bar-bottom-border solid;
+
+    padding-inline: $margin;
 }
 
 .main-menu {
@@ -164,11 +166,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-}
-
-.account-info-group .menu-bar-item {
-    margin: 0 0.25rem;
-    padding: 0 0.75rem;
 }
 
 .mystuff-icon {

@@ -1,15 +1,13 @@
 @import '../../css/colors.css';
+@import '../../css/units.css';
 
 .community-button {
     box-shadow: 0 0 0 1px $menu-bar-hover;
+    height: $menu-bar-button-size;
 }
 
 .community-button-icon {
     height: 1.25rem;
     transition: transform 0.4s ease;
     filter: var(--menu-bar-icon-filter);
-}
-
-.community-button:hover .community-button-icon {
-    transform: rotateZ(-360deg);
 }

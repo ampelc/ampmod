@@ -517,7 +517,7 @@ class MenuBar extends React.Component {
                                 </MenuLabel>
                             </div>
                         )}
-                        {(isScratchDesktop && aboutButton) || (
+                        {(isScratchDesktop && aboutButton) || !process.env.AW3 && (
                             <SmartLink className={classNames(styles.menuBarItem, styles.logo)} to="/" target="_blank">
                                 <img
                                     src={
@@ -532,9 +532,28 @@ class MenuBar extends React.Component {
                                     className="no-sa-compact-hide"
                                     alt="AmpMod"
                                 />
-                                <div className={styles.logoGround} />
                             </SmartLink>
                         )}
+                        { // The need for a separate link for aw3 is driven by the simple fact that SmartLink will end up
+                          // resolving to something like /ampmod/ as the AW3 build has ROOT=/ampmod/ (which is what aw3
+                          // uses internally for serving the editor).
+                          process.env.AW3 &&
+                            <a className={classNames(styles.menuBarItem, styles.logo)} href="/" target="_blank">
+                                <img
+                                    src={
+                                        process.env.ampmod_mode === 'canary'
+                                            ? ampmodCanaryIcon
+                                            : isAprilFools
+                                              ? lampmodIcon
+                                              : ampmodIcon
+                                    }
+                                    draggable={false}
+                                    height={25}
+                                    className="no-sa-compact-hide"
+                                    alt="AmpMod"
+                                />
+                            </a>
+                        }
                         {(this.props.canChangeTheme || this.props.canChangeLanguage) && (
                             <SettingsMenu
                                 canChangeLanguage={this.props.canChangeLanguage}
@@ -920,6 +939,7 @@ class MenuBar extends React.Component {
                             username={this.props.authorUsername}
                         />
                     ) : null}
+                    {this.props.projectId !== '0' && <CommunityButton onClick={() => location.replace(`/projects/${this.props.projectId}`)} />}
                     {this.props.canShare ? (
                         (this.props.isShowingProject || this.props.isUpdating) && (
                             <div className={classNames(styles.menuBarItem)}>

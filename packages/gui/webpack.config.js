@@ -75,6 +75,7 @@ const base = {
         compress: true,
         port: process.env.PORT || 8601,
         // allows ROUTING_STYLE=wildcard to work properly
+        // amp: AW3 and SPA as well
         historyApiFallback: {
             rewrites: process.env.SPA ? [ {from: /./, to: '/index.html'} ] : [
                 {from: /^\/\d+\/?$/, to: '/index.html'},
@@ -83,8 +84,11 @@ const base = {
                     to: '/fullscreen/index.html'
                 },
                 {from: /^\/\d+\/editor\/?$/, to: '/editor.html'},
+                {from: /^\/projects\/editor\/?$/, to: '/editor.html'},
+                {from: /^\/projects\/editor\/fullscreen\/?$/, to: '/fullscreen.html'},
                 {from: /^\/\d+\/embed\/?$/, to: '/embed.html'},
                 {from: /^\/addons\/?$/, to: '/addons.html'},
+                {from: /^\/settings\/addons\/?$/, to: '/addons.html'},
                 {from: /^\/new-compiler\/?$/, to: '/new-compiler.html'},
                 {from: /^\/examples\/?$/, to: '/examples.html'},
                 {from: /./, to: '/404.html'}
