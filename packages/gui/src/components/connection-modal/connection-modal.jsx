@@ -58,8 +58,4 @@ ConnectionModalComponent.propTypes = {
     useAutoScan: PropTypes.bool.isRequired
 };
 
-ConnectionModalComponent.defaultProps = {
-    connectingMessage: 'Connecting'
-};
-
 export {ConnectionModalComponent as default, PHASES};

@@ -53,16 +53,16 @@ class ComingSoonContent extends React.Component {
         const imageNumber = Math.floor(Math.random() * Object.keys(images).length);
 
         return (
-            <FormattedMessage
+            (<FormattedMessage
                 {...messages[`message${messageNumber}`]}
                 values={{
                     emoji: (
                         // We shouldn't be using the cat images since they are trademarks of Scratch
                         // so how about an emoticon instead?
-                        <span>:)</span>
+                        (<span>:)</span>)
                     )
                 }}
-            />
+            />)
         );
     }
 
@@ -121,12 +121,6 @@ ComingSoonTooltip.propTypes = {
     delayShow: PropTypes.number,
     place: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
     tooltipClassName: PropTypes.string
-};
-
-ComingSoonTooltip.defaultProps = {
-    delayHide: 0,
-    delayShow: 0,
-    place: 'bottom'
 };
 
 export { ComingSoon as ComingSoonComponent, ComingSoonTooltip };

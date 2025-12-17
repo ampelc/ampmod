@@ -17,9 +17,4 @@ Label.propTypes = {
     text: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired
 };
 
-Label.defaultProps = {
-    above: false,
-    secondary: false
-};
-
 export default Label;

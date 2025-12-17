@@ -73,6 +73,31 @@ const getFullscreenBackgroundColor = () => {
 const fullscreenBackgroundColor = getFullscreenBackgroundColor();
 
 const GUIComponent = props => {
+    props = {
+        ...props,
+        backpackHost: typeof props.backpackHost === "undefined" ? null : props.backpackHost,
+        backpackVisible: typeof props.backpackVisible === "undefined" ? false : props.backpackVisible,
+        basePath: typeof props.basePath === "undefined" ? './' : props.basePath,
+        blocksId: typeof props.blocksId === "undefined" ? 'original' : props.blocksId,
+        canChangeLanguage: typeof props.canChangeLanguage === "undefined" ? true : props.canChangeLanguage,
+        canChangeTheme: typeof props.canChangeTheme === "undefined" ? true : props.canChangeTheme,
+        canCreateNew: typeof props.canCreateNew === "undefined" ? false : props.canCreateNew,
+        canEditTitle: typeof props.canEditTitle === "undefined" ? false : props.canEditTitle,
+        canManageFiles: typeof props.canManageFiles === "undefined" ? true : props.canManageFiles,
+        canRemix: typeof props.canRemix === "undefined" ? false : props.canRemix,
+        canSave: typeof props.canSave === "undefined" ? false : props.canSave,
+        canCreateCopy: typeof props.canCreateCopy === "undefined" ? false : props.canCreateCopy,
+        canShare: typeof props.canShare === "undefined" ? false : props.canShare,
+        canUseCloud: typeof props.canUseCloud === "undefined" ? false : props.canUseCloud,
+        enableCommunity: typeof props.enableCommunity === "undefined" ? false : props.enableCommunity,
+        isCreating: typeof props.isCreating === "undefined" ? false : props.isCreating,
+        isShared: typeof props.isShared === "undefined" ? false : props.isShared,
+        isTotallyNormal: typeof props.isTotallyNormal === "undefined" ? false : props.isTotallyNormal,
+        loading: typeof props.loading === "undefined" ? false : props.loading,
+        showComingSoon: typeof props.showComingSoon === "undefined" ? false : props.showComingSoon,
+        stageSizeMode: typeof props.stageSizeMode === "undefined" ? STAGE_SIZE_MODES.large : props.stageSizeMode
+    };
+
     const {
         accountNavOpen,
         activeTabIndex,
@@ -534,29 +559,6 @@ GUIComponent.propTypes = {
     unknownPlatformModalVisible: PropTypes.bool,
     invalidProjectModalVisible: PropTypes.bool,
     vm: PropTypes.instanceOf(VM).isRequired
-};
-GUIComponent.defaultProps = {
-    backpackHost: null,
-    backpackVisible: false,
-    basePath: './',
-    blocksId: 'original',
-    canChangeLanguage: true,
-    canChangeTheme: true,
-    canCreateNew: false,
-    canEditTitle: false,
-    canManageFiles: true,
-    canRemix: false,
-    canSave: false,
-    canCreateCopy: false,
-    canShare: false,
-    canUseCloud: false,
-    enableCommunity: false,
-    isCreating: false,
-    isShared: false,
-    isTotallyNormal: false,
-    loading: false,
-    showComingSoon: false,
-    stageSizeMode: STAGE_SIZE_MODES.large
 };
 
 const mapStateToProps = state => ({

@@ -55,10 +55,4 @@ CloseButton.propTypes = {
     size: PropTypes.oneOf([CloseButton.SIZE_SMALL, CloseButton.SIZE_LARGE])
 };
 
-CloseButton.defaultProps = {
-    color: CloseButton.COLOR_NEUTRAL,
-    size: CloseButton.SIZE_LARGE,
-    buttonType: 'close'
-};
-
 export default CloseButton;

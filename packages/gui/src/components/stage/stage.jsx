@@ -14,7 +14,14 @@ import {STAGE_DISPLAY_SIZES} from '../../lib/layout-constants.js';
 import {getStageDimensions, getMinWidth} from '../../lib/screen-utils.js';
 import styles from './stage.css';
 
+const stageComponentDefaultPropDragRef = () => {};
+
 const StageComponent = props => {
+    props = {
+        ...props,
+        dragRef: typeof props.dragRef === "undefined" ? stageComponentDefaultPropDragRef : props.dragRef
+    };
+
     const {
         canvas,
         customStageSize,
@@ -151,8 +158,5 @@ StageComponent.propTypes = {
     question: PropTypes.string,
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
     useEditorDragStyle: PropTypes.bool
-};
-StageComponent.defaultProps = {
-    dragRef: () => {}
 };
 export default StageComponent;

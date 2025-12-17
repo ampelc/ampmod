@@ -122,10 +122,6 @@ DirectionPicker.propTypes = {
     rotationStyle: PropTypes.string
 };
 
-DirectionPicker.defaultProps = {
-    labelAbove: false
-};
-
 const WrappedDirectionPicker = injectIntl(DirectionPicker);
 
 export {WrappedDirectionPicker as default, RotationStyles};

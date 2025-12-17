@@ -6,7 +6,9 @@ import Button from '../button/button.jsx';
 
 import styles from './share-button.css';
 
-const ShareButton = ({className, isShared, onClick}) => (
+const shareButtonDefaultPropOnClick = () => {};
+
+const ShareButton = ({className, isShared, onClick = shareButtonDefaultPropOnClick}) => (
     <Button
         className={classNames(className, styles.shareButton, {
             [styles.shareButtonIsShared]: isShared
@@ -33,10 +35,6 @@ ShareButton.propTypes = {
     className: PropTypes.string,
     isShared: PropTypes.bool,
     onClick: PropTypes.func
-};
-
-ShareButton.defaultProps = {
-    onClick: () => {}
 };
 
 export default ShareButton;
