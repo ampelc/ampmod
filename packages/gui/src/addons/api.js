@@ -174,7 +174,31 @@ reduxInstance.addEventListener('statechanged', e => {
 });
 updateClasses();
 
-const getInternalKey = element => Object.keys(element).find(key => key.startsWith('__reactInternalInstance$'));
+// amp: copied from:
+// https://github.com/ScratchAddons/ScratchAddons/pull/8143
+/**
+ * @private
+ */
+function REACT_INTERNAL_PREFIXES() {
+    return ["__reactInternalInstance$", "__reactFiber$"];
+}
+
+/**
+ * @private
+ */
+function REACT_INTERNAL_CONTAINER_PREFIXES() {
+    return ["__reactContainere$", "__reactContainer$"];
+}
+
+let _react_internal_key = undefined;
+const getInternalKey = elem => {
+    if (!_react_internal_key) {
+      _react_internal_key = Object.keys(elem).find((key) =>
+        REACT_INTERNAL_PREFIXES().some((prefix) => key.startsWith(prefix))
+      );
+    }
+    return _react_internal_key;
+}
 
 class Tab extends EventTargetShim {
     constructor (id) {
@@ -201,14 +225,12 @@ class Tab extends EventTargetShim {
                         state.scratchGui.editorTab.activeTabIndex === 1 && !state.scratchGui.mode.isPlayerOnly
                     )
                 });
-                const reactInternalKey = Object.keys(modeSelector)
-                    .find(key => key.startsWith('__reactInternalInstance$'));
-                const internalState = modeSelector[reactInternalKey].child;
+                const internalState = modeSelector[getInternalKey(modeSelector)].child;
                 // .tool or .blob.tool only exists on the selected tool
                 let toolState = internalState;
                 let tool;
                 while (toolState) {
-                    const toolInstance = toolState.child.stateNode;
+                    const toolInstance = toolState.child.stateNode || toolState.child.child.stateNode;
                     if (toolInstance.tool) {
                         tool = toolInstance.tool;
                         break;
