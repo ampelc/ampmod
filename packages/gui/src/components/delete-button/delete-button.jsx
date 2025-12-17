@@ -25,8 +25,4 @@ DeleteButton.propTypes = {
     tabIndex: PropTypes.number
 };
 
-DeleteButton.defaultProps = {
-    tabIndex: 0
-};
-
 export default DeleteButton;

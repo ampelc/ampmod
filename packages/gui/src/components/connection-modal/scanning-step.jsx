@@ -15,10 +15,18 @@ import warningIcon from './icons/warning.svg';
 
 import styles from './connection-modal.css';
 
+const scanningStepDefaultPropPeripheralList = [];
+
 const ScanningStep = props => {
+    props = {
+        ...props,
+        peripheralList: typeof props.peripheralList === "undefined" ? scanningStepDefaultPropPeripheralList : props.peripheralList,
+        scanning: typeof props.scanning === "undefined" ? true : props.scanning
+    };
+
     const showUpdate = !!(props.onUpdatePeripheral && !props.scanning);
     return (
-        <Box className={styles.body}>
+        (<Box className={styles.body}>
             <Box className={styles.activityArea}>
                 {props.scanning ? (
                     props.peripheralList.length === 0 ? (
@@ -66,21 +74,21 @@ const ScanningStep = props => {
                 <Box className={classNames(styles.bottomAreaItem, styles.instructions)}>
                     {(props.scanning || props.peripheralList.length > 0) && (
                         // Show this message if we're still scanning OR if we've found devices
-                        <FormattedMessage
+                        (<FormattedMessage
                             defaultMessage="Select your device in the list above."
                             description="Prompt for choosing a device to connect to"
                             id="gui.connection.scanning.instructions"
-                        />
+                        />)
                     )}
                     {showUpdate && (
                         // Show this message if we're done scanning AND we can update
                         // Note that it's possible the list includes devices but does not include the desired device,
                         // so don't limit this message to the (props.peripheralList.length === 0) case
-                        <BalancedFormattedMessage
+                        (<BalancedFormattedMessage
                             defaultMessage="If you don't see your device, you may need to update it to work with Scratch."
                             description="Prompt for updating a peripheral device"
                             id="gui.connection.scanning.updatePeripheralPrompt"
-                        />
+                        />)
                     )}
                 </Box>
                 <Dots className={styles.bottomAreaItem} counter={0} total={3} />
@@ -105,7 +113,7 @@ const ScanningStep = props => {
                     )}
                 </Box>
             </Box>
-        </Box>
+        </Box>)
     );
 };
 
@@ -122,11 +130,6 @@ ScanningStep.propTypes = {
         })
     ),
     scanning: PropTypes.bool.isRequired
-};
-
-ScanningStep.defaultProps = {
-    peripheralList: [],
-    scanning: true
 };
 
 export default ScanningStep;

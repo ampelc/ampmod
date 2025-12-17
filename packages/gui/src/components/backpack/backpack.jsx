@@ -41,22 +41,24 @@ const labelMap = defineMessages({
     }
 });
 
+const backpackDefaultPropContents = [];
+
 const Backpack = ({
-    blockDragOver,
+    blockDragOver = false,
     containerRef,
-    contents,
-    dragOver,
+    contents = backpackDefaultPropContents,
+    dragOver = false,
     error,
-    expanded,
+    expanded = false,
     intl,
-    loading,
-    showMore,
-    onToggle,
+    loading = false,
+    showMore = false,
+    onToggle = null,
     onDelete,
     onRename,
     onMouseEnter,
     onMouseLeave,
-    onMore
+    onMore = null
 }) => (
     <div
         className={styles.backpackContainer}
@@ -173,17 +175,6 @@ Backpack.propTypes = {
     onMouseLeave: PropTypes.func,
     onToggle: PropTypes.func,
     showMore: PropTypes.bool
-};
-
-Backpack.defaultProps = {
-    blockDragOver: false,
-    contents: [],
-    dragOver: false,
-    expanded: false,
-    loading: false,
-    showMore: false,
-    onMore: null,
-    onToggle: null
 };
 
 export default injectIntl(Backpack);

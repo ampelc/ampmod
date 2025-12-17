@@ -7,7 +7,9 @@ import Button from '../button/button.jsx';
 import communityIcon from './icon--see-community.svg';
 import styles from './community-button.css';
 
-const CommunityButton = ({className, onClick}) => (
+const communityButtonDefaultPropOnClick = () => {};
+
+const CommunityButton = ({className, onClick = communityButtonDefaultPropOnClick}) => (
     <Button
         className={classNames(className, styles.communityButton)}
         iconClassName={styles.communityButtonIcon}
@@ -27,10 +29,6 @@ const CommunityButton = ({className, onClick}) => (
 CommunityButton.propTypes = {
     className: PropTypes.string,
     onClick: PropTypes.func
-};
-
-CommunityButton.defaultProps = {
-    onClick: () => {}
 };
 
 export default CommunityButton;

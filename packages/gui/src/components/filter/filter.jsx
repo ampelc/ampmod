@@ -8,6 +8,11 @@ import xIcon from '!!../../lib/tw-recolor/build!./icon--x.svg';
 import styles from './filter.css';
 
 const FilterComponent = props => {
+    props = {
+        ...props,
+        placeholderText: typeof props.placeholderText === "undefined" ? 'Search' : props.placeholderText
+    };
+
     const {className, onChange, onClear, placeholderText, filterQuery, inputClassName} = props;
     return (
         <div
@@ -37,8 +42,5 @@ FilterComponent.propTypes = {
     onChange: PropTypes.func,
     onClear: PropTypes.func,
     placeholderText: PropTypes.string
-};
-FilterComponent.defaultProps = {
-    placeholderText: 'Search'
 };
 export default FilterComponent;

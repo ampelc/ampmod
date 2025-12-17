@@ -41,6 +41,12 @@ const getCategoryColor = (theme, category) => {
 };
 
 const MonitorComponent = props => {
+    props = {
+        ...props,
+        category: typeof props.category === "undefined" ? 'extension' : props.category,
+        mode: typeof props.mode === "undefined" ? 'default' : props.mode
+    };
+
     // Determine mode: if value is array, use 'list' mode
     const mode = Array.isArray(props.value) ? 'list' : props.mode;
 
@@ -172,11 +178,6 @@ MonitorComponent.propTypes = {
     onSliderPromptOpen: PropTypes.func,
     theme: PropTypes.instanceOf(Theme).isRequired,
     value: PropTypes.any // Add this prop to handle the value being monitored
-};
-
-MonitorComponent.defaultProps = {
-    category: 'extension',
-    mode: 'default'
 };
 
 export {MonitorComponent as default, monitorModes};

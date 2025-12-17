@@ -6,12 +6,12 @@ import styles from './monitor.css';
 import ListMonitorScroller from './list-monitor-scroller.jsx';
 import { darken } from 'polished';
 
-const ListMonitor = ({ draggable, label, width, height, value, onResizeMouseDown, onAdd, categoryColor, ...rowProps }) => {
+const ListMonitor = ({ draggable, label, width = 110, height = 200, value, onResizeMouseDown, onAdd, categoryColor, ...rowProps }) => {
     // Detect if the value is a uniform 2D array (table)
     const is2DArray = Array.isArray(value) && value.length > 0 && value.every(Array.isArray);
 
     return (
-        <div
+        (<div
             className={styles.listMonitor}
             style={{
                 width: `${width}px`,
@@ -22,7 +22,7 @@ const ListMonitor = ({ draggable, label, width, height, value, onResizeMouseDown
             <div className={(styles.listBody, 'no-drag')}>
                 {is2DArray ? (
                     // Render 2D array as a table
-                    <div style={{ overflowX: 'auto', height: height - 42 }}>
+                    (<div style={{ overflowX: 'auto', height: height - 42 }}>
                         <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                             <tbody>
                                 {value.map((row, rIdx) => (
@@ -44,17 +44,17 @@ const ListMonitor = ({ draggable, label, width, height, value, onResizeMouseDown
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </div>)
                 ) : (
                     // Normal list / nested arrays use the existing scroller
-                    <ListMonitorScroller
+                    (<ListMonitorScroller
                         draggable={draggable}
                         height={height}
                         values={value}
                         width={width}
                         categoryColor={categoryColor}
                         {...rowProps}
-                    />
+                    />)
                 )}
             </div>
             <div className={styles.listFooter}>
@@ -79,7 +79,7 @@ const ListMonitor = ({ draggable, label, width, height, value, onResizeMouseDown
                     {'=' /* TODO waiting on asset */}
                 </div>
             </div>
-        </div>
+        </div>)
     );
 };
 
@@ -107,11 +107,6 @@ ListMonitor.propTypes = {
         )
     ]),
     width: PropTypes.number
-};
-
-ListMonitor.defaultProps = {
-    width: 110,
-    height: 200
 };
 
 export default ListMonitor;

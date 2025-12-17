@@ -25,6 +25,11 @@ const PHASES = keyMirror({
 });
 
 const AutoScanningStep = props => {
+    props = {
+        ...props,
+        phase: typeof props.phase === "undefined" ? PHASES.prescan : props.phase
+    };
+
     // Offer to update both during scan and after a failed scan, as long there's an update function.
     // It's possible the scan will find "some" device but not the desired device,
     // so don't limit the update offer to just the PHASES.notfound case.
@@ -157,10 +162,6 @@ AutoScanningStep.propTypes = {
     onStartScan: PropTypes.func,
     onUpdatePeripheral: PropTypes.func,
     phase: PropTypes.oneOf(Object.keys(PHASES))
-};
-
-AutoScanningStep.defaultProps = {
-    phase: PHASES.prescan
 };
 
 export {AutoScanningStep as default, PHASES};

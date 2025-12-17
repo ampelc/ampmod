@@ -21,7 +21,7 @@ const AlertComponent = ({
     extensionName,
     iconSpinner,
     iconURL,
-    level,
+    level = AlertLevels.WARN,
     showDownload,
     showSaveNow,
     onCloseAlert,
@@ -108,10 +108,6 @@ AlertComponent.propTypes = {
     showDownload: PropTypes.bool,
     showReconnect: PropTypes.bool,
     showSaveNow: PropTypes.bool
-};
-
-AlertComponent.defaultProps = {
-    level: AlertLevels.WARN
 };
 
 export default AlertComponent;

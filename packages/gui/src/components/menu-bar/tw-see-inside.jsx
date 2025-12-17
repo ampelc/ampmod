@@ -7,7 +7,9 @@ import Button from '../button/button.jsx';
 import communityIcon from './icon--see-community.svg';
 import styles from './tw-see-inside.css';
 
-const SeeInsideButton = ({className, onClick}) => (
+const seeInsideButtonDefaultPropOnClick = () => {};
+
+const SeeInsideButton = ({className, onClick = seeInsideButtonDefaultPropOnClick}) => (
     <Button
         className={classNames(className, styles.seeInsideButton)}
         iconClassName={styles.seeInsideButtonIcon}
@@ -27,10 +29,6 @@ const SeeInsideButton = ({className, onClick}) => (
 SeeInsideButton.propTypes = {
     className: PropTypes.string,
     onClick: PropTypes.func
-};
-
-SeeInsideButton.defaultProps = {
-    onClick: () => {}
 };
 
 export default SeeInsideButton;

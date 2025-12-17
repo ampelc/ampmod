@@ -5,7 +5,7 @@ import {FormattedMessage} from 'react-intl';
 import styles from './tag-button.css';
 
 const TagButtonComponent = ({
-    active,
+    active = false,
     className,
     tag,  
     intlLabel,
@@ -32,10 +32,6 @@ TagButtonComponent.propTypes = {
         PropTypes.string
     ]).isRequired,
     tag: PropTypes.string.isRequired
-};
-
-TagButtonComponent.defaultProps = {
-    active: false
 };
 
 export default TagButtonComponent;

@@ -5,6 +5,11 @@ import classNames from 'classnames';
 import styles from './input.css';
 
 const Input = props => {
+    props = {
+        ...props,
+        small: typeof props.small === "undefined" ? false : props.small
+    };
+
     const {small, ...componentProps} = props;
     return (
         <input
@@ -19,10 +24,6 @@ const Input = props => {
 Input.propTypes = {
     className: PropTypes.string,
     small: PropTypes.bool
-};
-
-Input.defaultProps = {
-    small: false
 };
 
 export default Input;

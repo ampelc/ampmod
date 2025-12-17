@@ -7,7 +7,7 @@ import {AlertLevels} from '../../lib/alerts/index.jsx';
 
 import styles from './inline-message.css';
 
-const InlineMessageComponent = ({content, iconSpinner, level}) => (
+const InlineMessageComponent = ({content, iconSpinner, level = AlertLevels.INFO}) => (
     <div className={classNames(styles.inlineMessage, styles[level])}>
         {/* TODO: implement Rtl handling */}
         {iconSpinner && <Spinner small className={styles.spinner} level={'info'} />}
@@ -19,10 +19,6 @@ InlineMessageComponent.propTypes = {
     content: PropTypes.element,
     iconSpinner: PropTypes.bool,
     level: PropTypes.string
-};
-
-InlineMessageComponent.defaultProps = {
-    level: AlertLevels.INFO
 };
 
 export default InlineMessageComponent;
