@@ -1,3 +1,4 @@
+import { createRoot } from "react-dom/client";
 import ReactDOM from 'react-dom';
 import {setAppElement} from 'react-modal';
 import * as bowser from 'bowser';
@@ -25,7 +26,8 @@ const render = children => {
         // TODO: customisation
         if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches)
             document.documentElement.classList.add('amp-gui-animations-enabled');
-        ReactDOM.render(children, appTarget);
+        const root = createRoot(appTarget);
+        root.render(children);
         if (window.SplashEnd) {
             window.SplashEnd();
         }
@@ -34,7 +36,8 @@ const render = children => {
 
 export const renderToBottom = children => {
     if (!migrationOccurred) {
-        ReactDOM.render(children, document.getElementById('app-footer'));
+        const root = createRoot(document.getElementById('app-footer'));
+        root.render(children);
     }
 };
 
