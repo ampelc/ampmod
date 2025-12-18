@@ -18,8 +18,6 @@ module.exports = [
             vertical: "./shim/vertical.js",
         },
         output: {
-            library: "ScratchBlocks",
-            libraryTarget: "commonjs2", // still valid
             path: path.resolve(__dirname, "dist"),
             filename: "[name].js",
         },
@@ -39,10 +37,6 @@ module.exports = [
             vertical: "./shim/vertical.js",
         },
         output: {
-            library: "Blockly",
-            library: {
-                type: "umd", // updated Webpack 5 syntax
-            },
             path: path.resolve(__dirname, "dist", "web"),
             filename: "[name].js",
         },
@@ -99,10 +93,6 @@ module.exports = [
             }),
             new CopyWebpackPlugin({
                 patterns: [
-                    {
-                        from: "../../node_modules/google-closure-library",
-                        to: "closure-library",
-                    },
                     { from: "blocks_common", to: "playgrounds/blocks_common" },
                     {
                         from: "blocks_vertical",
