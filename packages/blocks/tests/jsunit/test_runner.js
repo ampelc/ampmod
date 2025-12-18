@@ -1,7 +1,6 @@
-require("chromedriver");
-var webdriver = require("selenium-webdriver");
-var chrome = require("selenium-webdriver/chrome");
-var builder = new webdriver.Builder().forBrowser("chrome");
+var webdriver = require('selenium-webdriver');
+var chrome = require('selenium-webdriver/chrome');
+var builder = new webdriver.Builder().forBrowser('chrome');
 
 if (process.env.CI) {
     const options = new chrome.Options().headless();
