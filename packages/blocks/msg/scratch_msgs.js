@@ -1,10 +1,10 @@
 // This file was automatically generated.  Do not modify.
 
-'use strict';
+"use strict";
 
-goog.provide('Blockly.ScratchMsgs.allLocales');
+goog.provide("Blockly.ScratchMsgs.allLocales");
 
-goog.require('Blockly.ScratchMsgs');
+goog.require("Blockly.ScratchMsgs");
 
 
 Blockly.ScratchMsgs.locales["ab"] =
