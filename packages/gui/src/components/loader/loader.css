@@ -25,6 +25,8 @@
 .fullscreen {
     /* Break out of the layout using position: fixed to cover the whole screen */
     position: fixed;
+    width: 100vw;
+    height: 100vh;
     /* Use the fullscreen stage z-index to allow covering full-screen mode */
     z-index: $z-index-stage-wrapper-overlay;
     border-radius: 0;
@@ -218,6 +220,6 @@
 }
 
 .funFact {
-    margin-top: 20px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    padding: 20px;
 }
