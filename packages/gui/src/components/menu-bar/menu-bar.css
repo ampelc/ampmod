@@ -95,11 +95,7 @@
     background-color: $menu-bar-hover;
 }
 
-.settings-button .button-icon,
-.file-button .button-icon,
-.edit-button .button-icon,
-.error-icon,
-.menu-bar-item.logo img {
+.button-icon, .menu-bar-item.logo img {
     filter: var(--menu-bar-icon-filter);
 }
 
@@ -264,5 +260,8 @@
     }
     .dropdown-caret-icon, .item-dropdown-caret-icon {
         display: none;
+    }
+    .menu-bar-menu {
+        margin-top: -30px;
     }
 }

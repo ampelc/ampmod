@@ -107,6 +107,7 @@ class SettingsMenu extends React.Component {
                 <MenuLabel open={settingsMenuOpen} onOpen={onRequestOpen} onClose={onRequestClose}>
                     <img
                         src={settingsIcon}
+                        className={menuBarStyles.buttonIcon}
                         draggable={false}
                         width={20}
                         height={20}

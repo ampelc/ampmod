@@ -565,6 +565,7 @@ class MenuBar extends React.Component {
                                 >
                                     <img
                                         src={fileIcon}
+                                        className={styles.buttonIcon}
                                         draggable={false}
                                         width={20}
                                         height={20}
@@ -718,6 +719,7 @@ class MenuBar extends React.Component {
                                     draggable={false}
                                     width={20}
                                     height={20}
+                                    className={styles.buttonIcon}
                                 />
                                 <span className={styles.collapsibleLabel}>
                                     <FormattedMessage
