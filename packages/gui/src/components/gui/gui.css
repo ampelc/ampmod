@@ -3,7 +3,7 @@
 @import '../../css/z-index.css';
 
 .page-wrapper {
-    height: 100%;
+    height: 100vh;
     font-family: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     display: flex;
     flex-direction: column;
@@ -329,5 +329,9 @@ $fade-out-distance: 15px;
     }
     .flex-wrapper {
         flex-direction: column-reverse;
+    }
+    /* TODO: do something better */
+    .stage-and-target-wrapper {
+        display: none;
     }
 }
