@@ -53,7 +53,7 @@ export const findIncompatibleUserscripts = () => {
 };
 
 export const isBrowserSupported = isEmbedded =>
-    (!!isEmbedded || bowser.parse(navigator.userAgent).platform.type !== 'mobile') &&
+    // (!!isEmbedded || bowser.parse(navigator.userAgent).platform.type !== 'mobile') &&
     isNewFunctionSupported() &&
     isRendererSupported() &&
     findIncompatibleUserscripts().length === 0;

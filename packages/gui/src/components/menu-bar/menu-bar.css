@@ -252,3 +252,17 @@
             transform 0.25s ease;
     }
 }
+
+@media (max-width: 800px) {
+    .menu-bar, .main-menu, .account-nav-menu, .file-group {
+        flex-direction: column;
+    }
+    .menu-bar {
+        height: 100%;
+        width: $menu-bar-height;
+        justify-content: center;
+    }
+    .dropdown-caret-icon, .item-dropdown-caret-icon {
+        display: none;
+    }
+}

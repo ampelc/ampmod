@@ -191,7 +191,7 @@ const GUIComponent = props => {
         return <BrowserModal isRtl={isRtl} onClickDesktopSettings={onClickDesktopSettings} isEmbedded={isEmbedded} />;
     }
     return (
-        <MediaQuery minWidth={unconstrainedWidth}>
+        <MediaQuery minWidth={0}>
             {isUnconstrained => {
                 const stageSize = resolveStageSize(stageSizeMode, isUnconstrained);
 

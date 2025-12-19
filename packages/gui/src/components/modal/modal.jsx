@@ -35,7 +35,7 @@ const ModalComponent = props => {
         <ReactModal
             isOpen
             className={classNames(styles.modalContent, props.className, {
-                [styles.fullScreen]: props.fullScreen,
+                [styles.fullScreen]: props.fullScreen || window.innerWidth < 1025,
                 [styles.closing]: isClosing,
                 [styles.noZoomAnimation]: props.noZoomAnimation
             })}
