@@ -136,7 +136,7 @@
     -webkit-overflow-scrolling: 'touch';
     user-select: none;
 
-    background-color: $ui-secondary;
+    background-color: $ui-modal-background;
 
     /* Default modal resets */
     margin: 0;
