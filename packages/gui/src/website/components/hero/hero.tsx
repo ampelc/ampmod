@@ -8,14 +8,6 @@ import classNames from "classnames";
 import SmartLink from "../smart-link/smart-link";
 
 export default () => {
-    const [isPhone, setIsPhone] = useState(false);
-
-    useEffect(() => {
-        const parsed = Bowser.parse(window.navigator.userAgent);
-        const platformType = parsed.platform.type;
-        setIsPhone(platformType === 'mobile');
-    }, []);
-
     return (
         <>
             <header className={classNames([styles.headerContainer, myStyles.headerContainer])}>
@@ -35,11 +27,9 @@ export default () => {
 
                         <div className={styles.spacing}></div>
                         <div className={myStyles.buttonRow}>
-                            {!isPhone && (
-                                <SmartLink to="/editor" className={myStyles.primaryButton}>
-                                    <Localise id="hero.create" />
-                                </SmartLink>
-                            )}
+                            <SmartLink to="/editor" className={myStyles.primaryButton}>
+                                <Localise id="hero.create" />
+                            </SmartLink>
                             <SmartLink to="/examples" className={myStyles.primaryButton} onMouseEnter={() => process.env.SPA && import(/* webpackChunkName: "examples-landing" */ '../../examples/examples')}>
                                 <Localise id="hero.examples" />
                             </SmartLink>
