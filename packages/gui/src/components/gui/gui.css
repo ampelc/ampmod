@@ -48,7 +48,6 @@
         much better ways to solve that (e.g. undo #2124, remove this flex-basis entirely). However, they run their own
         risks of breaking things, so let's just leave this as-is for the time being.
     */
-    flex-basis: calc(1024px - 408px - (($margin + $stage-standard-border-width) * 2));
     flex-grow: 1;
     flex-shrink: 0;
     position: relative;
@@ -328,7 +327,10 @@ $fade-out-distance: 15px;
         flex-direction: column-reverse;
     }
     /* TODO: do something better */
-    .stage-and-target-wrapper {
+    .target-wrapper {
+        display: none;
+    }
+    .tab span {
         display: none;
     }
 }
