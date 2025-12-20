@@ -324,9 +324,6 @@ $fade-out-distance: 15px;
 
 /* amp: Primitive mobile support. */
 @media (max-width: 800px) {
-    .page-wrapper {
-        flex-direction: row;
-    }
     .flex-wrapper {
         flex-direction: column-reverse;
     }

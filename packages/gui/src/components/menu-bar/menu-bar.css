@@ -20,6 +20,7 @@
     */
     box-sizing: border-box;
     height: $menu-bar-height;
+    flex-shrink: 0;
 
     /*
         @todo: This adds ~20px in Chrome, when scrolling to the right,
@@ -246,22 +247,5 @@
         transition:
             background-color 0.15s ease,
             transform 0.25s ease;
-    }
-}
-
-@media (max-width: 800px) {
-    .menu-bar, .main-menu, .account-nav-menu, .file-group {
-        flex-direction: column;
-    }
-    .menu-bar {
-        height: 100%;
-        width: $menu-bar-height;
-        justify-content: center;
-    }
-    .dropdown-caret-icon, .item-dropdown-caret-icon {
-        display: none;
-    }
-    .menu-bar-menu {
-        margin-top: -30px;
     }
 }

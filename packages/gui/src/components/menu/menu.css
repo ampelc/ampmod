@@ -53,13 +53,6 @@
     border-top: 1px solid $menu-bar-hover;
 }
 
-@media (max-width: 800px) {
-    .menu.left, .menu.right {
-        left: calc($menu-bar-height - 3px);
-        border-radius: 0 8px 8px 0;
-    }
-}
-
 .submenu {
     display: none;
     position: absolute;
