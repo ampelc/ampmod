@@ -61,6 +61,10 @@ Blockly.Msg.CONTROL_SWITCH = "test if %1 is matched";
 Blockly.Msg.CONTROL_SWITCH_BAD_SYNTAX =
     '"if () was matched" blocks must be in a "test if () is matched" C-block.';
 Blockly.Msg.CONTROL_CASE = "if %1 was matched, then";
+Blockly.Msg.CONTROL_DEFAULT = "if no match was found, then";
+Blockly.Msg.CONTROL_BREAK = "break out of sub-stack";
+Blockly.Msg.CONTROL_ERROR = "throw error %1";
+Blockly.Msg.CONTROL_ERROR_MESSAGE = "Oops! Something went wrong.";
 
 // Data blocks
 Blockly.Msg.DATA_SETVARIABLETO = "set %1 to %2";
@@ -224,6 +228,7 @@ Blockly.Msg.OPERATORS_MATHOP_LOG = "log";
 Blockly.Msg.OPERATORS_MATHOP_EEXP = "e ^";
 Blockly.Msg.OPERATORS_MATHOP_10EXP = "10 ^";
 Blockly.Msg.OPERATORS_NEWLINE = "new line";
+Blockly.Msg.OPERATORS_ARRAY_JOIN = 'string from %1 with delimiter %2';
 
 // Procedures blocks
 Blockly.Msg.PROCEDURES_DEFINITION = "define %1";

@@ -10,6 +10,7 @@ import topBlock from './top-block.svg';
 import middleBlock from './middle-block.svg';
 import bottomBlock from './bottom-block.svg';
 import {facts, tips, jokes} from '../../lib/amp-fun-facts';
+import isAprilFools from '../../lib/amp-enable-pranks';
 
 const mainMessages = {
     'gui.loader.headline': (
@@ -83,7 +84,9 @@ class LoaderComponent extends React.Component {
 
             const rand = Math.random();
             let pool;
-            if (rand < 0.78) {
+            if (isAprilFools) {
+              pool = jokes; // 100%
+            } else if (rand < 0.78) {
                 pool = tips; // 78%
             } else if (rand < 0.96) {
                 pool = facts; // 18%

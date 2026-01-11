@@ -104,6 +104,7 @@ const StackOpcode = {
     ADDON_CALL: 'addons.call',
     DEBUGGER: 'tw.debugger',
     VISUAL_REPORT: 'visualReport',
+    BLOCK_ERROR: 'blockError',
     COMPATIBILITY_LAYER: 'compat',
     OLD_COMPILER_COMPATIBILITY_LAYER: 'oldCompiler',
 
@@ -123,6 +124,10 @@ const StackOpcode = {
     CONTROL_WAIT_UNTIL: 'control.waitUntil',
     CONTROL_CLEAR_COUNTER: 'control.counterClear',
     CONTORL_INCR_COUNTER: 'control.counterIncr',
+    CONTROL_SWITCH: 'control.switch',
+    CONTROL_CASE: 'control.case',
+    CONTROL_DEFAULT: 'control.default',
+    CONTROL_BREAK: 'control.break',
 
     LIST_ADD: 'list.add',
     LIST_INSERT: 'list.instert',
@@ -262,6 +267,7 @@ const InputOpcode = {
     OP_RANDOM: 'op.random',
     OP_ROUND: 'op.round',
     OP_SUBTRACT: 'op.subtract',
+    OP_ARRAYJOIN: 'op.arrayJoin',
 
     SENSING_ANSWER: 'sensing.answer',
     SENSING_COLOR_TOUCHING_COLOR: 'sensing.colorTouchingColor',

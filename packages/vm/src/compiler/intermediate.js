@@ -195,6 +195,10 @@ class IntermediateInput {
                 this.type = IntermediateInput.getNumberInputType(this.inputs.value);
                 break;
             }
+            case InputOpcode.CAST_ARRAY:
+                this.inputs.value = Cast.toList(this.inputs.value);
+                this.type = InputType.ARRAY;
+                break;
             case InputOpcode.CAST_STRING:
                 this.inputs.value += '';
                 this.type = InputType.STRING;
@@ -202,10 +206,6 @@ class IntermediateInput {
             case InputOpcode.CAST_COLOR:
                 this.inputs.value = Cast.toRgbColorList(this.inputs.value);
                 this.type = InputType.COLOR;
-                break;
-            case InputOpcode.CAST_ARRAY:
-                this.inputs.value = Cast.toList(this.inputs.value);
-                this.type = InputType.ARRAY;
                 break;
             }
             return this;

@@ -27,6 +27,7 @@ const Header = () => {
 
     return (
         <>
+            <TWNews />
             <div className={styles.header}>
                 <div className={styles.mainGroup}>
                     <SmartLink
@@ -87,9 +88,6 @@ const Header = () => {
                     
                 </div>
             </div>
-
-            <div className={styles.spacer}></div>
-            <TWNews />
         </>
     );
 };

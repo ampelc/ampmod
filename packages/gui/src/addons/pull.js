@@ -261,7 +261,7 @@ const generateRuntimeEntry = (id, manifest, assets) => {
 
     for (const userstyle of manifest.userstyles || []) {
         const src = userstyle.url;
-        const importName = importSection.add(`!css-loader!./${src}`, 'css');
+        const importName = importSection.add(`./${src}?addon-style`, 'css');
         exportSection += `  ${JSON.stringify(src)}: ${importName},\n`;
     }
 

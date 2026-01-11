@@ -1,5 +1,6 @@
 import JSZip from '@turbowarp/jszip';
 import {base64ToArrayBuffer} from './tw-base64-utils';
+import lsNamespace from './amp-localstorage-namespace';
 
 const TYPE_AUTOMATIC = 0;
 const TYPE_MANUAL = 1;
@@ -732,7 +733,7 @@ const deleteLegacyRestorePoint = () => {
 };
 
 const DEFAULT_INTERVAL = 1000 * 60 * 5;
-const INTERVAL_STORAGE_KEY = 'tw:restore-point-interval';
+const INTERVAL_STORAGE_KEY = `${lsNamespace}restore-point-interval`;
 
 const readInterval = () => {
     try {
@@ -741,16 +742,6 @@ const readInterval = () => {
             const number = +stored;
             if (Number.isFinite(number)) {
                 return number;
-            }
-        }
-
-        // TODO: this is temporary, remove it after enough has passed for people that care to have migrated
-        const addonSettings = localStorage.getItem('amp:addons');
-        if (addonSettings) {
-            const parsedAddonSettings = JSON.parse(addonSettings);
-            const addonObject = parsedAddonSettings['tw-disable-restore-points'];
-            if (addonObject && addonObject.enabled) {
-                return -1;
             }
         }
     } catch (e) {

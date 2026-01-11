@@ -15,12 +15,15 @@ import Clippy from '../../containers/amp-clippy';
 import Hero from '../components/hero/hero';
 
 import Localise, {setHtmlLang} from '../components/localise/localise';
+import { loadServiceWorker } from '../../playground/load-service-worker.js';
 
 applyGuiColors(detectTheme());
 setHtmlLang();
 document.title = `${APP_NAME} - ${APP_SLOGAN}`;
 
 export default function Home() {
+    // this is managed by the router when building for ampmod.codeberg.page
+    if (!process.env.SPA) loadServiceWorker();
     return (
         <>
             <Header />

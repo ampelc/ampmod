@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 
 import check from './check.svg';
 import dropdownCaret from './dropdown-caret.svg';
-import {MenuItem, Submenu} from '../menu/menu.jsx';
+import {MenuItem, MenuSection, Submenu} from '../menu/menu.jsx';
 import {
     GUI_MAP,
     GUI_AMP_LIGHT,
@@ -22,6 +22,7 @@ import {setTheme} from '../../reducers/theme.js';
 import {persistTheme} from '../../lib/themes/themePersistance.js';
 import lightModeIcon from './tw-sun.svg';
 import darkModeIcon from './tw-moon.svg';
+import colourfulModeIcon from './md-symbols-palette.svg';
 import customIcon from './tw-blocks-custom.svg';
 import {openGuiThemeMenu, guiThemeMenuOpen} from '../../reducers/menus.js';
 import styles from './settings-menu.css';
@@ -34,9 +35,9 @@ const options = defineMessages({
         id: 'amp.gui.light'
     },
     [GUI_LIGHT]: {
-        defaultMessage: 'Light (Classic)',
-        description: 'Light theme option',
-        id: 'amp.gui.lightClassic'
+        defaultMessage: 'Colourful',
+        description: 'Colourful theme option',
+        id: 'amp.gui.colourful'
     },
     [GUI_DARK]: {
         defaultMessage: 'Dark',
@@ -61,7 +62,7 @@ const options = defineMessages({
 });
 
 const icons = {
-    [GUI_LIGHT]: lightModeIcon,
+    [GUI_LIGHT]: colourfulModeIcon,
     [GUI_AMP_LIGHT]: lightModeIcon,
     [GUI_DARK]: darkModeIcon,
     [GUI_AMOLED]: darkModeIcon,
@@ -73,8 +74,8 @@ const GuiIcon = ({ id }) => <img src={icons[id]} draggable={false} width={24} he
 
 GuiIcon.propTypes = {id: PropTypes.string};
 
-const GuiThemeItem = ({id, isSelected, onClick, disabled}) => (
-    <MenuItem onClick={disabled ? null : onClick}>
+const GuiThemeItem = ({id, isSelected, onClick, disabled, ...props}) => (
+    <MenuItem onClick={disabled ? null : onClick} {...props}>
         <div
             className={classNames(styles.option, {
                 [styles.disabled]: disabled
@@ -124,22 +125,45 @@ const GuiThemeMenu = ({isOpen, isRtl, onChangeTheme, onOpenCustomSettings, onOpe
             <img className={styles.expandCaret} src={dropdownCaret} draggable={false} />
         </div>
         <Submenu place={isRtl ? 'left' : 'right'}>
-            {[
-                GUI_AMP_LIGHT,
-                GUI_LIGHT,
-                GUI_DARK,
-                GUI_AMOLED,
-                // GUI_HIGH_CONTRAST,
-                ...(onOpenCustomSettings ? [GUI_CUSTOM] : [])
-            ].map(id => (
-                <GuiThemeItem
-                    key={id}
-                    id={id}
-                    isSelected={theme.gui === id}
-                    onClick={id === GUI_CUSTOM ? onOpenCustomSettings : () => onChangeTheme(theme.set('gui', id))}
-                    disabled={id !== GUI_CUSTOM && theme.gui === GUI_CUSTOM}
-                />
-            ))}
+          {[
+              GUI_AMP_LIGHT,
+              GUI_LIGHT
+          ].map(id => (
+              <GuiThemeItem
+                  key={id}
+                  id={id}
+                  isSelected={theme.gui === id}
+                  onClick={id === GUI_CUSTOM ? onOpenCustomSettings : () => onChangeTheme(theme.set('gui', id))}
+                  disabled={id !== GUI_CUSTOM && theme.gui === GUI_CUSTOM}
+              />
+          ))}
+          <MenuSection>
+              {[
+                  GUI_DARK,
+                  GUI_AMOLED
+              ].map(id => (
+                  <GuiThemeItem
+                      key={id}
+                      id={id}
+                      isSelected={theme.gui === id}
+                      onClick={id === GUI_CUSTOM ? onOpenCustomSettings : () => onChangeTheme(theme.set('gui', id))}
+                      disabled={id !== GUI_CUSTOM && theme.gui === GUI_CUSTOM}
+                  />
+              ))}
+            </MenuSection>
+          <MenuSection>
+              {[
+                  ...(onOpenCustomSettings ? [GUI_CUSTOM] : [])
+              ].map(id => (
+                  <GuiThemeItem
+                      key={id}
+                      id={id}
+                      isSelected={theme.gui === id}
+                      onClick={id === GUI_CUSTOM ? onOpenCustomSettings : () => onChangeTheme(theme.set('gui', id))}
+                      disabled={id !== GUI_CUSTOM && theme.gui === GUI_CUSTOM}
+                  />
+              ))}
+            </MenuSection>
         </Submenu>
     </MenuItem>
 );

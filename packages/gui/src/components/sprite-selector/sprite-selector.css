@@ -159,7 +159,7 @@ $main-button-size: 2.75rem;
     transition: width 0.3s, background-color 0.3s;
     background:
         url('./icon--filter.svg') center / 1.2em no-repeat,
-        $motion-primary;
+        $looks-secondary;
 }
 
 .sprite-search:hover, .sprite-search:focus, .sprite-search:not(:placeholder-shown) {

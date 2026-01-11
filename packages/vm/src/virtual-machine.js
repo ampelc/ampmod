@@ -1,9 +1,4 @@
-let _TextEncoder;
-if (typeof TextEncoder === 'undefined') {
-    _TextEncoder = require('text-encoding').TextEncoder;
-} else {
-    _TextEncoder = TextEncoder;
-}
+const _TextEncoder = TextEncoder;
 const EventEmitter = require('events');
 const JSZip = require('@turbowarp/jszip');
 
@@ -468,30 +463,6 @@ class VirtualMachine extends EventEmitter {
                 }
                 resolve(res);
             });
-        }).catch(error => {
-            const {SB1File, ValidationError} = require('scratch-sb1-converter');
-
-            try {
-                const sb1 = new SB1File(input);
-                const json = sb1.json;
-                json.projectVersion = 2;
-                return Promise.resolve([json, sb1.zip]);
-            } catch (sb1Error) {
-                if (
-                    sb1Error instanceof ValidationError ||
-                    `${sb1Error}`.includes('Non-ascii character in FixedAsciiString')
-                ) {
-                    // The input does not validate as a Scratch 1 file.
-                } else {
-                    // The project appears to be a Scratch 1 file but it
-                    // could not be successfully translated into a Scratch 2
-                    // project.
-                    return Promise.reject(sb1Error);
-                }
-            }
-            // Throw original error since the input does not appear to be
-            // an SB1File.
-            return Promise.reject(error);
         });
 
         return validationPromise
@@ -712,10 +683,6 @@ class VirtualMachine extends EventEmitter {
         const runtime = this.runtime;
         const deserializePromise = function () {
             const projectVersion = projectJSON.projectVersion;
-            if (projectVersion === 2) {
-                const sb2 = require('./serialization/sb2');
-                return sb2.deserialize(projectJSON, runtime, false, zip);
-            }
             if (projectVersion === 3) {
                 const sb3 = require('./serialization/sb3');
                 return sb3.deserialize(projectJSON, runtime, zip);
@@ -820,6 +787,7 @@ class VirtualMachine extends EventEmitter {
 
             if (wholeProject) {
                 this.runtime.parseProjectOptions();
+                this.runtime.applyAmpModStoredOptions();
             }
 
             // Update the VM user's knowledge of targets and blocks on the workspace.
@@ -890,13 +858,9 @@ class VirtualMachine extends EventEmitter {
      * @param {?ArrayBuffer} zip Optional zip of assets being referenced by json
      * @returns {Promise} Promise that resolves after the sprite is added
      */
+    // eslint-disable-next-line no-unused-vars
     _addSprite2 (sprite, zip) {
-        // Validate & parse
-
-        const sb2 = require('./serialization/sb2');
-        return sb2
-            .deserialize(sprite, this.runtime, true, zip)
-            .then(({targets, extensions}) => this.installTargets(targets, extensions, false));
+        // noop
     }
 
     /**

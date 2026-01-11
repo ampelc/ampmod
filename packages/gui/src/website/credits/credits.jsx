@@ -121,6 +121,11 @@ export default function Credits() {
                 <p>
                     <Localise id="credits.scratchDescription" values={{APP_NAME}} />
                 </p>
+                <p>
+                    <a href="https://scratch.mit.edu/donate">
+                        <Localise id="credits.scratchDonate" />
+                    </a>
+                </p>
             </section>
             <section>
                 <h2>

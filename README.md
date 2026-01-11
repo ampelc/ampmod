@@ -1,9 +1,13 @@
-# ![AmpMod](packages/gui/src/website/components/header/ampmod.svg)<br>[![CI status](https://ci.codeberg.org/api/badges/15147/status.svg)](https://ci.codeberg.org/repos/15147) [![Multiple licences, click here for more info](https://img.shields.io/badge/licence-multiple,%20click%20here-blue.svg)](LICENSE.md)
+# AmpMod editor
+
+[![CI status](https://ci.codeberg.org/api/badges/15147/status.svg)](https://ci.codeberg.org/repos/15147) [![Multiple licences, click here for more info](https://img.shields.io/badge/licence-multiple,%20click%20here-blue.svg)](LICENSE.md)
 
 This is the source code for the AmpMod editor. AmpMod (formerly UltiBlocks) is a powerful block-based programming
 language mainly focusing on adding more data types to Scratch, as well as dozens of quality-of-life changes.
 
 [![Try AmpMod now!](readme-assets/trynow.svg)](https://ampmod.codeberg.page) 
+
+View this repository [**on Codeberg**](https://codeberg.org/ampmod/ampmod) or [on GitHub](https://github.com/amp-mod/ampmod).
 
 *To access the canary build which has the newest features at the cost of more bugs, see https://ampmod.codeberg.page/@canary*
 

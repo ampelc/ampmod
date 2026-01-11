@@ -1,0 +1,3 @@
+/canary/* /@canary/:splat 302
+/@preview/* /:splat 302
+/* index.html 200

@@ -1,6 +1,6 @@
 {
     "name": "ampmod",
-    "version": "0.4.0",
+    "version": "0.4.0-canary1",
     "description": "The AmpMod monorepo",
     "private": true,
     "packageManager": "pnpm@10.24.0",
@@ -17,6 +17,7 @@
         "@swc/core": "^1.15.3",
         "@types/webpack": "^5.28.5",
         "esbuild-loader": "^4.4.0",
+        "mini-svg-data-uri": "^1.4.4",
         "optimize-css-assets-webpack-plugin": "^6.0.1",
         "sugarss": "^5.0.1",
         "swc-loader": "^0.2.6",

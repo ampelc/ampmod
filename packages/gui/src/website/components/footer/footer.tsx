@@ -36,7 +36,7 @@ const Footer = () => {
                         id="amp.footer.copyright"
                         values={{
                             APP_NAME,
-                            year: new Date().getFullYear(),
+                            year: `2025-${new Date().getFullYear()}`,
                             freeSoftware: (
                                 <a href="LICENSE.txt">
                                     <Localise id="amp.footer.copyright.freeSoftware" />
@@ -58,6 +58,11 @@ const Footer = () => {
                             twLink: (
                                 <a href="https://turbowarp.org" target="_blank" rel="noreferrer">
                                     TurboWarp
+                                </a>
+                            ),
+                            supportScratch: (
+                                <a href="https://scratchfoundation.org/donate">
+                                    <Localise id="amp.footer.disclaimer.supportScratch" />
                                 </a>
                             )
                         }}

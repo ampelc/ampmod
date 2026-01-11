@@ -67,8 +67,8 @@
     position: relative;
     align-items: center;
     white-space: nowrap;
-    height: calc($menu-bar-height - $margin * 1.7);
-    border-radius: $roundedness;
+    height: calc($menu-bar-height - $margin * 1.2);
+    border-radius: calc($roundedness / 1.5);
 }
 
 .menu-bar-item.hoverable,
@@ -250,7 +250,10 @@
     .menu-bar-item,
     :global(.sa-record) {
         transition:
-            background-color 0.15s ease,
-            transform 0.25s ease;
+            background-color 0.1s ease;
     }
+}
+
+.icon {
+  filter: var(--menu-bar-icon-filter);
 }

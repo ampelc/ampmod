@@ -75,35 +75,9 @@
     right: 0;
     bottom: 0;
     z-index: $z-index-modal;
-    background-color: hsla(0, 0%, 0%, 0.3);
+    background-color: $ui-modal-overlay;
     color: $ui-modal-foreground;
     backdrop-filter: blur(1px) contrast(0.8);
-}
-
-:global(.amp-gui-animations-enabled) {
-    .modal-overlay {
-        animation: fadeIn 0.15s ease;
-    }
-    .modal-overlay.closing,
-    :global(.amp-addon-modalclosing).modal-overlay {
-        opacity: 0;
-        animation: fadeOut 0.2s ease-in;
-        pointer-events: none;
-    }
-    .modal-content:not(.no-zoom-animation) {
-        animation: zoomFadeIn 0.25s ease;
-    }
-    .modal-content.closing,
-    :global(.amp-addon-modalclosing) .modal-content {
-        opacity: 0;
-        animation: zoomFadeOut 0.15s ease-in;
-    }
-    .modal-content.full-screen:not(.no-zoom-animation) {
-        animation: slideInFromBottom 0.3s ease;
-    }
-    .modal-content.full-screen.closing {
-        animation: slideOutToBottom 0.2s ease-in;
-    }
 }
 
 .modal-content * {
@@ -197,8 +171,6 @@ $sides: 20rem;
     letter-spacing: 0.4px;
     cursor: default;
     font-family: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 1.2rem;
-    font-weight: bold;
     justify-content: center;
 }
 

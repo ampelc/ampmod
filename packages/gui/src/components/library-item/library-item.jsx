@@ -121,58 +121,15 @@ class LibraryItemComponent extends React.PureComponent {
                     </div>
                 )}
 
-                {(this.props.docsURI || this.props.samples) && (
-                    <div className={styles.extensionLinks}>
-                        {this.props.docsURI && (
-                            <a href={this.props.docsURI} target="_blank" rel="noreferrer">
-                                <FormattedMessage
-                                    defaultMessage="Documentation"
-                                     
-                                    description="Appears in the extension list. Links to additional extension documentation."
-                                    id="tw.documentation"
-                                />
-                            </a>
-                        )}
-
-                        {this.props.samples && (
-                            <a href={this.props.samples[0].href} target="_blank" rel="noreferrer">
-                                <FormattedMessage
-                                    defaultMessage="Sample project"
-                                     
-                                    description="Appears in the extension list. Links to a sample project for an extension."
-                                    id="tw.sample"
-                                />
-                            </a>
-                        )}
-                    </div>
-                )}
-
                 {this.props.tags.includes('localStorage') && (
                     <div className={styles.extensionLinks}>Saved locally. (you will be able to delete soon)</div>
-                )}
-
-                {this.props.credits && this.props.credits.length > 0 && (
-                    <div className={styles.extensionLinks}>
-                        <div>
-                            <FormattedMessage
-                                defaultMessage="Created by:"
-                                description="Appears in the extension list. Followed by a list of names."
-                                id="tw.createdBy"
-                            />{' '}
-                            {this.props.credits.map((credit, index) => (
-                                <React.Fragment key={index}>
-                                    {credit}
-                                    {index !== this.props.credits.length - 1 && ', '}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
                 )}
 
                 {this.props.bluetoothRequired ||
                 this.props.internetConnectionRequired ||
                 this.props.requirements ||
-                this.props.collaborator ? (
+                this.props.collaborator ||
+                this.props.credits ? (
                     <div className={styles.featuredExtensionMetadata}>
                         <div className={styles.featuredExtensionRequirement}>
                             {this.props.bluetoothRequired ||
@@ -227,7 +184,31 @@ class LibraryItemComponent extends React.PureComponent {
                                         ) : null}
                                     </div>
                                 </div>
-                            ) : null}
+                            ) : (this.props.docsURI || this.props.samples) && (
+                                <div className={styles.extensionLinks}>
+                                    {this.props.docsURI && (
+                                        <a href={this.props.docsURI} className={styles.docsLink} target="_blank" rel="noreferrer">
+                                            <FormattedMessage
+                                                defaultMessage="Docs"
+                                                
+                                                description="Appears in the extension list. Links to additional extension documentation."
+                                                id="tw.documentation"
+                                            />
+                                        </a>
+                                    )}
+
+                                    {this.props.samples && (
+                                        <a href={this.props.samples[0].href} className={styles.sampleLink} target="_blank" rel="noreferrer">
+                                            <FormattedMessage
+                                                defaultMessage="Sample project"
+                                                
+                                                description="Appears in the extension list. Links to a sample project for an extension."
+                                                id="tw.sample"
+                                            />
+                                        </a>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <div className={styles.featuredExtensionCollaboration}>
                             {this.props.collaborator ? (
@@ -243,7 +224,23 @@ class LibraryItemComponent extends React.PureComponent {
                                         {this.props.collaborator}
                                     </div>
                                 </div>
-                            ) : null}
+                            ) : this.props.credits && this.props.credits.length > 0 && (
+                                <div>
+                                    <div><FormattedMessage
+                                        defaultMessage="Created by:"
+                                        description="Appears in the extension list. Followed by a list of names."
+                                        id="tw.createdBy"
+                                    /></div>
+                                    <div className={styles.featuredExtensionMetadataDetail}>
+                                    {this.props.credits.map((credit, index) => (
+                                        <React.Fragment key={index}>
+                                            {credit}
+                                            {index !== this.props.credits.length - 1 && ', '}
+                                        </React.Fragment>
+                                    ))}
+                                    </div>
+                                </div>
+                        )}
                         </div>
                     </div>
                 ) : null}

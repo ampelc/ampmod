@@ -1,14 +1,15 @@
 packages:
-    - packages/*
+  - packages/*
 
 ignoredBuiltDependencies:
-    - core-js
+  - core-js
 
 onlyBuiltDependencies:
-    - chromedriver
-    - electron
-    - electron-winstaller
-    - es5-ext
-    - esbuild
+  - chromedriver
+  - electron
+  - electron-winstaller
+  - es5-ext
+  - esbuild
+  - optipng-bin
 
 shamefullyHoist: true

@@ -39,47 +39,26 @@ const CustomProcedures = props => (
             <div className={styles.optionsRow}>
                 <div className={styles.optionCard} role="button" tabIndex="0" onClick={props.onAddTextNumber}>
                     <img className={styles.optionIcon} src={squareTextIcon} draggable={false} />
-                    <div className={styles.optionTitle}>
-                        <FormattedMessage
-                            defaultMessage="Add an input"
-                            description="Label for button to add a number/text input"
-                            id="gui.customProcedures.addAnInputNumberText"
-                        />
-                    </div>
                     <div className={styles.optionDescription}>
                         <FormattedMessage
-                            defaultMessage="number or text"
-                            description="Description of the number/text input type"
-                            id="gui.customProcedures.numberTextType"
+                            defaultMessage="text"
+                            description="Description of the text input type"
+                            id="amp.customProcedures.textType"
                         />
                     </div>
                 </div>
-                {/* <div className={styles.optionCard} role="button" tabIndex="0" onClick={props.onAddNumber}>
+                <div className={styles.optionCard} role="button" tabIndex="0" onClick={props.onAddNumber}>
                     <img className={styles.optionIcon} src={textInputIcon} draggable={false} />
-                    <div className={styles.optionTitle}>
-                        <FormattedMessage
-                            defaultMessage="Add an input"
-                            description="Label for button to add a number/text input"
-                            id="gui.customProcedures.addAnInputNumberText"
-                        />
-                    </div>
                     <div className={styles.optionDescription}>
                         <FormattedMessage
-                            defaultMessage="number only"
+                            defaultMessage="number"
                             description="Description of the number input type"
-                            id="gui.customProcedures.numberType"
+                            id="amp.customProcedures.numberType"
                         />
                     </div>
-                </div> */}
+                </div>
                 <div className={styles.optionCard} role="button" tabIndex="0" onClick={props.onAddBoolean}>
                     <img className={styles.optionIcon} src={booleanInputIcon} draggable={false} />
-                    <div className={styles.optionTitle}>
-                        <FormattedMessage
-                            defaultMessage="Add an input"
-                            description="Label for button to add a boolean input"
-                            id="gui.customProcedures.addAnInputBoolean"
-                        />
-                    </div>
                     <div className={styles.optionDescription}>
                         <FormattedMessage
                             defaultMessage="boolean"
@@ -90,11 +69,11 @@ const CustomProcedures = props => (
                 </div>
                 <div className={styles.optionCard} role="button" tabIndex="0" onClick={props.onAddLabel}>
                     <img className={styles.optionIcon} src={labelIcon} draggable={false} />
-                    <div className={styles.optionTitle}>
+                    <div className={styles.optionDescription}>
                         <FormattedMessage
-                            defaultMessage="Add a label"
+                            defaultMessage="label"
                             description="Label for button to add a label"
-                            id="gui.customProcedures.addALabel"
+                            id="amp.customProcedures.addALabel"
                         />
                     </div>
                 </div>

@@ -24,7 +24,7 @@ export const initialState = {
     interpolation: false,
     cloud: true,
     username: '',
-    highQualityPen: false,
+    highQualityPen: true,
     compilerOptions: {
         enabled: true,
         warpTimer: false
@@ -32,7 +32,7 @@ export const initialState = {
     runtimeOptions: {
         maxClones: 300,
         miscLimits: true,
-        fencing: true,
+        fencing: false,
         caseSensitivity: false
     },
     isWindowFullScreen: false,

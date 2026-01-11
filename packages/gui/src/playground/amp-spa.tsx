@@ -11,6 +11,7 @@ import ErrorBoundary from '../containers/error-boundary';
 import Header from '../website/components/header/header';
 import Footer from '../website/components/footer/footer';
 import Spinner from '../components/tw-loading-spinner/spinner';
+import {loadServiceWorker} from './load-service-worker';
 
 const Interface = lazy(() => import(/* webpackChunkName: "interface" */ './render-interface'));
 const Embed = lazy(() => import(/* webpackChunkName: "embed" */ './embed'));
@@ -49,6 +50,8 @@ const RedirectWithParams: React.FC<{ to: string }> = ({ to }) => {
   const location = useLocation();
   return <Navigate to={`${to}${location.search}${location.hash}`} replace />;
 };
+
+loadServiceWorker();
 
 render(
   <ErrorBoundary>

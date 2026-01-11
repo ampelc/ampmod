@@ -104,7 +104,7 @@ import sharedMessages from '../../lib/shared-messages';
 
 import SeeInsideButton from './tw-see-inside.jsx';
 import isScratchDesktop, {notScratchDesktop} from '../../lib/isScratchDesktop.js';
-import {APP_FORUMS, APP_FORUMS_BUGS, APP_NAME} from '@ampmod/branding';
+import {APP_CONTACT, APP_FORUMS, APP_FORUMS_BUGS, APP_NAME} from '@ampmod/branding';
 
 import ampmodIcon from './tw-advanced.svg';
 import ampmodCanaryIcon from './ampmod-canary.svg';
@@ -489,14 +489,14 @@ class MenuBar extends React.Component {
                                         place={this.props.isRtl ? 'left' : 'right'}
                                     >
                                         <MenuSection>
-                                            <MenuItemLink href={APP_FORUMS_BUGS}>
+                                            <MenuItemLink href={APP_CONTACT}>
                                                 <FormattedMessage
-                                                    defaultMessage="Some scripts encountered errors."
+                                                    defaultMessage="Some scripts encountered errors during compilation."
                                                     description="Link in error menu"
-                                                    id="tw.menuBar.reportError1"
+                                                    id="amp.menuBar.reportError1"
                                                 />
                                             </MenuItemLink>
-                                            <MenuItemLink href={APP_FORUMS_BUGS}>
+                                            <MenuItemLink href={APP_CONTACT}>
                                                 <FormattedMessage
                                                     defaultMessage="This is a bug. Please report it."
                                                     description="Link in error menu"
@@ -518,7 +518,7 @@ class MenuBar extends React.Component {
                                 </MenuLabel>
                             </div>
                         )}
-                        {(isScratchDesktop && aboutButton) || !process.env.AW3 && (
+                        {(isScratchDesktop && aboutButton) || !process.env.AW3 && process.env.ampmod_mode !== 'standalone' && (
                             <SmartLink className={classNames(styles.menuBarItem, styles.logo)} to="/" target="_blank">
                                 <img
                                     src={
@@ -578,7 +578,7 @@ class MenuBar extends React.Component {
                             />
                         )}
                         {this.props.canManageFiles && (
-                            <div className={styles.fileButton}>
+                            <div>
                                 <MenuLabel
                                     open={this.props.fileMenuOpen}
                                     onOpen={this.props.onClickFile}
@@ -586,10 +586,10 @@ class MenuBar extends React.Component {
                                 >
                                     <img
                                         src={fileIcon}
+                                        className={styles.icon}
                                         draggable={false}
                                         width={20}
                                         height={20}
-                                        className={styles.buttonIcon}
                                     />
                                     <span className={styles.collapsibleLabel}>
                                         <FormattedMessage
@@ -729,7 +729,7 @@ class MenuBar extends React.Component {
                                 </MenuLabel>
                             </div>
                         )}
-                        <div className={styles.editButton}>
+                        <div>
                             <MenuLabel
                                 open={this.props.editMenuOpen}
                                 onOpen={this.props.onClickEdit}
@@ -737,10 +737,10 @@ class MenuBar extends React.Component {
                             >
                                 <img
                                     src={editIcon}
+                                    className={styles.icon}
                                     draggable={false}
                                     width={20}
                                     height={20}
-                                    className={styles.buttonIcon}
                                 />
                                 <span className={styles.collapsibleLabel}>
                                     <FormattedMessage
@@ -1014,13 +1014,7 @@ class MenuBar extends React.Component {
             </Box>
         );
 
-        return (
-            <React.Fragment>
-                {menuBar}
-
-                <TWNews />
-            </React.Fragment>
-        );
+        return menuBar;
     }
 }
 
