@@ -84,14 +84,13 @@ const base = {
                     to: '/fullscreen/index.html'
                 },
                 {from: /^\/\d+\/editor\/?$/, to: '/editor.html'},
-                {from: /^\/projects\/editor\/?$/, to: '/editor.html'},
                 {from: /^\/projects\/editor\/fullscreen\/?$/, to: '/fullscreen.html'},
+                {from: /^\/projects\/editor\/?$/, to: '/editor.html'},
                 {from: /^\/\d+\/embed\/?$/, to: '/embed.html'},
                 {from: /^\/addons\/?$/, to: '/addons.html'},
-                {from: /^\/settings\/addons\/?$/, to: '/addons.html'},
+                {from: /^\/settings\/addons\/?$/, to: '/addon-settings.html'},
                 {from: /^\/new-compiler\/?$/, to: '/new-compiler.html'},
-                {from: /^\/examples\/?$/, to: '/examples.html'},
-                {from: /./, to: '/404.html'}
+                {from: /^\/examples\/?$/, to: '/examples.html'}
             ]
         },
         client: {
@@ -411,8 +410,36 @@ module.exports = [
                         title: `${APP_NAME} - ${APP_SLOGAN}`,
                         ...htmlWebpackPluginCommon
                     })
-                ]
-                : [
+                ] : process.env.AW3 ? [
+                    new HtmlWebpackPlugin({
+                        chunks: ['editor'],
+                        template: 'src/playground/index.ejs',
+                        filename: 'editor.html',
+                        title: `Editor - ${APP_NAME}`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['fullscreen'],
+                        template: 'src/playground/index.ejs',
+                        filename: 'fullscreen.html',
+                        title: `Editor - ${APP_NAME}`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['embed'],
+                        template: 'src/playground/index.ejs',
+                        filename: 'embed.html',
+                        title: `Embedded Project - ${APP_NAME}`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                    new HtmlWebpackPlugin({
+                        chunks: ['addon-settings'],
+                        template: 'src/playground/index.ejs',
+                        filename: 'addon-settings.html',
+                        title: `Addon Settings - ${APP_NAME}`,
+                        ...htmlWebpackPluginCommon
+                    }),
+                ] : [
                     new HtmlWebpackPlugin({
                         chunks: ['info', 'minorpages'],
                         title: `Privacy Policy - ${APP_NAME}`,
