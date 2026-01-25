@@ -277,7 +277,7 @@ const GUIComponent = props => {
                             {backdropLibraryVisible ? (
                                 <BackdropLibrary vm={vm} onRequestClose={onRequestCloseBackdropLibrary} />
                             ) : null}
-                            {!loading && <MenuBar
+                            <MenuBar
                                 accountNavOpen={accountNavOpen}
                                 authorId={authorId}
                                 authorThumbnailUrl={authorThumbnailUrl}
@@ -316,7 +316,7 @@ const GUIComponent = props => {
                                 onShare={onShare}
                                 onStartSelectingFileUpload={onStartSelectingFileUpload}
                                 onToggleLoginOpen={onToggleLoginOpen}
-                            />}
+                            />
                             <Box className={styles.bodyWrapper}>
                                 <Box className={styles.flexWrapper}>
                                     <Box className={styles.editorWrapper}>
