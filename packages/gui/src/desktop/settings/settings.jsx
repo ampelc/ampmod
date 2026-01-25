@@ -34,16 +34,6 @@ const DesktopSettings = () => {
   };
 
   const handleToggleNodeIntegration = () => {
-    if (!nodeIntegration) {
-      const ok = confirm(
-        "Are you sure you want to enable Node.js integration?\n" +
-        "(This will allow projects to use extensions that can do anything to your computer, " +
-        "including the ability to corrupt projects, install malware, phish for passwords, and more. " +
-        "Only use this if you know what you are doing.)"
-      );
-      if (!ok) return;
-    }
-
     const newValue = !nodeIntegration;
     setNodeIntegration(newValue);
     api.setSetting('nodeIntegration', newValue);

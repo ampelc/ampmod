@@ -15,6 +15,43 @@ const __dirname = path.dirname(__filename);
 
 const require = createRequire(import.meta.url);
 const { version } = require("./../../../../package.json");
+let theme = { color: '', symbolColor: '', height: 47 };
+
+function startTitlebarAutoTheme(win: { isDestroyed: () => any; webContents: { capturePage: (arg0: { x: number; y: number; width: number; height: number; }) => any; }; setTitleBarOverlay: (arg0: { color: string; symbolColor: string; height: number; }) => void; }, intervalMs = 250) {
+  if (!["win32", "linux"].includes(process.platform)) return () => {};
+
+  let stopped = false;
+  let lastColor: string | null = null;
+  let lastSymbol: string | null = null;
+
+  const tick = async () => {
+    if (stopped || win.isDestroyed()) return;
+
+    try {
+      const image = await win.webContents.capturePage({ x: 0, y: 0, width: 1, height: 1 });
+      const buffer = image.toBitmap();
+      const b = buffer[0], g = buffer[1], r = buffer[2], a = buffer[3];
+
+      const color = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+      const brightness = (0.299*r + 0.587*g + 0.114*b)/255;
+      const symbolColor = brightness > 0.8 ? '#000' : '#fff';
+
+      if (color !== lastColor || symbolColor !== lastSymbol) {
+        theme = { color, symbolColor, height: 47 };
+        win.setTitleBarOverlay(theme);
+        lastColor = color;
+        lastSymbol = symbolColor;
+      }
+    } catch {
+      // Safe to ignore capture errors during navigation/resizes
+    }
+
+    setTimeout(tick, intervalMs);
+  };
+
+  tick();
+  return () => { stopped = true; };
+}
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -24,6 +61,13 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true
+    },
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: "#4FA55C",
+      symbolColor: "#fff",
+      // intentionally minus 1 to account for border-bottom in menu bar
+      height: 47
     }
   });
 
@@ -84,7 +128,10 @@ const createWindow = () => {
 
   let processingWillPreventUnload = false;
 
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => {
+    win.show();
+    startTitlebarAutoTheme(win);
+  });
 
   win.webContents.on('will-prevent-unload', () => {
     // Happily stolen from from https://github.com/TurboWarp/desktop/blob/6c52ba5/src-main/windows/editor.js#L252
@@ -134,7 +181,7 @@ const createWindow = () => {
         webPreferences: {
           preload: path.join(__dirname, "preload-infoPages.cjs"),
           contextIsolation: true
-        }
+        },
       });
 
       newWin.setMenu(null);
@@ -203,9 +250,12 @@ ipcMain.on('open-addon-settings', () => {
     height: 900,
     show: false,
     webPreferences: {
+      preload: path.join(__dirname, "preload.cjs"),
       nodeIntegration: false,
       contextIsolation: true
-    }
+    },
+    titleBarStyle: 'hidden',
+    titleBarOverlay: theme,
   });
 
   win.setMenu(null);
@@ -214,15 +264,18 @@ ipcMain.on('open-addon-settings', () => {
   win.once('ready-to-show', () => win.show());
 });
 
-ipcMain.on('open-addon', (_event, addonId) => {
+ipcMain.on('open-addon', (_, addonId) => {
   const win = new BrowserWindow({
     width: 850,
     height: 900,
     show: false,
     webPreferences: {
+      preload: path.join(__dirname, "preload.cjs"),
       nodeIntegration: false,
       contextIsolation: true
-    }
+    },
+    titleBarStyle: 'hidden',
+    titleBarOverlay: theme,
   });
 
   win.setMenu(null);
@@ -241,6 +294,12 @@ ipcMain.on('open-about', () => {
       preload: path.join(__dirname, "preload-about.cjs"),
       nodeIntegration: false,
       contextIsolation: true
+    },
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: "#4FA55C",
+      symbolColor: "#fff",
+      height: 30
     }
   });
 

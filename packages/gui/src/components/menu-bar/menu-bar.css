@@ -33,6 +33,7 @@
     background-image: $menu-bar-background-image;
     color: $menu-bar-foreground;
     border-bottom: 1px $menu-bar-bottom-border solid;
+    -webkit-app-region: drag;
 }
 
 .main-menu {
@@ -67,6 +68,7 @@
     white-space: nowrap;
     height: calc($menu-bar-height - $margin * 1.2);
     border-radius: calc($roundedness / 1.5);
+    -webkit-app-region: no-drag;
 }
 
 .menu-bar-item.hoverable,
@@ -221,7 +223,7 @@
 }
 
 .about-icon {
-    height: 32px;
+    height: 24px;
 }
 
 .collapsible-label {
@@ -252,6 +254,18 @@
     }
 }
 
-.icon {
+.icon, .about-icon {
   filter: var(--menu-bar-icon-filter);
+}
+
+/* Desktop */
+:global(.desktop-windows) .menu-bar {
+    /* This is only an estimate, I don't use Windows */
+    padding-right: 128px;
+}
+:global(.desktop-linux) .menu-bar {
+    padding-right: 96px;
+}
+:global(.ReactModal__Body--open) .menu-bar {
+    -webkit-app-region: no-drag;
 }

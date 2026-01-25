@@ -18,18 +18,17 @@
             display: flex;
             flex-direction: column;
             user-select: none;
+            -webkit-app-region: drag;
         }
 
         .content {
             flex: 1;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            padding: 40px 20px 20px 20px;
-        }
-
-        .text {
-            text-align: left;
+            justify-content: center;
+            text-align: center;
+            gap: 4px;
         }
 
         h1 {
@@ -44,6 +43,7 @@
 
         a {
           color: inherit;
+          -webkit-app-region: no-drag;
         }
 
         button {
@@ -54,6 +54,7 @@
             border: 0;
             border-radius: 4px;
             cursor: pointer;
+            -webkit-app-region: no-drag;
         }
 
         .logo {
@@ -79,18 +80,16 @@
 </head>
 <body>
     <div class="content">
-        <div class="text">
-            <h1>AmpMod</h1>
-            <p>Block-based programming, amplified.</p>
-            <p>Version <span id="version"></span></p>
-            <p><small id="sysinfo"></small></p>
-            <button onclick="window.close()">OK</button>
-            <script>
-              window.document.getElementById('version').innerText = window._AMP_INTERNAL_API.version();
-              window.document.getElementById('sysinfo').innerText = window._AMP_INTERNAL_API.sysinfo();
-          </script>
-        </div>
         <div class="logo"></div>
+        <h1>AmpMod</h1>
+        <p>Block-based programming, amplified.</p>
+        <p>Version <span id="version"></span></p>
+        <p><small id="sysinfo"></small></p>
+        <button onclick="window.close()">OK</button>
+        <script>
+            window.document.getElementById('version').innerText = window._AMP_INTERNAL_API.version();
+            window.document.getElementById('sysinfo').innerText = window._AMP_INTERNAL_API.sysinfo();
+        </script>
     </div>
     <div class="bottom-bar">
         <span>AmpMod is free software. <a href="https://codeberg.org/ampmod/ampmod">Contribute on Codeberg.</a></span>

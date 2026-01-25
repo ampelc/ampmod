@@ -23,6 +23,7 @@ import {setTheme} from '../../reducers/theme.js';
 import {persistTheme} from '../../lib/themes/themePersistance.js';
 import rainbowIcon from './tw-accent-rainbow.svg';
 import styles from './settings-menu.css';
+import { notScratchDesktop } from '../../lib/isScratchDesktop.js';
 
 export const options = defineMessages({
     [ACCENT_GREEN]: {
@@ -139,7 +140,8 @@ const AccentThemeMenu = ({isOpen, isRtl, onChangeTheme, onOpen, theme}) => {
                 <img className={styles.expandCaret} src={dropdownCaret} draggable={false} />
             </div>
             <Submenu place={isRtl ? 'left' : 'right'}>
-                {Object.keys(options).map(item => (
+                {/* rainbow is hidden because it causes the integrated titlebar controls to mismatch with the rest of the menu bar. */}
+                {Object.keys(options).filter(item => notScratchDesktop() || item !== ACCENT_RAINBOW).map(item => (
                     <AccentMenuItem
                         key={item}
                         id={item}

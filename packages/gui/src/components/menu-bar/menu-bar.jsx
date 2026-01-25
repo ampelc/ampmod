@@ -403,8 +403,7 @@ class MenuBar extends React.Component {
                     }
                     draggable={false}
                     className={styles.aboutIcon}
-                    height={25}
-                    className="no-sa-compact-hide"
+                    className={classNames(styles.aboutIcon, "no-sa-compact-hide")}
                     alt="AmpMod"
                 />
                 <MenuBarMenu
