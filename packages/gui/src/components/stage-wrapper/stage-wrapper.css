@@ -15,10 +15,6 @@
     user-select: none;
 }
 
-.offset-controls .stage-canvas-wrapper {
-    padding-top: 44px;
-}
-
 .stage-wrapper.full-screen {
     position: fixed;
     top: $stage-menu-height;

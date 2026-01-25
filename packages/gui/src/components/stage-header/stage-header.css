@@ -4,8 +4,6 @@
 @import '../../css/filters.css';
 
 .stage-header-wrapper {
-    position: absolute;
-    top: 0;
     font-family: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 [dir='ltr'] .stage-header-wrapper {
