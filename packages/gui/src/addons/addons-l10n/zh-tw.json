@@ -98,7 +98,6 @@
     "variable-manager/for-this-sprite": "僅這個角色使用的變數",
     "variable-manager/search": "搜尋",
     "variable-manager/variables": "變數",
-    "search-sprites/placeholder": "搜尋角色…",
     "gamepad/axes-a-b": "軸 {a} 與 {b}",
     "gamepad/axis-arrows": "方向鍵",
     "gamepad/axis-cursor": "滑鼠游標",

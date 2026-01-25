@@ -70,7 +70,6 @@
     "editor-stage-left/@name": "Afișează scena pe partea stângă",
     "variable-manager/@description": "Adaugă o filă lângă „sunete” în editor pentru pentru a actualiza ușor variabile și liste.",
     "variable-manager/@name": "Administrator de Variabile",
-    "search-sprites/@description": "Adaugă o cutie de căutare la panoul personajelor pentru a căuta personaje după nume.",
     "gamepad/@name": "Suport gamepad",
     "editor-sounds/@description": "Redă efecte sonore la conectarea și la ștergerea blocurilor.",
     "editor-sounds/@name": "Efecte sonore în editor",

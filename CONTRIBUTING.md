@@ -6,6 +6,7 @@ making an issue about it.
 We used to have a style guide, but it is no longer enforced since it conflicts with
 Scratch's eslint configuration.
 
+## Requirements
 AmpMod is not written in itself.
 If you want to contribute, you will need to know JavaScript. If you don't know the difference
 between `1` and `"1"`, sorry, you don't know JavaScript. We cannot spend all of our time
@@ -13,6 +14,12 @@ helping you learn it, but there are some tutorials online.
 
 In addition, you will need learn how to use Git, as it is helpful for tracking your code so
 you can revert bugs. If you can't use Git, you can't push changes, and you can't make your PR.
+Even knowing only `git clone`, `git switch`/`checkout`, `git add`, `git commit` and `git push`
+is sufficient.
+
+## Highly discouraged practices
+
+### The Codeberg built-in editor is not an IDE
 
 We highly discourage using Codeberg's built-in editor as:
 * It does not contain a development server
@@ -23,6 +30,15 @@ We highly discourage using Codeberg's built-in editor as:
   like vibe coding and lack of programming knowledge
 
 Please use an IDE, such as VSCodium or Sublime Text, to contribute if possible.
+
+### Do not modify `develop`
+
+In addition, please do not directly commit to `develop` if you are on a fork. This has several
+complications. If you edit the develop branch, we close your PR, and then you contribute something
+different, the code from the closed PR will get into the new one. This can also cause merge conflicts.
+
+If you have access to `ampmod/ampmod` itself and are pushing to that instead of a fork, this does
+not apply.
 
 ## Development environment
 

@@ -34,7 +34,7 @@ steps:
             branch: develop
       image: node:alpine
       commands:
-          - apk add --no-cache openjdk21-jre python3 git
+          - apk add --no-cache openjdk21-jre python3 zlib zlib-dev git
           - npm i -g pnpm
           - pnpm i --frozen-lockfile
     - name: compile-desktop

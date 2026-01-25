@@ -9,7 +9,7 @@ import {updateTargets} from '../reducers/targets';
 import {updateBlockDrag} from '../reducers/block-drag';
 import {updateMonitors} from '../reducers/monitors';
 import {setProjectChanged, setProjectUnchanged} from '../reducers/project-changed';
-import {setRunningState, setTurboState, setStartedState} from '../reducers/vm-status';
+import {setRunningState, setTurboState, setStartedState, setPausedState} from '../reducers/vm-status';
 import {showExtensionAlert} from '../reducers/alerts';
 import {updateMicIndicator} from '../reducers/mic-indicator';
 import {
@@ -76,6 +76,9 @@ const vmListenerHOC = function (WrappedComponent) {
             this.props.vm.on('STAGE_SIZE_CHANGED', this.props.onStageSizeChanged);
             this.props.vm.on('CREATE_UNSANDBOXED_EXTENSION_API', implementGuiAPI);
             this.props.vm.runtime.on('PLATFORM_MISMATCH', this.props.onPlatformMismatch);
+            // amp: add core pause event handlers
+            this.props.vm.runtime.on('RUNTIME_PAUSED', this.props.onPause);
+            this.props.vm.runtime.on('RUNTIME_UNPAUSED', this.props.onResume);
         }
         componentDidMount() {
             if (this.props.attachKeyboardEvents) {
@@ -110,6 +113,8 @@ const vmListenerHOC = function (WrappedComponent) {
             this.props.vm.off('BLOCK_DRAG_UPDATE', this.props.onBlockDragUpdate);
             this.props.vm.off('TURBO_MODE_ON', this.props.onTurboModeOn);
             this.props.vm.off('TURBO_MODE_OFF', this.props.onTurboModeOff);
+            this.props.vm.off('RUNTIME_PAUSED', this.props.onPause);
+            this.props.vm.off('RUNTIME_UNPAUSED', this.props.onResume);
             this.props.vm.off('PROJECT_RUN_START', this.props.onProjectRunStart);
             this.props.vm.off('PROJECT_RUN_STOP', this.props.onProjectRunStop);
             this.props.vm.off('PROJECT_CHANGED', this.handleProjectChanged);
@@ -225,6 +230,8 @@ const vmListenerHOC = function (WrappedComponent) {
                 onRuntimeStopped,
                 onTurboModeOff,
                 onTurboModeOn,
+                onPause,
+                onResume,
                 hasCloudVariables,
                 onHasCloudVariablesChanged,
                 onFramerateChanged,
@@ -260,6 +267,8 @@ const vmListenerHOC = function (WrappedComponent) {
         onTargetsUpdate: PropTypes.func.isRequired,
         onTurboModeOff: PropTypes.func.isRequired,
         onTurboModeOn: PropTypes.func.isRequired,
+        onPause: PropTypes.func.isRequired,
+        onResume: PropTypes.func.isRequired,
         hasCloudVariables: PropTypes.bool,
         onHasCloudVariablesChanged: PropTypes.func.isRequired,
         onFramerateChanged: PropTypes.func.isRequired,
@@ -317,6 +326,8 @@ const vmListenerHOC = function (WrappedComponent) {
         onRuntimeStopped: () => dispatch(setStartedState(false)),
         onTurboModeOn: () => dispatch(setTurboState(true)),
         onTurboModeOff: () => dispatch(setTurboState(false)),
+        onPause: () => dispatch(setPausedState(true)),
+        onResume: () => dispatch(setPausedState(false)),
         onHasCloudVariablesChanged: hasCloudVariables => dispatch(setHasCloudVariables(hasCloudVariables)),
         onFramerateChanged: framerate => dispatch(setFramerateState(framerate)),
         onInterpolationChanged: interpolation => dispatch(setInterpolationState(interpolation)),

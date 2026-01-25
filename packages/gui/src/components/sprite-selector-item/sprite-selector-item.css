@@ -64,8 +64,8 @@
 
 .sprite-info {
     padding: 0.25rem;
-    border-bottom-left-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: 0.45rem;
+    border-bottom-right-radius: 0.45rem;
 
     font-size: 0.625rem;
     color: $text-primary;

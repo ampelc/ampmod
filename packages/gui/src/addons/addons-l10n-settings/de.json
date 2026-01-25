@@ -216,8 +216,6 @@
     "editor-buttons-reverse-order/@name": "Verkehrte Anordnung von Player-Steuerelementen",
     "variable-manager/@description": "Fügt einen Tab neben \"Klänge\" im Editor hinzu, um Variablen und Listen einfach zu aktualisieren.",
     "variable-manager/@name": "Variablenmanager",
-    "search-sprites/@description": "Fügt ein Suchfeld zur Figurenleiste hinzu.",
-    "search-sprites/@name": "Figuren-Suche",
     "sprite-properties/@description": "Versteckt die Eigenschaftenleiste von Figuren, wie in Scratch 2.0. Benutze die Info-Schaltfläche auf der aktuell ausgewählten FIgur oder doppelklicke auf eine Figur, um die Leiste anzuzeigen oder zu verstecken.",
     "sprite-properties/@name": "Figureneigenschaften ausblenden",
     "sprite-properties/@settings-name-autoCollapse": "Automatisch ausblenden, wenn die Maus den Bereich verlässt",

@@ -8,9 +8,13 @@
 
 .popover-arrow {
     fill: $popover-background;
+    stroke: $ui-black-transparent;
 }
 
 .popover-content {
+    color: $text-primary;
+    box-shadow: 0px 0px 8px 1px $shadow;
+
     background-color: $popover-background;
     border: 1px solid $ui-black-transparent;
     padding: 4px;
@@ -18,38 +22,38 @@
     will-change: transform, opacity;
 
     &[data-state='open'][data-side='top'] {
-        animation: slideFadeTop 0.3s ease forwards;
+        animation: slideFadeTop 0.35s ease forwards;
     }
 
     &[data-state='open'][data-side='bottom'] {
-        animation: slideFadeBottom 0.3s ease forwards;
+        animation: slideFadeBottom 0.35s ease forwards;
     }
 
     &[data-state='open'][data-side='left'] {
-        animation: slideFadeLeft 0.3s ease forwards;
+        animation: slideFadeLeft 0.35s ease forwards;
     }
 
     &[data-state='open'][data-side='right'] {
-        animation: slideFadeRight 0.3s ease forwards;
+        animation: slideFadeRight 0.35s ease forwards;
     }
 }
 
 @keyframes slideFadeTop {
-    from { opacity: 0; transform: translateY(-40px); }
+    from { opacity: 0; transform: translateY(-100px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideFadeBottom {
-    from { opacity: 0; transform: translateY(40px); }
+    from { opacity: 0; transform: translateY(100px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideFadeLeft {
-    from { opacity: 0; transform: translateX(-40px); }
+    from { opacity: 0; transform: translateX(-100px); }
     to   { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slideFadeRight {
-    from { opacity: 0; transform: translateX(40px); }
+    from { opacity: 0; transform: translateX(100px); }
     to   { opacity: 1; transform: translateX(0); }
 }

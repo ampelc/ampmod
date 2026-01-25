@@ -1,20 +1,15 @@
 packages:
-    - packages/gui
-    - packages/branding
-    - packages/vm
-    - packages/blocks
-    - packages/render
-    - packages/render-fonts
-    - packages/paint
+  - packages/*
 
 ignoredBuiltDependencies:
-    - core-js
+  - core-js
 
 onlyBuiltDependencies:
-    - chromedriver
-    - electron
-    - electron-winstaller
-    - es5-ext
-    - esbuild
+  - chromedriver
+  - electron
+  - electron-winstaller
+  - es5-ext
+  - esbuild
+  - optipng-bin
 
 shamefullyHoist: true

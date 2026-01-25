@@ -1,0 +1,13 @@
+@import "../../css/colors.css";
+@import "../../css/z-index.css";
+
+.drag-zone {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: $z-index-modal;
+    background: $looks-secondary;
+    opacity: 0.5;
+}

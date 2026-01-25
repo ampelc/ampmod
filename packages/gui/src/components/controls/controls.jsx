@@ -66,6 +66,7 @@ const Controls = function (props) {
 
 Controls.propTypes = {
     active: PropTypes.bool,
+    paused: PropTypes.bool,
     className: PropTypes.string,
     intl: intlShape.isRequired,
     onGreenFlagClick: PropTypes.func.isRequired,
@@ -79,6 +80,7 @@ Controls.propTypes = {
 Controls.defaultProps = {
     active: false,
     turbo: false,
+    paused: false,
     isSmall: false
 };
 

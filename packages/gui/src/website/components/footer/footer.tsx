@@ -36,7 +36,7 @@ const Footer = () => {
                         id="amp.footer.copyright"
                         values={{
                             APP_NAME,
-                            year: new Date().getFullYear(),
+                            year: `2025-${new Date().getFullYear()}`,
                             freeSoftware: (
                                 <a href="LICENSE.txt">
                                     <Localise id="amp.footer.copyright.freeSoftware" />

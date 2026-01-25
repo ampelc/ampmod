@@ -65,8 +65,8 @@
     position: relative;
     align-items: center;
     white-space: nowrap;
-    height: calc($menu-bar-height - $margin * 1.7);
-    border-radius: $roundedness;
+    height: calc($menu-bar-height - $margin * 1.2);
+    border-radius: calc($roundedness / 1.5);
 }
 
 .menu-bar-item.hoverable,
@@ -101,30 +101,6 @@
 .error-icon,
 .menu-bar-item.logo img {
     filter: var(--menu-bar-icon-filter);
-}
-
-:global(.amp-gui-animations-enabled) {
-    .menu-bar-item.logo:hover {
-        background-color: transparent;
-    }
-    .menu-bar-item.logo:hover img {
-        transform: translateX(14px) rotateZ(360deg) scale(1.05);
-    }
-
-    .menu-bar-item.logo .logo-ground {
-        position: absolute;
-        transform: translateX(-15px);
-        height: 28px;
-        opacity: 0;
-        border-bottom: 2px white solid;
-        width: 52px;
-        transition: opacity 0.35s linear;
-        filter: var(--menu-bar-icon-filter);
-    }
-
-    .menu-bar-item.logo:hover .logo-ground {
-        opacity: 1;
-    }
 }
 
 .menu-bar-item.growable {
@@ -272,34 +248,10 @@
     .menu-bar-item,
     :global(.sa-record) {
         transition:
-            background-color 0.15s ease,
-            transform 0.25s ease;
+            background-color 0.1s ease;
     }
+}
 
-    .settings-button .button-icon,
-    .file-button .button-icon,
-    .edit-button .button-icon {
-        transition:
-            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-            filter 0.25s ease;
-    }
-
-    .settings-button:hover .button-icon,
-    .settings-button .menu-bar-item.active .button-icon {
-        transform: rotateZ(270deg) scale(1.2);
-    }
-
-    .file-button .button-icon {
-        transform-style: preserve-3d;
-    }
-
-    .file-button:hover .button-icon,
-    .file-button .menu-bar-item.active .button-icon {
-        transform: perspective(600px) rotateY(-40deg) rotateX(-35deg) rotateZ(5deg) scale(1.25);
-    }
-
-    .edit-button:hover .button-icon,
-    .edit-button .menu-bar-item.active .button-icon {
-        transform: rotateZ(-35deg) scale(1.2);
-    }
+.icon {
+  filter: var(--menu-bar-icon-filter);
 }

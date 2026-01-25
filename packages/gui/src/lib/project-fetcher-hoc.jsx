@@ -109,10 +109,19 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                 // We don't need to load the examples manifest unless there actually is an example to load
                 return import('./examples').then(examplesModule => {
                     const examples = examplesModule.default;
-                    return examples[exampleId].loader().then(module => {
-                        const exampleData = module;
-                        this.props.onFetchedProjectData(exampleData, loadingState);
-                    });
+                    return fetch(examples[exampleId].url)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Failed to fetch project: ${response.status} ${response.statusText}`);
+                            }
+                            return response.arrayBuffer();
+                        })
+                        .then(exampleData => {
+                            this.props.onFetchedProjectData(exampleData, loadingState);
+                        })
+                        .catch(err => {
+                            console.error("Project fetch error:", err);
+                        });
                 }).catch(err => {
                     log.error(err);
                     this.props.onError(err);

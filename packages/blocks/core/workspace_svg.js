@@ -1152,6 +1152,30 @@ Blockly.WorkspaceSvg.prototype.reportValue = function (id, value) {
 };
 
 /**
+ * Visually report an error associated with a block.
+ * @param {?string} id ID of block to report associated value.
+ * @param {?string} value String value to visually report.
+ */
+Blockly.WorkspaceSvg.prototype.reportError = function (id, value) {
+    var block = this.getBlockById(id);
+    if (!block) {
+        throw "Tried to report value on block that does not exist.";
+    }
+    Blockly.DropDownDiv.hideWithoutAnimation();
+    Blockly.DropDownDiv.clearContent();
+    var contentDiv = Blockly.DropDownDiv.getContentDiv();
+    var valueReportBox = goog.dom.createElement("div");
+    valueReportBox.setAttribute("class", "valueReportBox");
+    valueReportBox.textContent = value;
+    contentDiv.appendChild(valueReportBox);
+    Blockly.DropDownDiv.setColour(
+        Blockly.Colours.valueReportBackground,
+        '#f00' // this is the main differentiator
+    );
+    Blockly.DropDownDiv.showPositionedByBlock(this, block);
+};
+
+/**
  * Paste the provided block onto the workspace.
  * @param {!Element} xmlBlock XML block element.
  */

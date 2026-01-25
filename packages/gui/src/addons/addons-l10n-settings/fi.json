@@ -217,8 +217,6 @@
     "editor-buttons-reverse-order/@name": "Projektin ohjainten käänteinen järjestys",
     "variable-manager/@description": "Lisää välilehden editoriin \"äänet\"-välilehden viereen, jonka avulla voit päivittää muuttujia ja listoja helposti.",
     "variable-manager/@name": "Muuttujien hallinta",
-    "search-sprites/@description": "Lisää hahmoruutuun hakukentän hahmojen nimellä etsimistä varten.",
-    "search-sprites/@name": "Hakuosio hahmoruudussa",
     "sprite-properties/@description": "Piilottaa hahmon asetusruudun oletuksena, kuten Scratch 2.0:ssa. Näytä asetusruutu uudestaan käyttämällä parhaillaan valitun hahmon tietoapainiketta tai kaksoisnapauttamalla hahmoa. Käytä asetusruudun kutistuspainiketta tai kaksoisnapauta hahmoa piilottaaksesi sen uudestaan.",
     "sprite-properties/@name": "Hahmoasetusten kutistaminen",
     "sprite-properties/@settings-name-autoCollapse": "Kutista automaattisesti, kun hiiren osoitin poistuu hahmoruudusta.",

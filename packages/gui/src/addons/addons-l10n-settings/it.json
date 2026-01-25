@@ -216,8 +216,6 @@
     "editor-buttons-reverse-order/@name": "Inverti l'ordine dei controlli del progetto",
     "variable-manager/@description": "Aggiunge una scheda nell'editor a fianco a \"suoni\" per gestire facilmente variabili e liste.",
     "variable-manager/@name": "Gestore variabili",
-    "search-sprites/@description": "Aggiunge una casella di ricerca all'area degli sprite per cercare uno sprite basandosi sul nome.",
-    "search-sprites/@name": "Casella di ricerca nell'area degli sprite",
     "sprite-properties/@description": "Nasconde l'area delle informazioni per impostazione predefinita, come in Scratch 2.0. Usa il pulsante informazioni dello sprite selezionato o fai doppio-click su uno sprite per mostrare di l'area delle informazioni. Per nasconderla nuovamente usa il pulsante nascondi nell'area delle informazioni o fai di nuovo doppio-click su uno sprite.",
     "sprite-properties/@name": "Informazioni degli sprite collassabili",
     "sprite-properties/@settings-name-autoCollapse": "Nascondi automaticamente quando il mouse lascia l'area informazioni",

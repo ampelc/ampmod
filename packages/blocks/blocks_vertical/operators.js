@@ -533,3 +533,28 @@ Blockly.Blocks["operator_newline"] = {
         });
     },
 };
+
+Blockly.Blocks["operator_arrayjoin"] = {
+    /**
+     * amp: Join an array into a string.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.jsonInit({
+            message0: Blockly.Msg.OPERATORS_ARRAY_JOIN,
+            args0: [
+                {
+                    type: "input_value",
+                    name: "ARRAY",
+                    check: "Array",
+                },
+                {
+                    type: "input_value",
+                    name: "DELIM",
+                },
+            ],
+            category: Blockly.Categories.operators,
+            extensions: ["colours_strings", "output_string"],
+        });
+    },
+};

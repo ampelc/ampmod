@@ -77,10 +77,11 @@ Controls.propTypes = {
 const mapStateToProps = state => ({
     isStarted: state.scratchGui.vmStatus.started,
     projectRunning: state.scratchGui.vmStatus.running,
+    paused: state.scratchGui.vmStatus.paused,
     framerate: state.scratchGui.tw.framerate,
     interpolation: state.scratchGui.tw.interpolation,
     turbo: state.scratchGui.vmStatus.turbo
-});
+}); 
 // no-op function to prevent dispatch prop being passed to component
 const mapDispatchToProps = () => ({});
 

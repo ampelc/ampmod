@@ -372,7 +372,11 @@ const GUIComponent = props => {
                                                                 grow={1}
                                                                 isVisible={blocksTabVisible}
                                                                 options={{
-                                                                    media: `${basePath}static/${theme.getBlocksMediaFolder()}/`
+                                                                    // amp: standalone behaviour is a really hacky trap
+                                                                    // amp-standalone-handler will catch loading error and then override it
+                                                                    media: process.env.ampmod_mode === 'standalone'
+                                                                        ? `about:blank#${theme.getBlocksMediaFolder()}/`
+                                                                        : `${basePath}static/${theme.getBlocksMediaFolder()}/`
                                                                 }}
                                                                 stageSize={stageSize}
                                                                 onOpenCustomExtensionModal={

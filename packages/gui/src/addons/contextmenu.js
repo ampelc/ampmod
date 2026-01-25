@@ -30,29 +30,45 @@ const removeFocus = (item) => {
   item.tabIndex = -1;
 };
 
-const menuArrowKeyListener = (menu) => (e) => {
-  if (e.target !== menu) {
-    // Target is one of the items, not the menu
-    return;
+const moveFocusSkippingSeparators = (menu, currentItem, direction) => {
+  let nextItem = currentItem;
+  do {
+    nextItem = direction === "next" ? nextItem.nextElementSibling : nextItem.previousElementSibling;
+    if (!nextItem) break;
+  } while (nextItem && nextItem.getAttribute("role") === "separator");
+
+  if (nextItem) {
+    removeFocus(currentItem);
+    setFocus(nextItem);
   }
-  const moveFocusTo = (newFocusedItem) => {
-    e.stopPropagation();
-    setFocus(newFocusedItem);
-  };
-  if (["Home", "PageUp", "ArrowDown"].includes(e.key)) moveFocusTo(menu.firstElementChild);
-  else if (["End", "PageDown", "ArrowUp"].includes(e.key)) moveFocusTo(menu.lastElementChild);
 };
 
 const itemArrowKeyListener = (menu, item) => (e) => {
-  const moveFocusTo = (newFocusedItem) => {
-    e.stopPropagation();
-    removeFocus(item);
-    setFocus(newFocusedItem);
-  };
-  if (e.key === "ArrowDown" && item.nextElementSibling) moveFocusTo(item.nextElementSibling);
-  else if (e.key === "ArrowUp" && item.previousElementSibling) moveFocusTo(item.previousElementSibling);
-  else if (["Home", "PageUp"].includes(e.key)) moveFocusTo(menu.firstElementChild);
-  else if (["End", "PageDown"].includes(e.key)) moveFocusTo(menu.lastElementChild);
+  if (e.key === "ArrowDown") moveFocusSkippingSeparators(menu, item, "next");
+  else if (e.key === "ArrowUp") moveFocusSkippingSeparators(menu, item, "prev");
+  else if (["Home", "PageUp"].includes(e.key)) {
+    const first = Array.from(menu.children).find((child) => child.getAttribute("role") !== "separator");
+    if (first) {
+      removeFocus(item);
+      setFocus(first);
+    }
+  } else if (["End", "PageDown"].includes(e.key)) {
+    const last = Array.from(menu.children).reverse().find((child) => child.getAttribute("role") !== "separator");
+    if (last) {
+      removeFocus(item);
+      setFocus(last);
+    }
+  }
+};
+
+const menuArrowKeyListener = (menu) => (e) => {
+  if (e.target !== menu) return;
+  e.stopPropagation();
+  const first = Array.from(menu.children).find((child) => child.getAttribute("role") !== "separator");
+  const last = Array.from(menu.children).reverse().find((child) => child.getAttribute("role") !== "separator");
+
+  if (["Home", "PageUp", "ArrowDown"].includes(e.key) && first) setFocus(first);
+  else if (["End", "PageDown", "ArrowUp"].includes(e.key) && last) setFocus(last);
 };
 
 const onReactContextMenu = async function (e) {

@@ -158,7 +158,6 @@
     "editor-buttons-reverse-order/@name": "Inverter a ordem dos botões do controle do projeto",
     "variable-manager/@description": "Adiciona uma aba do lado de \"Sons\" no editor para facilmente editar variáveis e listas.",
     "variable-manager/@name": "Administrador de variáveis",
-    "search-sprites/@description": "Adiciona uma barra de busca ao painel de atores para pesquisar por atores pelo nome.",
     "sprite-properties/@settings-name-transitionDuration": "Velocidade da animação",
     "sprite-properties/@settings-select-transitionDuration-default": "Padrão",
     "sprite-properties/@settings-select-transitionDuration-long": "Lento",

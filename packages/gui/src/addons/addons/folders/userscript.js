@@ -125,7 +125,7 @@ export default async function ({ addon, console, msg }) {
   const getSortableHOCFromElement = (el) => {
     const nearestSpriteSelector = el.closest("[class*='sprite-selector_sprite-selector']");
     if (nearestSpriteSelector) {
-      return nearestSpriteSelector[reactInternalKey].child.sibling.child.stateNode;
+      return nearestSpriteSelector[reactInternalKey].child.sibling.sibling.child.stateNode;
     }
     const nearestAssetPanelWrapper = el.closest('[class*="asset-panel_wrapper"]');
     if (nearestAssetPanelWrapper) {

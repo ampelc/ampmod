@@ -473,7 +473,8 @@
     }
 
     .reset-setting-button {
-        background-color: $input-background;
+        background-color: $ui-primary;
+        border: 1px solid $ui-black-transparent;
         border-left-width: 0;
         border-radius: 0 4px 4px 0px;
         box-sizing: border-box;
@@ -486,6 +487,11 @@
     }
     .reset-setting-button[data-for-text-input='true'] {
         height: 35px;
+        border-radius: 0 20px 20px 0;
+    }
+    .reset-setting-button[data-for-boolean='true'] {
+        height: 22px;
+        padding: 4px;
         border-radius: 0 20px 20px 0;
     }
 

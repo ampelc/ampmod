@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
 
 import Box from '../box/box.jsx';
@@ -37,6 +37,11 @@ const messages = defineMessages({
         id: 'gui.spriteSelector.addSpriteFromFile',
         description: 'Button to add a sprite in the target pane from file',
         defaultMessage: 'Upload Sprite'
+    },
+    searchSprites: {
+        id: 'amp.searchSprites',
+        description: 'Placeholder text for sprite search',
+        defaultMessage: 'Search sprites...'
     }
 });
 
@@ -70,12 +75,25 @@ const SpriteSelectorComponent = function (props) {
         stageSize,
         ...componentProps
     } = props;
+
+    const [searchQuery, setSearchQuery] = useState('');
+
     let selectedSprite = sprites[selectedId];
     let spriteInfoDisabled = false;
     if (typeof selectedSprite === 'undefined') {
         selectedSprite = {};
         spriteInfoDisabled = true;
     }
+
+    const filteredSprites = Object.keys(sprites)
+        .map(id => sprites[id])
+        .filter(sprite =>
+            !searchQuery ||
+            (sprite.name || '')
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase())
+        );
+
     return (
         <Box className={styles.spriteSelector} {...componentProps}>
             <SpriteInfo
@@ -98,10 +116,19 @@ const SpriteSelectorComponent = function (props) {
                 onChangeY={onChangeSpriteY}
             />
 
+            <input
+                type="text"
+                className={styles.spriteSearch}
+                placeholder={intl.formatMessage(messages.searchSprites)}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                aria-label={intl.formatMessage(messages.searchSprites)}
+            />
+
             <SpriteList
                 editingTarget={editingTarget}
                 hoveredTarget={hoveredTarget}
-                items={Object.keys(sprites).map(id => sprites[id])}
+                items={filteredSprites}
                 raised={raised}
                 selectedId={selectedId}
                 onDeleteSprite={onDeleteSprite}
@@ -110,6 +137,7 @@ const SpriteSelectorComponent = function (props) {
                 onExportSprite={onExportSprite}
                 onSelectSprite={onSelectSprite}
             />
+
             <ActionMenu
                 className={styles.addButton}
                 img={spriteIcon}
@@ -126,12 +154,12 @@ const SpriteSelectorComponent = function (props) {
                     {
                         title: intl.formatMessage(messages.addSpriteFromSurprise),
                         img: surpriseIcon,
-                        onClick: onSurpriseSpriteClick // TODO need real function for this
+                        onClick: onSurpriseSpriteClick
                     },
                     {
                         title: intl.formatMessage(messages.addSpriteFromPaint),
                         img: paintIcon,
-                        onClick: onPaintSpriteClick // TODO need real function for this
+                        onClick: onPaintSpriteClick
                     },
                     {
                         title: intl.formatMessage(messages.addSpriteFromLibrary),

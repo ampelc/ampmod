@@ -3,14 +3,15 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="/manifest.webmanifest" />
         <title><%= htmlWebpackPlugin.options.title %></title>
             <% 
           /* Stolen from librekitten lol
             https://codeberg.org/LibreKitten/LibreKitten/commit/87f1b2d934aa228829ee3179fb226c411d969fba#diff-4913fa303beb5bc166ede94c92bb244f9ed68cef */
-          [
+          process.env.ampmod_mode !== 'standalone' ? [
             require('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'),
             require('@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2'),
-          ].map(font => { %>
+          ] : [].map(font => { %>
             <link 
               rel="preload"
               href="<%= font %>"
@@ -55,6 +56,9 @@
           window.__PAGE__ = "<%= htmlWebpackPlugin.options.page %>";
         </script>
         <% } %>
+        <% if (htmlWebpackPlugin.options.ampmod_mode === 'standalone') { %>
+        <link rel="icon" href="<%- require('../../static/favicon.ico') %>" type="image/vnd.microsoft.icon" />
+        <% } %>
         <style>
             body {
                 background-color: #4fa55c;
@@ -82,10 +86,10 @@
     </head>
     <body>
         <noscript>
-            <div class="splash-custom-info"><img src="<%= require('../components/menu-bar/tw-error.svg') %>" draggable="false" loading="lazy" height="30" /> <%= htmlWebpackPlugin.options.APP_NAME %> requires JavaScript.</div>
+            <div class="splash-custom-info"><%= htmlWebpackPlugin.options.APP_NAME %> requires JavaScript.</div>
         </noscript>
 
-        <div class="splash-custom-info" hidden><img src="<%= require('../components/menu-bar/icon--settings.svg') %>" draggable="false" loading="lazy" height="30" /><br /><span class="splash-custom-info-text"></span></div>
+        <div class="splash-custom-info" hidden><span class="splash-custom-info-text"></span></div>
 
         <div id="app"></div>
     </body>

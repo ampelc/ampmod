@@ -208,8 +208,6 @@
     "editor-buttons-reverse-order/@name": "Ters çevrilmiş proje kontrolleri",
     "variable-manager/@description": "Editörde \"sesler\" sekmesinin yanına değişken ve listelerinizi kolaylıkla yönetebileceğiniz bir sekme ekler.",
     "variable-manager/@name": "Değişken yöneticisi",
-    "search-sprites/@description": "Karakterleri ismine göre aramak için kukla bölmesine bir arama kutusu ekler.",
-    "search-sprites/@name": "Kukla panelinde arama kutusu",
     "sprite-properties/@description": "Varsayılan olarak - Scratch 2.0'daki gibi - kukla özellikleri panelini gizler. Özellikler panelini tekrar göstermek için seçili kuklanın üzerindeki bilgi düğmesine veya kuklaya çift tıklayın. Tekrar gizlemek için özellikler panelindeki daraltma düğmesine veya kuklaya çift tıklayın.",
     "sprite-properties/@name": "Daraltılmış kukla özellikleri",
     "sprite-properties/@settings-name-autoCollapse": "Fare kukla panelinden çıktığında otomatik olarak daralt",

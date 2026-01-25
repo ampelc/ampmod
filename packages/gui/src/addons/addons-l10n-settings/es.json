@@ -206,8 +206,6 @@
     "editor-buttons-reverse-order/@name": "Invertir orden de los controles del proyecto",
     "variable-manager/@description": "Agrega una pestaña al lado de \"sonidos\" en el editor para que pueda fácilmente editar variables y listas.",
     "variable-manager/@name": "Gestor de variables",
-    "search-sprites/@description": "Agrega una barra de búsqueda al panel de objetos para buscar objetos por nombre.",
-    "search-sprites/@name": "Barra de búsqueda en panel de objetos",
     "sprite-properties/@description": "Esconde en panel de propiedades de sprite por defecto, como en Scratch 2.0. Use el botón de información en el sprite actualmente seleccionado o haga doble click en un sprite para mostrar el panel de propiedades otra vez. Para volver a esconderlo, use el botón de colapsar en el panel de propiedades o haga doble click en un sprite.",
     "sprite-properties/@name": "Colapsar propiedades de sprites",
     "sprite-properties/@settings-name-autoCollapse": "Colapsar automáticamente cuando el cursor se aleja del panel de sprites",

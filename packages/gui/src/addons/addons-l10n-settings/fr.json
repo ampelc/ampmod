@@ -201,8 +201,6 @@
     "editor-buttons-reverse-order/@name": "Inverse l'ordre des contrôles du projet",
     "variable-manager/@description": "Ajoute un nouvel onglet à côté de \"sons\" dans l'éditeur pour mettre à jour facilement les variables et les listes.",
     "variable-manager/@name": "Gestionnaire de variables",
-    "search-sprites/@description": "Ajoute un champ de recherche au volet des sprites pour les rechercher par nom.",
-    "search-sprites/@name": "Boîte de recherche dans le volet sprite",
     "sprite-properties/@description": "Cache le panneau de propriétés du sprite par défaut, comme dans Scratch 2.0. Utilisez le bouton info sur le sprite actuellement sélectionné ou double-cliquez sur un sprite pour afficher à nouveau le panneau des propriétés. Pour le réafficher, utilisez le bouton de réduction dans le panneau de propriétés ou double-cliquez sur un sprite.",
     "sprite-properties/@name": "Réduire les propriétés des sprites",
     "sprite-properties/@settings-name-autoCollapse": "Réduction automatique lorsque la souris quitte le panneau des sprites",

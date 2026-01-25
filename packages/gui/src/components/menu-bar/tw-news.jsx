@@ -3,9 +3,11 @@ import {APP_NAME} from '@ampmod/branding';
 import {isScratchDesktop} from '../../lib/isScratchDesktop';
 import CloseButton from '../close-button/close-button.jsx';
 import styles from './tw-news.css';
+import icon from './tw-advanced.svg';
+import SmartLink from '../../website/components/smart-link/smart-link';
 
 const LOCAL_STORAGE_KEY = `${process.env.ampmod_mode === 'canary' ? 'canary' : 'amp'}:closedNews`;
-const NEWS_ID = 'privacy-1';
+const NEWS_ID = '0.4';
 
 const getIsClosedInLocalStorage = () => {
     try {
@@ -44,18 +46,19 @@ class TWNews extends React.Component {
     }
     render() {
         const today = new Date();
-        const is911 = today.getMonth() === 8 && today.getDate() === 11; // September is month 8 (0-indexed)
-        if (true || this.state.closed || isScratchDesktop() || is911 || process.env.ampmod_mode === 'lab') {
+        if (this.state.closed || isScratchDesktop() || process.env.ampmod_mode === 'lab') {
             return null;
         }
         return (
             <div className={styles.news}>
-                <div className={styles.text}>
-                    { }
-                    {`The ${APP_NAME} privacy policy has been updated. You can also disable analytics. `}
-                    <a href="privacy.html" target="_blank" rel="noreferrer">
-                        {'View it here.'}
-                    </a>
+                <div className={styles.textContainer}>
+                    <img src={icon} draggable={false} height={28} />
+                    <div className={styles.text}>
+                        {APP_NAME} 0.4 has been released! For more information, view the patch notes in the editor.
+                    </div>
+                    <SmartLink to="/editor" className={styles.button} target="_blank" rel="noopener">
+                        Try it now
+                    </SmartLink>
                 </div>
                 <CloseButton className={styles.close} onClick={this.handleClose} />
             </div>

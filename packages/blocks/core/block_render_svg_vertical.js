@@ -185,14 +185,16 @@ Blockly.BlockSvg.NOTCH_PATH_RIGHT =
  * @const
  */
 Blockly.BlockSvg.NOTCH_PATH_CASE_LEFT =
-    "l 8,8 " + "l 8,-8 " + "l 8,8 " + "l 8,-8";
+  // TODO: implement
+  Blockly.BlockSvg.NOTCH_PATH_LEFT;
 
 /**
  * SVG path for drawing a "case" notch from right to left.
  * @const
  */
 Blockly.BlockSvg.NOTCH_PATH_CASE_RIGHT =
-    "l -8,8 " + "l -8,-8 " + "l -8,8 " + "l -8,-8";
+  // TODO: implement
+  Blockly.BlockSvg.NOTCH_PATH_RIGHT;
 
 /**
  * Amount of padding before the notch.
@@ -1430,8 +1432,8 @@ Blockly.BlockSvg.prototype.renderDrawTop_ = function (steps, rightEdge) {
             steps.push("H", Blockly.BlockSvg.NOTCH_START_PADDING);
             // Use case notch if block shape is SHAPE_SWITCH_CASE
             if (
-                this.getOutputShape &&
-                this.getOutputShape() === Blockly.SHAPE_SWITCH_CASE
+                this.previousConnection.check_ &&
+                this.previousConnection.check_.indexOf("case") !== -1
             ) {
                 steps.push(Blockly.BlockSvg.NOTCH_PATH_CASE_LEFT);
             } else {
@@ -1657,8 +1659,8 @@ Blockly.BlockSvg.prototype.renderDrawBottom_ = function (steps, cursorY) {
         steps.push("H", notchStart, " ");
         // Use case notch if block shape is SHAPE_SWITCH_CASE
         if (
-            this.getOutputShape &&
-            this.getOutputShape() === Blockly.SHAPE_SWITCH_CASE
+            this.nextConnection.check_ &&
+            this.nextConnection.check_.indexOf("case") !== -1
         ) {
             steps.push(Blockly.BlockSvg.NOTCH_PATH_CASE_RIGHT);
         } else {

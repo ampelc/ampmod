@@ -51,7 +51,7 @@ steps:
     - name: install
       image: node:24-alpine
       commands:
-          - apk add --no-cache openjdk21-jre python3
+          - apk add --no-cache openjdk21-jre python3 zlib zlib-dev
           - corepack enable
           - pnpm --filter !turbowarp-desktop i --frozen-lockfile
     - name: build-monorepo
@@ -76,8 +76,7 @@ steps:
           - cd ./amp-build
           # Remove all previous files, then copy in the new build
           - git rm -rf ./*
-          - echo "/* index.html 200" > _redirects
           - cp -a ../packages/gui/build/. .
           - git add --all
           - git commit -m "Woodpecker CI Build at $( env TZ=America/Chicago date +'%Y-%m-%d %X %Z' )"
-          - git push -f -u origin canary
+          - git push -f -u origin pages

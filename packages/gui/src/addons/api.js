@@ -136,22 +136,7 @@ const getTranslations = async () => {
 const addonMessagesPromise = getTranslations();
 
 const untilInEditor = () => {
-    if (
-        !reduxInstance.state.scratchGui.mode.isPlayerOnly ||
-        reduxInstance.state.scratchGui.mode.isEmbedded
-    ) {
-        return;
-    }
-    return new Promise(resolve => {
-        const handler = () => {
-            if (!reduxInstance.state.scratchGui.mode.isPlayerOnly) {
-                resolve();
-                reduxInstance.removeEventListener('statechanged', handler);
-            }
-        };
-        reduxInstance.initialize();
-        reduxInstance.addEventListener('statechanged', handler);
-    });
+    return new Promise(resolve => true);
 };
 
 const getDisplayNoneWhileDisabledClass = id => `addons-display-none-${id}`;
@@ -906,10 +891,6 @@ class AddonRunner {
     }
 
     async run () {
-        if (this.manifest.editorOnly) {
-            await untilInEditor();
-        }
-
         const mod = await addonEntries[this.id]();
         this.resources = mod.resources;
 

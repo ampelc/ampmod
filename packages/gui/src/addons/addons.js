@@ -43,7 +43,7 @@ const addons = [
     'editor-stage-left',
     'editor-buttons-reverse-order',
     'variable-manager',
-    'search-sprites',
+    // 'search-sprites',
     'sprite-properties',
     'gamepad',
     'editor-sounds',

@@ -733,20 +733,59 @@ Blockly.Blocks["control_case"] = {
             extensions: ["colours_control", "shape_switch_case"],
         });
     },
-    onchange: function (event) {
-        if (!this.workspace || this.isInFlyout) return;
+};
 
-        let parentBlock = this.getSurroundParent();
-        let isChildOfSwitch = false;
+Blockly.Blocks["control_default"] = {
+    /**
+     * amp: Block for "default".
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.jsonInit({
+            message0: Blockly.Msg.CONTROL_DEFAULT,
+            message1: "%1",
+            args1: [
+                {
+                    type: "input_statement",
+                    name: "SUBSTACK",
+                },
+            ],
+            category: Blockly.Categories.control,
+            extensions: ["colours_control", "shape_switch_case_end"],
+        });
+    },
+};
 
-        if (parentBlock && parentBlock.type === "control_switch") {
-            isChildOfSwitch = true;
-        }
+Blockly.Blocks["control_break"] = {
+    /**
+     * amp: Block for "break".
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.jsonInit({
+            message0: Blockly.Msg.CONTROL_BREAK,
+            category: Blockly.Categories.control,
+            extensions: ["colours_control", "shape_end"],
+        });
+    },
+};
 
-        if (!isChildOfSwitch) {
-            this.setWarningText(Blockly.Msg.CONTROL_SWITCH_BAD_SYNTAX, this.id);
-        } else {
-            this.setWarningText(null, this.id);
-        }
+Blockly.Blocks["control_error"] = {
+    /**
+     * Block for "throw error..."
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.jsonInit({
+            message0: Blockly.Msg.CONTROL_ERROR,
+            args0: [
+                {
+                    type: "input_value",
+                    name: "MESSAGE",
+                },
+            ],
+            category: Blockly.Categories.control,
+            extensions: ["colours_control", "shape_end"],
+        });
     },
 };

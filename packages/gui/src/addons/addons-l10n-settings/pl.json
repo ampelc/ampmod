@@ -165,8 +165,6 @@
     "editor-buttons-reverse-order/@name": "Odwrócona kolejność kontrolek projektu",
     "variable-manager/@description": "Dodaje nową zakładkę obok \"dźwięków\" w edytorze, aby łatwo edytować zmienne i listy.",
     "variable-manager/@name": "Menedżer zmiennych",
-    "search-sprites/@description": "Dodaje pole wyszukiwania w liście duszków, za pomocą którego możesz wyszukać duszka po jego nazwie.",
-    "search-sprites/@name": "Pasek wyszukiwania w panelu duszków",
     "sprite-properties/@settings-name-hideByDefault": "Zwijaj panel domyślnie",
     "sprite-properties/@settings-name-transitionDuration": "Prędkość animacji",
     "sprite-properties/@settings-select-transitionDuration-default": "Domyślna",

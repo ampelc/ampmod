@@ -216,8 +216,6 @@
     "editor-buttons-reverse-order/@name": "Volgorde van projectbesturingen omkeren",
     "variable-manager/@description": "Voegt een tabblad naast \"geluiden\" toe in de editor om makkelijk variabelen en lijsten aan te passen.",
     "variable-manager/@name": "Variabele manager",
-    "search-sprites/@description": "Voegt een zoekbalk aan het spritevenster toe om sprites bij naam te zoeken.",
-    "search-sprites/@name": "Zoekbalk in spritepaneel",
     "sprite-properties/@description": "Verbergt het sprite-eigenschappenpaneel zoals in Scratch 2.0. Klik op de infoknop in de huidige sprite of dubbelklik een sprite om het paneel weer te laten verschijnen. Om het weer te verbergen gebruik je de samenvouwknop in het paneel of dubbelklik een sprite.",
     "sprite-properties/@name": "Sprite-eigenschappen samenvouwen",
     "sprite-properties/@settings-name-autoCollapse": "Automatisch samenvouwen wanneer muis buiten paneel beweegt",

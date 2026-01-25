@@ -112,7 +112,6 @@
     "variable-manager/for-this-sprite": "Variables para este objeto",
     "variable-manager/search": "Buscar",
     "variable-manager/too-big": "Click para mostrar un valor muy grande.",
-    "search-sprites/placeholder": "Buscar objetos...",
     "sprite-properties/close-properties-panel-tooltip": "Colapsar panel de propiedades",
     "sprite-properties/open-properties-panel-tooltip": "Abrir panel de propiedades",
     "gamepad/axes-a-b": "Ejes {a} y {b}",

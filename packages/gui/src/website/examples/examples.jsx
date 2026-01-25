@@ -68,7 +68,8 @@ export default function ExamplesPage() {
                                 img={proj.img}
                                 isSupported={proj.isSupported ?? true}
                                 ref={index === 0 ? firstExampleRef : null}
-                                onClick={() => exdriver?.destroy()}
+                                url={proj.url}
+                                onClick={() => /* exdriver?.destroy() */ {}}
                             />
                         ))}
                     </div>

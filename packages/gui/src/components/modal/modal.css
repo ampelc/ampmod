@@ -6,12 +6,10 @@
     0% {
         transform: scale(0.8);
         opacity: 0;
-        filter: blur(2px);
     }
     100% {
         transform: scale(1);
         opacity: 1;
-        filter: blur(0);
     }
 }
 
@@ -19,12 +17,10 @@
     0% {
         transform: translateY(250px);
         opacity: 0;
-        filter: blur(2px);
     }
     100% {
         transform: translateY(0);
         opacity: 1;
-        filter: blur(0);
     }
 }
 
@@ -50,16 +46,13 @@
     0% {
         transform: translateY(0);
         opacity: 1;
-        filter: blur(0);
     }
     10% {
         opacity: 1;
-        filter: blur(2px);
     }
     100% {
         transform: translateY(150px);
         opacity: 0;
-        filter: blur(0);
     }
 }
 
@@ -68,21 +61,12 @@
     0% {
         transform: scale(1);
         opacity: 1;
-        filter: blur(0);
-    }
-    10% {
-        filter: blur(2px);
     }
     100% {
         transform: scale(0.8);
         opacity: 0;
-        filter: blur(0);
     }
 }
-
-/* --------------------------------------------------------
- * Modal Overlay and Content Styles (Unchanged from original)
- * -------------------------------------------------------- */
 
 .modal-overlay {
     position: fixed;
@@ -91,35 +75,9 @@
     right: 0;
     bottom: 0;
     z-index: $z-index-modal;
-    background-color: hsla(0, 0%, 0%, 0.3);
+    background-color: $ui-modal-overlay;
     color: $ui-modal-foreground;
     backdrop-filter: blur(1px) contrast(0.8);
-}
-
-:global(.amp-gui-animations-enabled) {
-    .modal-overlay {
-        animation: fadeIn 0.15s cubic-bezier(0.445, 0.05, 0.55, 0.95);
-    }
-    .modal-overlay.closing,
-    :global(.amp-addon-modalclosing).modal-overlay {
-        opacity: 0;
-        animation: fadeOut 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
-        pointer-events: none;
-    }
-    .modal-content:not(.no-zoom-animation) {
-        animation: zoomFadeIn 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    .modal-content.closing,
-    :global(.amp-addon-modalclosing) .modal-content {
-        opacity: 0;
-        animation: zoomFadeOut 0.15s cubic-bezier(0.55, 0.085, 0.68, 0.53);
-    }
-    .modal-content.full-screen:not(.no-zoom-animation) {
-        animation: slideInFromBottom 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-    .modal-content.full-screen.closing {
-        animation: slideOutToBottom 0.2s cubic-bezier(0.6, 0.1, 0.8, 0.3);
-    }
 }
 
 .modal-content * {
@@ -213,8 +171,6 @@ $sides: 20rem;
     letter-spacing: 0.4px;
     cursor: default;
     font-family: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 1.2rem;
-    font-weight: bold;
     justify-content: center;
 }
 

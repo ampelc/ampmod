@@ -5,6 +5,7 @@ const { merge } = require('webpack-merge');
 const path = require('path');
 const webpack = require('webpack');
 const monorepoPackageJson = require('../../package.json');
+const svgToMiniDataURI = require('mini-svg-data-uri');
 
 // Plugins
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -13,25 +14,20 @@ const { SwcMinifyWebpackPlugin } = require('swc-minify-webpack-plugin');
 const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const STATIC_PATH = process.env.STATIC_PATH || '/static';
 const {APP_NAME, APP_SLOGAN, APP_DESCRIPTION, APP_SOURCE} = require('@ampmod/branding');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const root = process.env.ROOT || '';
 if (root.length > 0 && !root.endsWith('/')) {
     throw new Error('If ROOT is defined, it must have a trailing slash.');
 }
 
-if (process.env.ENABLE_SERVICE_WORKER) {
-    console.warn(
-        'amp: ENABLE_SERVICE_WORKER is deprecated as the service worker is now enabled by default. To disable the service worker, use DISABLE_SERVICE_WORKER instead.'
-    );
-}
-
 const IS_CBP_BUILD = Boolean(process.env.IS_CBP_BUILD);
 const htmlWebpackPluginCommon = {
-    scriptLoading: 'module',
+    scriptLoading: process.env.BUILD_MODE === 'standalone' ? 'defer' : 'module',
     root: root,
     meta: JSON.parse(process.env.EXTRA_META || '{}'),
     APP_NAME,
@@ -68,6 +64,7 @@ const CACHE_EPOCH = `amp-${monorepoPackageJson.version}`;
 const base = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     devtool: process.env.SOURCEMAP || (process.env.NODE_ENV === 'production' ? false : 'source-map'),
+    cache: { type: 'filesystem' },
     devServer: {
         static: { directory: path.resolve(__dirname, "build") },
         host: "0.0.0.0",
@@ -97,7 +94,7 @@ const base = {
     experiments: {
         futureDefaults: true,
         css: false, // for now
-        outputModule: true,
+        outputModule: process.env.BUILD_MODE !== 'standalone',
     },
     output: {
         clean: !process.env.CI,
@@ -108,7 +105,7 @@ const base = {
         chunkFilename:
             process.env.NODE_ENV === 'production' ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
         publicPath: root,
-        module: true
+        module: process.env.BUILD_MODE !== 'standalone'
     },
     resolve: {
         symlinks: false,
@@ -119,7 +116,6 @@ const base = {
         alias: {
             'react': path.resolve(__dirname, 'node_modules/react'),
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
-            'text-encoding$': path.resolve(__dirname, 'src/lib/tw-text-encoder'),
             'scratch-render-fonts$': path.resolve(__dirname, 'src/lib/tw-scratch-render-fonts'),
             '@ampmod/branding$': path.resolve(__dirname, 'src/lib/amp-intercept-branding'),
             'real-branding$': path.resolve(__dirname, '../branding'),
@@ -144,7 +140,7 @@ const base = {
                             decorators: false,
                             dynamicImport: true
                         },
-                        target: process.env.NODE_ENV === 'production' ? 'es2022' : 'esnext',
+                        target: (process.env.NODE_ENV === 'production' || process.env.BUILD_MODE === 'standalone') ? 'es2022' : 'esnext',
                         transform: {
                             react: {
                                 pragma: 'React.createElement',
@@ -161,9 +157,11 @@ const base = {
             },
             {
                 test: /\.css$/i,
-                resourceQuery: /^(?!basic$).*/,
+                resourceQuery: {
+                    not: [/^\?basic$/, /^\?addon-style$/]
+                },
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    process.env.BUILD_MODE === 'standalone' ? 'style-loader' : MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
                         options: {
@@ -195,11 +193,59 @@ const base = {
                 ]
             },
             {
-                // Static assets
-                test: /\.(svg|png|wav|mp3|gif|jpg|woff2?|hex)$/,
+                resourceQuery: /addon-style/,
+                use: [
+                    'css-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [
+                                    // we only want to minify
+                                    ...(process.env.NODE_ENV === 'production'
+                                        ? [require('cssnano')({ preset: 'default' })]
+                                        : []),
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            // Static assets
+            ...(process.env.BUILD_MODE === 'standalone' ? [{
+                test: /\.(png|wav|mp3|gif|jpg|ico|woff2)$/,
+                type: "asset/inline",
+            }, {
+                test: /\.svg$/,
+                type: "asset/inline",
+                generator: {
+                  dataUrl: content => {
+                    content = content.toString();
+                    return svgToMiniDataURI(content);
+                  },
+                },
+            }] : [{
+                test: /\.(png|wav|mp3|gif|jpg|ico|woff2?|hex)$/,
                 type: "asset",
                 parser: { dataUrlCondition: { maxSize: 8 * 1024 } },
-                generator: { filename: "static/assets/[name][hash][ext]" },
+                generator: { filename: "static/assets/[hash][ext]" },
+            }, {
+                test: /\.svg$/,
+                type: "asset",
+                parser: { dataUrlCondition: { maxSize: 10 * 1024 } },
+                generator: {
+                  filename: "static/assets/[hash].svg",
+                  dataUrl: content => {
+                    content = content.toString();
+                    return svgToMiniDataURI(content);
+                  },
+                },
+            }]),
+            {
+                // Static assets
+                test: /\.(sb3|apz)$/,
+                type: "asset/resource",
+                generator: { filename: "static/projects/[name].[hash][ext]" },
             },
             {
                 resourceQuery: /raw/,
@@ -236,12 +282,23 @@ const base = {
         emitOnErrors: true,
     },
     plugins: [
+        ...(process.env.BUILD_MODE !== 'standalone' ? [
+            new MiniCssExtractPlugin({
+                filename:
+                    process.env.NODE_ENV === 'production'
+                        ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
+                        : 'css/[name].css',
+                chunkFilename:
+                    process.env.NODE_ENV === 'production'
+                        ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
+                        : 'css/[id].css',
+                ignoreOrder: true,
+                runtime: true,
+            })
+        ] : []),
         new webpack.DefinePlugin({
             "global": "globalThis",
             "process.env.DEBUG": Boolean(process.env.DEBUG),
-            "process.env.DISABLE_SERVICE_WORKER": JSON.stringify(
-                process.env.DISABLE_SERVICE_WORKER || ""
-            ),
             "process.env.ROOT": JSON.stringify(root),
             "process.env.AW3": Boolean(process.env.AW3),
             "process.env.SPA": Boolean(process.env.SPA),
@@ -277,24 +334,12 @@ const base = {
                     from: "src/lib/themes/blocks/dark-media/blocks-media",
                     to: "static/blocks-media/dark",
                     force: true,
-                },
+                }
             ],
         }),
         new webpack.ProvidePlugin({
             Buffer: ["buffer", "Buffer"],
         }),
-        new MiniCssExtractPlugin({
-            filename:
-                process.env.NODE_ENV === 'production'
-                    ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
-                    : 'css/[name].css',
-            chunkFilename:
-                process.env.NODE_ENV === 'production'
-                    ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
-                    : 'css/[id].css',
-            ignoreOrder: true,
-            runtime: true,
-        })
     ],
 };
 
@@ -308,7 +353,10 @@ if (process.env.NODE_ENV !== "production") {
 module.exports = [
     // to run editor examples
     merge(base, {
-        entry: process.env.SPA ? './src/playground/amp-spa.tsx' : {
+        entry: process.env.SPA ? {
+            'main':  './src/playground/amp-spa.tsx',
+            'service-worker-extra': './src/playground/service-worker.js',
+        } : {
             'website': [
                 './src/website/components/header/header.tsx',
                 './src/website/components/footer/footer.tsx',
@@ -329,7 +377,8 @@ module.exports = [
             'notfound': './src/website/not-found.ts',
             'minorpages': './src/website/minor-pages/render.tsx',
             'faq': './src/website/faq/faq.tsx',
-            'examples-landing': './src/website/examples/examples.jsx'
+            'examples-landing': './src/website/examples/examples.jsx',
+            'service-worker-extra': './src/playground/service-worker.js',
         },
         output: {
             hashFunction: 'sha256',
@@ -340,21 +389,16 @@ module.exports = [
             splitChunks: {
                 chunks: 'all',
                 minChunks: 1,
-                minSize: 50000,
-                maxSize: 8000000,
-                maxInitialRequests: 8,
+                minSize: 500 * 1024,
+                maxSize: 10 * 1024 * 1024,
+                maxInitialRequests: 12,
             },
             minimizer: [new SwcMinifyWebpackPlugin({compress: true, mangle: true, format: {comments: "some"}})]
         },
-        stats:
-            process.env.NODE_ENV === 'production'
-                ? 'errors-only'
-                : {
-                      chunks: true,
-                      chunkModules: false,
-                      chunkOrigins: false,
-                      colors: true
-                  },
+        stats: {
+            preset: process.env.STATS ?? 'summary',
+            errorDetails: true
+        },
         plugins: base.plugins.concat([
             ...process.env.BUILD_TARGET === "desktop" || process.env.NODE_ENV !== "production" ? [
                 new HtmlWebpackPlugin({
@@ -377,6 +421,7 @@ module.exports = [
             ...(process.env.SPA
                 ? [
                     new HtmlWebpackPlugin({
+                        chunks: ['main'],
                         template: 'src/playground/index.ejs',
                         filename: 'index.html',
                         title: `${APP_NAME} - ${APP_SLOGAN}`,
@@ -429,7 +474,7 @@ module.exports = [
                     ...(process.env.BUILD_MODE !== 'lab'
                         ? [
                                 new HtmlWebpackPlugin({
-                                    chunks: ['info', 'home'],
+                                    chunks: ['website', 'home'],
                                     template: 'src/playground/index.ejs',
                                     filename: 'index.html',
                                     title: `${APP_NAME} - ${APP_SLOGAN}`,
@@ -439,7 +484,7 @@ module.exports = [
                             ]
                         : []),
                     new HtmlWebpackPlugin({
-                        chunks: ['info', 'minorpages'],
+                        chunks: ['website', 'minorpages'],
                         template: 'src/playground/index.ejs',
                         filename: 'new-compiler.html',
                         title: `New compiler - ${APP_NAME}`,
@@ -448,7 +493,7 @@ module.exports = [
                         ...htmlWebpackPluginCommon
                     }),
                     new HtmlWebpackPlugin({
-                        chunks: ['info', 'examples-landing'],
+                        chunks: ['website', 'examples-landing'],
                         template: 'src/playground/index.ejs',
                         filename: 'examples.html',
                         title: `Examples - ${APP_NAME}`,
@@ -456,7 +501,7 @@ module.exports = [
                         ...htmlWebpackPluginCommon
                     }),
                     new HtmlWebpackPlugin({
-                        chunks: ['info', 'faq'],
+                        chunks: ['website', 'faq'],
                         template: 'src/playground/index.ejs',
                         filename: 'faq.html',
                         title: `FAQ - ${APP_NAME}`,
@@ -471,7 +516,7 @@ module.exports = [
                         ...htmlWebpackPluginCommon
                     }),
                     new HtmlWebpackPlugin({
-                        chunks: ['info', 'credits'],
+                        chunks: ['website', 'credits'],
                         template: 'src/playground/index.ejs',
                         filename: 'credits.html',
                         title: `Credits - ${APP_NAME}`,
@@ -484,16 +529,53 @@ module.exports = [
                         filename: '404.html',
                         title: `Not Found - ${APP_NAME}`,
                         ...htmlWebpackPluginCommon
-                    })
+                    }),
                 ]),
             new CopyWebpackPlugin({
                 patterns: [
                     {
                         from: 'static',
                         to: ''
-                    }
+                    },
+                  ...(process.env.IS_CBP_BUILD ? [{ from: "./static-prod", to: ""}] : [])
                 ]
             }),
+            ...(process.env.NODE_ENV === "production" || process.env.ENABLE_SERVICE_WORKER)
+               && !process.env.BUILD_MODE === 'standalone' ? [
+                new WorkboxPlugin.GenerateSW({
+                    // these options encourage the ServiceWorkers to get in there fast
+                    // and not allow any straggling "old" SWs to hang around
+                    clientsClaim: true,
+                    skipWaiting: true,
+                    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+                    excludeChunks: [
+                        // website pages
+                        'examples-landing',
+                        'faq',
+                        'credits',
+                        'home',
+                        'embed',
+                        'notfound', // used in MPA
+                        'minorpages', // used in MPA
+                        'page-new-compiler', // used in SPA
+                        'page-privacy', // used in SPA
+                        'extension-gdxfor', // what the heck is a gdxfor (i know but barely anyone uses this)
+                        // bunch of obscure LEGO stuff
+                        'extension-ev3',
+                        'extension-boost',
+                        'extension-wedo2',
+                        // people seem to use microbit on scratch so not including that unless nobody uses that over here
+                    ],
+                    exclude: [
+                        /images\/seo\/.*/, // SEO stuff
+                        /.*\.map$/, // source maps
+                        /^robots\.txt$/, // no use outside of the internet
+                        /\.woff$/, // old font format
+                        /\/static\/blocks-media\/.*\/icons\/(control_(forever|wait)|event_.*|set\-led.*|wedo.*)/ // unused
+                    ],
+                    importScriptsViaChunks: ['service-worker-extra'],
+                }),
+            ] : []
         ]),
     }),
 ].concat(
@@ -502,14 +584,11 @@ module.exports = [
               target: 'web',
               mode: 'production',
               devtool: false,
-              entry: {
-                  'standalone': ['./src/playground/amp-standalone-handler.jsx']
-              },
+              entry: {standalone: './src/playground/amp-standalone-handler.jsx'},
               output: {
                   filename: '[name].js',
                   chunkFilename: '[name].js',
                   path: path.resolve('standalone'),
-                  publicPath: `${STATIC_PATH}/`
               },
               optimization: {
                   splitChunks: false,
@@ -518,27 +597,64 @@ module.exports = [
                   sideEffects: true,
                   concatenateModules: true,
                   minimize: true,
-              },
-              module: {
-                  rules: [
-                      base.module.rules[0],
-                      base.module.rules[1],
-                      {
-                          test: /\.(svg|png|wav|mp3|gif|jpg|woff2?)$/,
-                          type: 'asset/inline',
-                      },
-                      base.module.rules[3],
-                      base.module.rules[4],
-                  ]
+                  minimizer: [new SwcMinifyWebpackPlugin({ compress: { passes: 3, unsafe: true } })]
               },
               plugins: base.plugins.concat([
+                  new webpack.IgnorePlugin({
+                    resourceRegExp: /\.woff$/,
+                  }),
+                  new ImageMinimizerPlugin({
+                    minimizer: {
+                      implementation: ImageMinimizerPlugin.imageminMinify,
+                      options: {
+                        plugins: [
+                          // these don't work
+                          // ["gifsicle", { interlaced: true, optimizationLevel: 3, colors: 64 }],  
+                          // ["mozjpeg", { quality: 50, progressive: true }],
+                          // ["pngquant", { quality: [0.5, 0.7], speed: 1 }],
+
+                          [
+                            "svgo",
+                            {
+                              plugins: [
+                                {
+                                  name: "preset-default",
+                                  params: {
+                                    overrides: {
+                                      removeViewBox: false,
+                                      removeComments: true,
+                                      removeMetadata: true,
+                                      removeDesc: true,
+                                      removeTitle: true,
+                                      convertPathData: {
+                                        floatPrecision: 2
+                                      },
+                                      convertTransform: {
+                                        floatPrecision: 2
+                                      },
+                                      cleanupNumericValues: {
+                                        floatPrecision: 2
+                                      }
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  }),
                   new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
+                  new webpack.BannerPlugin({
+                    banner: `AmpMod ${monorepoPackageJson.version} Standalone | GPL-3.0: https://codeberg.org/ampmod/ampmod | =^..^=`,
+                    entryOnly: true,
+                  }),
                   new HtmlWebpackPlugin({
                       chunks: ['standalone'],
-                      template: 'src/playground/index.ejs',
+                  	  template: "src/playground/index.ejs",
                       filename: `AmpMod-Standalone-${monorepoPackageJson.version}-EXPERIMENTAL.html`,
                       title: `${APP_NAME} - ${APP_SLOGAN}`,
-                      isEditor: true,
                       inject: 'body',
                       ...htmlWebpackPluginCommon
                   }),

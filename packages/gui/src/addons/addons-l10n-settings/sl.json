@@ -212,8 +212,6 @@
     "editor-buttons-reverse-order/@name": "Obratno zaporedje gumbov za nadzor projekta",
     "variable-manager/@description": "Doda zavihek za enostavno urejanje spremenljivk in seznamov v urejevalnik, poleg zavihka \"zvoki\".",
     "variable-manager/@name": "Upravitelj spremenljivk",
-    "search-sprites/@description": "Poleg seznama figur doda polje za iskanje figur glede na ime.",
-    "search-sprites/@name": "Polje za iskanje po seznamu figur",
     "sprite-properties/@description": "Skrije lastnosti figur, kot v Scratchu 2.0. Za prikaz uporabite gumb za informacije na trenutno izbrani figuri ali dvakrat kliknite figuro. Ponovno se skrije, ko uporabite gumb \"skrči\" pod lastnostmi ali dvakrat kliknete figuro.",
     "sprite-properties/@name": "Skrči lastnosti figure",
     "sprite-properties/@settings-name-autoCollapse": "Samodejno skrči, ko miška zapusti seznam figur",

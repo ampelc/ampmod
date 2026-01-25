@@ -1,0 +1,1 @@
+We welcome contributions from everyone regardless of age, gender, religion, skin colour, etc. Please keep comments respectful and do not make threats. Swearing is prohibited. This applies to every repository in the AmpMod Codeberg organisation, not just this one.

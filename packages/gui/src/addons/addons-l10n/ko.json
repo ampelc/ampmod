@@ -120,7 +120,6 @@
     "variable-manager/search": "찾기",
     "variable-manager/too-big": "클릭해 매우 큰 값 보기",
     "variable-manager/variables": "변수",
-    "search-sprites/placeholder": "스프라이트 검색...",
     "sprite-properties/close-properties-panel-tooltip": "속성 패널 닫기",
     "sprite-properties/open-properties-panel-tooltip": "속성 패널 열기",
     "gamepad/axes-a-b": "축 {a}와 {b}",

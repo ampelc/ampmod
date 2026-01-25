@@ -100,6 +100,11 @@ const groupAddons = () => {
             open: true,
             addons: []
         },
+        themes: {
+            label: settingsTranslations.groupThemes,
+            open: true,
+            addons: []
+        },
         others: {
             label: settingsTranslations.groupOthers,
             open: true,
@@ -116,6 +121,8 @@ const groupAddons = () => {
         const manifest = manifests[index];
         if (manifest.tags.includes('new')) {
             groups.new.addons.push(index);
+        } else if (manifest.tags.includes('theme')) {
+            groups.themes.addons.push(index);
         } else if (manifest.tags.includes('danger') || manifest.noCompiler) {
             groups.danger.addons.push(index);
         } else {
@@ -223,9 +230,6 @@ const Tags = ({manifest}) => (
         {manifest.tags.includes('recommended') && (
             <span className={classNames(styles.tag, styles.tagRecommended)}>{settingsTranslations.tagRecommended}</span>
         )}
-        {manifest.tags.includes('theme') && (
-            <span className={classNames(styles.tag, styles.tagTheme)}>{settingsTranslations.tagTheme}</span>
-        )}
         {manifest.tags.includes('beta') && (
             <span className={classNames(styles.tag, styles.tagBeta)}>{settingsTranslations.tagBeta}</span>
         )}
@@ -323,12 +327,13 @@ ColorInput.propTypes = {
     value: PropTypes.string.isRequired
 };
 
-const ResetButton = ({addonId, settingId, forTextInput}) => (
+const ResetButton = ({addonId, settingId, forTextInput, forBoolean}) => (
     <button
         className={classNames(styles.button, styles.resetSettingButton)}
         onClick={() => SettingsStore.setAddonSetting(addonId, settingId, null)}
         title={settingsTranslations.reset}
         data-for-text-input={forTextInput}
+        data-for-boolean={forBoolean}
     >
         <img src={undoImage} alt={settingsTranslations.reset} draggable={false} />
     </button>
@@ -356,10 +361,10 @@ const Setting = ({addonId, setting, value}) => {
             {setting.type === 'boolean' && (
                 <React.Fragment>
                     {label}
-                    <TWFancyCheckbox
+                    <Switch
                         id={uniqueId}
-                        checked={value}
-                        onChange={e => SettingsStore.setAddonSetting(addonId, settingId, e.target.checked)}
+                        value={value}
+                        onChange={value => SettingsStore.setAddonSetting(addonId, settingId, value)}
                     />
                 </React.Fragment>
             )}
