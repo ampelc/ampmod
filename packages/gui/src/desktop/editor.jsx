@@ -38,6 +38,7 @@ import GUI from '../playground/render-gui.jsx';
 import styles from '../playground/interface.css';
 
 import {APP_NAME} from '@ampmod/branding';
+import './global-style.css';
 
 runAddons();
 
