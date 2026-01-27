@@ -122,7 +122,7 @@ const base = {
         }
     },
     module: {
-        rules: [
+        rules: [    
             {
                 test: /\.[jt]sx?$/,
                 loader: 'swc-loader',
@@ -145,7 +145,7 @@ const base = {
                                 pragmaFrag: 'React.Fragment',
                                 throwIfNamespace: true,
                                 development: process.env.NODE_ENV !== 'production',
-                                refresh: process.env.NODE_ENV !== 'production',
+                                refresh: process.env.NODE_ENV !== 'production' && process.env.BUILD_TARGET !== 'desktop',
                                 useBuiltins: true
                             }
                         }
@@ -344,7 +344,7 @@ const base = {
 if (!process.env.CI) {
     base.plugins.push(new webpack.ProgressPlugin());
 }
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production" && process.env.BUILD_TARGET !== "desktop") {
     base.plugins.push(new ReactRefreshWebpackPlugin({overlay: false}));
 }
 

@@ -17,6 +17,8 @@
         "i18n:push": "wlc push --project ampmod --component ampmod-editor-interface --file translations/en.json",
         "i18n:src": "rimraf ./translations/messages/src && babel src > tmp.js && rimraf tmp.js && build-i18n-src ./translations/messages/src ./translations/",
         "start": "webpack serve",
+        "watch-desktop": "rimraf src/desktop/dist && BUILD_TARGET=desktop webpack --watch",
+        "start-desktop": "wait-on src/desktop/dist/main.js && electron src/desktop/dist/main.js",
         "test": "pnpm run test:lint && pnpm run test:unit && pnpm run build && pnpm run test:integration",
         "test:integration": "jest --maxWorkers=4 test[\\\\/]integration",
         "test:lint": "eslint . --ext .js,.jsx",
@@ -146,6 +148,7 @@
         "jest-junit": "7.0.0",
         "mini-css-extract-plugin": "^2.9.4",
         "mkdirp": "1.0.4",
+        "nodemon": "^3.1.11",
         "pngquant-bin": "^9.0.0",
         "postcss-nesting": "^13.0.2",
         "postcss-preset-env": "^10.4.0",
@@ -154,6 +157,7 @@
         "redux-mock-store": "1.5.5",
         "rimraf": "2.7.1",
         "selenium-webdriver": "3.6.0",
+        "wait-on": "^9.0.3",
         "web-audio-test-api": "0.5.2",
         "webpack-bundle-analyzer": "^5.1.0",
         "workbox-webpack-plugin": "^7.4.0",
@@ -183,14 +187,17 @@
         },
         "files": [
             "package.json",
-			{
+            {
                 "from": "src/desktop/dist",
                 "to": "."
             },
-			"LICENSE"
+            "LICENSE"
         ],
         "win": {
-            "target": ["nsis", "portable"],
+            "target": [
+                "nsis",
+                "portable"
+            ],
             "icon": "build-assets/icon.ico"
         },
         "mac": {
