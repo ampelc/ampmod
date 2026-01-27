@@ -1,9 +1,8 @@
-import { shell, BrowserWindow } from 'electron';
+import { shell, BrowserWindow, app } from 'electron';
 import { APP_NAME } from '@ampmod/branding';
 import path from 'path';
 import { fileURLToPath } from 'node:url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = app.getAppPath();
 
 export const buildOfflineGallery = win => {
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -24,7 +23,7 @@ export const buildOfflineGallery = win => {
         show: true,
         title: APP_NAME,
         webPreferences: {
-          preload: path.join(__dirname, "../preload-infoPages.cjs"),
+          preload: path.join(__dirname, "preloads/infoPages.cjs"),
           contextIsolation: true,
         }
       });
