@@ -606,12 +606,15 @@ class MenuBar extends React.Component {
                                         </MenuItem>
                                         {this.props.onClickNewWindow && (
                                             <MenuItem isRtl={this.props.isRtl} onClick={this.handleClickNewWindow}>
-                                                <FormattedMessage
-                                                    defaultMessage="New window"
-                                                     
-                                                    description="Part of desktop app. Menu bar item that creates a new window."
-                                                    id="tw.menuBar.newWindow"
-                                                />
+                                                <div className={styles.hasKbd}>
+                                                    <FormattedMessage
+                                                        defaultMessage="New window"
+                                                        
+                                                        description="Part of desktop app. Menu bar item that creates a new window."
+                                                        id="tw.menuBar.newWindow"
+                                                    />
+                                                    <div className={styles.kbd}>Ctrl+N</div>
+                                                </div>
                                             </MenuItem>
                                         )}
                                         {(this.props.canSave || this.props.canCreateCopy || this.props.canRemix) && (
@@ -631,7 +634,10 @@ class MenuBar extends React.Component {
                                         )}
                                         <MenuSection>
                                             <MenuItem onClick={this.props.onStartSelectingFileUpload}>
-                                                {this.props.intl.formatMessage(sharedMessages.loadFromComputerTitle)}
+                                                <div className={styles.hasKbd}>
+                                                    {this.props.intl.formatMessage(sharedMessages.loadFromComputerTitle)}
+                                                    <div className={styles.kbd}>Ctrl+O</div>
+                                                </div>
                                             </MenuItem>
                                             <SB3Downloader showSaveFilePicker={this.props.showSaveFilePicker}>
                                                 {(_className, downloadProject, extended) => (
@@ -645,15 +651,18 @@ class MenuBar extends React.Component {
                                                                             extended.saveToLastFile
                                                                         )}
                                                                     >
-                                                                        <FormattedMessage
-                                                                            defaultMessage="Save to {file}"
-                                                                             
-                                                                            description="Menu bar item to save project to an existing file on the user's computer"
-                                                                            id="tw.saveTo"
-                                                                            values={{
-                                                                                file: extended.name
-                                                                            }}
-                                                                        />
+                                                                        <div className={styles.hasKbd}>
+                                                                            <FormattedMessage
+                                                                                defaultMessage="Save to {file}"
+                                                                                
+                                                                                description="Menu bar item to save project to an existing file on the user's computer"
+                                                                                id="tw.saveTo"
+                                                                                values={{
+                                                                                    file: extended.name
+                                                                                }}
+                                                                            />
+                                                                            <div className={styles.kbd}>Ctrl+S</div>
+                                                                        </div>
                                                                     </MenuItem>
                                                                 )}
                                                                 { }

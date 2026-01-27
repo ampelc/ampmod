@@ -261,11 +261,21 @@
 /* Desktop */
 :global(.desktop-windows) .menu-bar {
     /* This is only an estimate, I don't use Windows */
-    padding-right: 128px;
+    padding-right: var(--zoom-estimate, 128px);
 }
 :global(.desktop-linux) .menu-bar {
-    padding-right: 96px;
+    padding-right: var(--zoom-estimate, 96px);
 }
 :global(.ReactModal__Body--open) .menu-bar {
     -webkit-app-region: no-drag;
+}
+.has-kbd {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    justify-content: space-between;
+}
+.kbd {
+    opacity: 0.5;
+    font-weight: normal;
 }
