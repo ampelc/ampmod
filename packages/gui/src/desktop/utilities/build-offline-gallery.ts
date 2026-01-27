@@ -16,6 +16,10 @@ export const buildOfflineGallery = win => {
 
     if (u.hostname === "ampmod.codeberg.page") {
       const segments = u.pathname.split('/').filter(Boolean);
+      if (segments[0] !== "extensions") {
+        shell.openExternal(url);
+        return { action: 'deny' };
+      }
 
       const newWin = new BrowserWindow({
         width: 700,
@@ -30,15 +34,8 @@ export const buildOfflineGallery = win => {
 
       newWin.setMenu(null);
 
-      if (segments[0] === "extensions") {
-        const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}.html`;
-        newWin.loadURL(galleryURL);
-      } else {
-        const localURL = `amp-gui://./${segments.join('/')}`;
-        newWin.loadURL(localURL);
-      }
-
-      return { action: "deny" };
+      const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}.html`;
+      newWin.loadURL(galleryURL);
     }
 
     shell.openExternal(url);

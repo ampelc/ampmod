@@ -46,7 +46,7 @@ export const setupProtocols = () => {
         return await fetch(`http://localhost:8601/${url}`);
       }
 
-      let urlPath = request.url.replace('amp-gui://', '');
+      let urlPath = request.url.replace('amp-gui://', '').split('#')[0];
       urlPath = urlPath.replace(/^\/+|\/+$/g, '');
 
       let filePath = path.join(app.getAppPath(), 'gui', urlPath);
