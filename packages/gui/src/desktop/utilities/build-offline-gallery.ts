@@ -36,9 +36,7 @@ export const buildOfflineGallery = win => {
 
       const galleryURL = `ampmod-extension-gallery://./${segments.slice(1).join('/')}.html`;
       newWin.loadURL(galleryURL);
+      return { action: 'deny' };
     }
-
-    shell.openExternal(url);
-    return { action: 'deny' };
   });
 }
