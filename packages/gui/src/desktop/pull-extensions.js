@@ -1,34 +1,53 @@
 import { execSync } from "child_process";
-import fs from "fs";
+import fs from "fs/promises";
 import path from "path";
+import zlib from "zlib";
+import { pipeline } from "stream/promises";
+import { createReadStream, createWriteStream } from "fs";
+import crypto from "crypto";
 
-const REPO_URL = "https://codeberg.org/ampmod/extensions";
-const BRANCH = "pages";
-const TARGET_DIR = "extensions";
-const REMOVE_FILES = ["index.html", "_headers"];
-const REMOVE_FOLDERS = ["test"];
+async function main() {
+  const bundleUrl = "https://codeberg.org/ampmod/extensions/archive/pages.bundle";
+  const tmpDir = `/tmp/ampmod-${crypto.randomUUID()}`;
+  const targetDir = path.resolve(import.meta.dirname, "extensions");
+  const bundlePath = path.join(tmpDir, "pages.bundle");
+  const exclude = ["index.html", "_headers", "test", "favicon.ico", ".github", ".vscode"];
 
-function removeRecursive(p) {
-  if (!fs.existsSync(p)) return;
-  const stat = fs.statSync(p);
-  if (stat.isDirectory()) {
-    fs.readdirSync(p).forEach(f => removeRecursive(path.join(p, f)));
-    fs.rmdirSync(p);
-  } else {
-    fs.unlinkSync(p);
+  await fs.rm(tmpDir, { recursive: true, force: true });
+  await fs.rm(targetDir, { recursive: true, force: true });
+  await fs.mkdir(tmpDir, { recursive: true });
+
+  try {
+    execSync(`curl -L ${bundleUrl} -o ${bundlePath}`, { stdio: 'ignore' });
+    execSync(`git clone ${bundlePath} ${path.join(tmpDir, "repo")}`, { stdio: 'ignore' });
+    
+    await fs.cp(path.join(tmpDir, "repo"), targetDir, { recursive: true });
+    await fs.rm(path.join(targetDir, ".git"), { recursive: true, force: true });
+
+    for (const item of exclude) {
+      const excludePath = path.join(targetDir, item);
+      await fs.rm(excludePath, { recursive: true, force: true });
+    }
+
+    const files = await fs.readdir(targetDir, { recursive: true });
+    for (const file of files) {
+      const filePath = path.join(targetDir, file);
+      const stat = await fs.stat(filePath);
+      
+      if (stat.isFile() && !file.endsWith('.br')) {
+        await pipeline(
+          createReadStream(filePath),
+          zlib.createBrotliCompress(),
+          createWriteStream(`${filePath}.br`)
+        );
+        await fs.rm(filePath);
+      }
+    }
+  } catch (error) {
+    process.exit(1);
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
   }
 }
-removeRecursive(TARGET_DIR);
 
-execSync(`git clone --branch ${BRANCH} --depth 1 ${REPO_URL} ${TARGET_DIR}`, { stdio: "inherit" });
-
-for (const file of REMOVE_FILES) {
-  const filePath = path.join(TARGET_DIR, file);
-  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-}
-
-for (const folder of REMOVE_FOLDERS) {
-  const folderPath = path.join(TARGET_DIR, folder);
-  removeRecursive(folderPath);
-}
-
+main();

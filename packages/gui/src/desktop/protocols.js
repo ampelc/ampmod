@@ -5,6 +5,10 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { protocol } from 'electron';
 import { fileURLToPath } from 'node:url';
+import { execSync } from "child_process";
+import zlib from "node:zlib";
+import { promisify } from "node:util";
+const brotliDecompress = promisify(zlib.brotliDecompress);
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'amp-gui', privileges: { standard: true, supportFetchAPI: true, secure: true } },
@@ -77,27 +81,37 @@ export const setupProtocols = () => {
 
       let filePath = path.join(app.getAppPath(), 'extensions', urlPath);
 
-      // Auto-append .html if missing AND the raw path does not exist
-      let stat;
+      let brPath = filePath + '.br';
+      let content;
+      let finalPath = filePath;
+
       try {
-        stat = await fs.stat(filePath);
+        const compressedData = await fs.readFile(brPath);
+        content = await brotliDecompress(compressedData);
+        finalPath = brPath;
       } catch {
-        if (!path.extname(filePath)) {
-          const htmlPath = filePath + '.html';
-          try {
-            stat = await fs.stat(htmlPath);
-            filePath = htmlPath;
-          } catch {
-            throw new Error(`Not found: ${filePath}`);
+        try {
+          content = await fs.readFile(filePath);
+        } catch {
+          if (!path.extname(filePath)) {
+            const htmlBrPath = filePath + '.html.br';
+            try {
+              const compressedData = await fs.readFile(htmlBrPath);
+              content = await brotliDecompress(compressedData);
+              finalPath = htmlBrPath;
+            } catch {
+              const htmlPath = filePath + '.html';
+              content = await fs.readFile(htmlPath);
+              finalPath = htmlPath;
+            }
+          } else {
+            throw new Error('File not found');
           }
-        } else {
-          return;
         }
       }
 
-      const content = await fs.readFile(filePath);
-      const ext = path.extname(filePath).toLowerCase();
-      const mimeType = MIME_TYPES[ext] || 'application/octet-stream';
+      const effectiveExt = path.extname(finalPath.endsWith('.br') ? finalPath.slice(0, -3) : finalPath).toLowerCase();
+      const mimeType = MIME_TYPES[effectiveExt] || 'application/octet-stream';
 
       return new Response(content, {
         headers: { 'content-type': mimeType }
