@@ -1,4 +1,4 @@
-const { ipcRenderer, contextBridge } = require("electron");
+const { ipcRenderer, contextBridge, webFrame } = require("electron");
 
 contextBridge.exposeInMainWorld("_AMP_INTERNAL_API", {
   openAbout: () => ipcRenderer.send("open-about"),
@@ -19,6 +19,23 @@ const platformClass = (() => {
       return null;
   }
 })();
+
+const patchZoomIssues = () => {
+  const zoomFactor = webFrame.getZoomFactor();
+  const inverse = 1 / zoomFactor;
+  const root = document.documentElement;
+
+  let basePadding = 0;
+  if (process.platform === "win32") {
+    basePadding = 128;
+  } else if (process.platform === "linux") {
+    basePadding = 96;
+  }
+
+  root.style.setProperty('--zoom-estimate', `${basePadding * inverse}px`);
+};
+
+window.addEventListener('resize', patchZoomIssues);
 
 // https://github.com/TurboWarp/desktop/blob/6c52ba5/src-preload/extension-documentation.js
 
@@ -54,4 +71,6 @@ waitForElement("html").then(html => {
   if (platformClass) {
     html.classList.add(platformClass);
   }
+
+  patchZoomIssues();
 });

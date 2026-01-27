@@ -616,8 +616,8 @@
 /* Desktop */
 :global(.desktop-windows) .header {
     /* This is only an estimate, I don't use Windows */
-    padding-right: 164px;
+    padding-right: calc(var(--zoom-estimate, 164px) + 4px);
 }
 :global(.desktop-linux) .header {
-    padding-right: 100px;
+    padding-right: calc(var(--zoom-estimate, 96px) + 4px);
 }

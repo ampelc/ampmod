@@ -1,6 +1,6 @@
 // inspired by https://github.com/TurboWarp/desktop/blob/master/src-main/protocols.js
 
-import electron from 'electron'; const { app } = electron;
+import {app} from 'electron';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { protocol } from 'electron';
@@ -12,9 +12,9 @@ const brotliDecompress = promisify(zlib.brotliDecompress);
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'amp-gui', privileges: { standard: true, supportFetchAPI: true, secure: true } },
-  { scheme: 'ampmod-extension-gallery', privileges: { standard: true, supportFetchAPI: true, secure: true } },
+  { scheme: 'ampmod-extension-gallery', privileges: { standard: true, supportFetchAPI: true, secure: true, corsEnabled: true } },
   { scheme: 'desktop-info', privileges: { standard: true, supportFetchAPI: true, secure: true } },
-  { scheme: 'attached-file', privileges: { standard: true, supportFetchAPI: true, secure: true } },
+  { scheme: 'attached-file', privileges: { standard: true, supportFetchAPI: true, secure: true, corsEnabled: true } },
 ]);
 
 let hasUsedAttachedFile = false;

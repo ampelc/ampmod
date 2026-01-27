@@ -9,7 +9,8 @@ const guiColors = {
     'ui-secondary': '#1e1e1e',
     'ui-tertiary': '#2e2e2e',
 
-    'ui-modal-overlay': '#333333aa',
+    // Makes desktop look ugly:
+    // 'ui-modal-overlay': '#333333aa',
     'ui-modal-background': '#111111',
     'ui-modal-foreground': '#eeeeee',
 

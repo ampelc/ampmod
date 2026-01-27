@@ -1,96 +1,180 @@
-import electron from 'electron';
-const { dialog, BrowserWindow } = electron;
+import { dialog, shell, BrowserWindow, app } from 'electron';
+import path from 'path';
+import AbstractWindow from '.';
+import GalleryWindow from './extension-documentation';
 import { APP_NAME } from '@ampmod/branding';
+import { buildOfflineGallery } from '../utilities/build-offline-gallery';
+import AboutWindow from './about';
+import AddonWindow from './addon';
 
-export class EditorWindow {
-  public win: InstanceType<typeof BrowserWindow> | null = null;
-  private processingWillPreventUnload = false;
+export default class EditorWindow extends AbstractWindow {
+    processingWillPreventUnload: boolean;
+    private readonly baseTitleBarHeight = 47;
+    private currentThemeColor = "#4FA55C";
+    declare window: any;
+    declare ipc: any;
 
-  constructor() {
-    this.createWindow();
-  }
-
-  private createWindow() {
-    this.win = new BrowserWindow({
-      width: 1400,
-      height: 900,
-      webPreferences: {
-        nodeIntegration: false
-      }
-    });
-
-    this.win.setMenu(null);
-    this.setupShortcuts();
-    this.setupWillPreventUnload();
-    this.loadContent();
-  }
-
-  private setupShortcuts() {
-    if (!this.win) return;
-
-    this.win.webContents.on('before-input-event', (event: { preventDefault: () => void; }, input: { control: any; shift: any; key: string; }) => {
-      // Ctrl+Shift+I or F12 = dev tools
-      if ((input.control && input.shift && input.key.toLowerCase() === 'i') || input.key === 'F12') {
-        event.preventDefault();
-        this.win?.webContents.toggleDevTools();
-      }
-
-      // Ctrl+R or Ctrl+F5 = reload
-      if (input.control && (input.key === "F5" || input.key.toLowerCase() === "r")) {
-        event.preventDefault();
-        this.win?.webContents.reload();
-      }
-    });
-  }
-
-  private setupWillPreventUnload() {
-    if (!this.win) return;
-
-    this.win.webContents.on('will-prevent-unload', () => {
-      // Happily stolen from from https://github.com/TurboWarp/desktop/blob/6c52ba5/src-main/windows/editor.js#L252
-      //
-      // Using showMessageBoxSync synchronously in the event handler causes broken focus on Windows.
-      // See https://github.com/TurboWarp/desktop/issues/1245
-      // To work around that, we won't cancel that will-prevent-unload event so the window stays
-      // open. After a very short delay to let focus get fixed, we'll show a dialog and force close
-      // the window ourselves if the user wants.
-
-      // Due to the timeout, this event could theoretically fire multiple times before we show the
-      // dialog. Make sure to only show one dialog if that happens.
-      if (this.processingWillPreventUnload) {
-        return;
-      }
-      this.processingWillPreventUnload = true;
-
-      setTimeout(() => {
-        const choice = dialog.showMessageBoxSync(this.win!, {
-          title: APP_NAME,
-          type: 'info',
-          buttons: [
-            "Stay",
-            "Leave"
-          ],
-          cancelId: 0,
-          defaultId: 0,
-          message: "Are you sure you want to exit?",
-          detail: "Changes you made may be lost.",
-          noLink: true
-        });
-        if (choice === 1) {
-          this.win?.destroy();
-        }
+    constructor(options = {}) {
+        super(options);
         this.processingWillPreventUnload = false;
-      });
-    });
-  }
 
-  private loadContent() {
-    if (!this.win) return;
+        // Electron passes the color string directly as the second argument
+        this.window.webContents.on('did-change-theme-color', (_event: any, color: string | null) => {
+            if (color && color !== this.currentThemeColor) {
+                // Electron usually returns the color in #RRGGBB format here
+                this.updateTitleBar(color);
+            }
+        });
 
-    if (process.argv.includes('--dev')) {
-      this.win.loadURL('http://localhost:8601/editor-desktop.html');
-    } else {
-      this.win.loadFile('./dist-rendered/editor-desktop.html');
+        this.window.webContents.on('zoom-changed', () => {
+            this.updateTitleBar();
+        });
+
+        this.window.webContents.on('did-finish-load', () => {
+            this.updateTitleBar();
+        });
+
+        this.window.webContents.setWindowOpenHandler(({ url }) => {
+            const u = new URL(url);
+            if (u.pathname === "/extensions/" || u.pathname === "/extensions") {
+                shell.openExternal(url);
+                return { action: "deny" };
+            }
+
+            if (u.hostname === "ampmod.codeberg.page") {
+                const segments = u.pathname.split('/').filter(Boolean);
+                if (segments[0] !== "extensions") {
+                    shell.openExternal(url);
+                    return { action: 'deny' };
+                }
+                
+                const resourcePath = segments.slice(1).join('/');
+                const isAsset = resourcePath.includes('.');
+                const galleryURL = `ampmod-extension-gallery://${resourcePath}${isAsset ? '' : '.html'}`;
+                
+                new GalleryWindow(galleryURL);
+                return { action: 'deny' };
+            }
+
+            shell.openExternal(url);
+            return { action: 'deny' };
+        });
+
+        this.window.webContents.on('will-prevent-unload', (event: any) => {
+            if (this.processingWillPreventUnload) return;
+            this.processingWillPreventUnload = true;
+
+            setTimeout(() => {
+                const choice = dialog.showMessageBoxSync(this.window, {
+                    title: APP_NAME,
+                    type: 'info',
+                    buttons: ["Stay", "Leave"],
+                    cancelId: 0,
+                    defaultId: 0,
+                    message: "Are you sure you want to exit?",
+                    detail: "Changes you made may be lost.",
+                    noLink: true
+                });
+
+                if (choice === 1) this.window.destroy();
+                this.processingWillPreventUnload = false;
+            }, 0);
+        });
+
+        buildOfflineGallery(this.window);
+
+        this.setupIpc();
+        this.loadURL('amp-gui://./editor-desktop.html');
+        this.show();
+        
+        setImmediate(() => this.updateTitleBar());
     }
-  }
+
+    private updateTitleBar(newColor?: string) {
+        if (process.platform === 'darwin') return;
+        if (newColor) this.currentThemeColor = newColor;
+
+        const factor = this.window.webContents.getZoomFactor();
+        const scaledHeight = Math.max(30, Math.round(this.baseTitleBarHeight * factor));
+
+        const luma = this.getLuminance(this.currentThemeColor);
+        const symbolColor = luma > 0.8 ? "#000000" : "#ffffff";
+
+        this.window.setTitleBarOverlay({
+            color: this.currentThemeColor,
+            symbolColor: symbolColor,
+            height: scaledHeight
+        });
+    }
+
+    private getLuminance(hex: string) {
+        const r = parseInt(hex.slice(1, 3), 16) / 255;
+        const g = parseInt(hex.slice(3, 5), 16) / 255;
+        const b = parseInt(hex.slice(5, 7), 16) / 255;
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    private setupIpc() {
+        this.ipc.on('open-desktop-settings', () => {
+            const win = new BrowserWindow({
+                width: 800,
+                height: 600,
+                show: false,
+                webPreferences: {
+                    preload: path.join(app.getAppPath(), "preloads/settings.cjs"),
+                    nodeIntegration: false,
+                    contextIsolation: true
+                }
+            });
+            win.setMenu(null);
+            win.loadURL('amp-gui://./desktop-settings.html');
+            win.once('ready-to-show', () => win.show());
+        });
+
+        this.ipc.on('open-addon-settings', () => this.createAddonWindow());
+        this.ipc.on('open-addon', (_: any, addonId: string | undefined) => this.createAddonWindow(addonId));
+
+        this.ipc.on('open-about', () => {
+            new AboutWindow();
+        });
+
+        this.ipc.on('open-user-data', () => {
+            shell.openPath(app.getPath('userData'));
+        });
+    }
+
+    createAddonWindow(addonId?: string) {
+        new AddonWindow(addonId, {
+            themeColor: this.currentThemeColor,
+            zoomFactor: this.window.webContents.getZoomFactor()
+        });
+    }
+
+    getDimensions() {
+        return { width: 1400, height: 900 };
+    }
+
+    getPreload() {
+        return 'main';
+    }
+
+    getTitleBarStyle() {
+        return 'hidden';
+    }
+
+    getTitleBarOverlay() {
+        return {
+            color: "#4FA55C",
+            symbolColor: "#fff",
+            height: this.baseTitleBarHeight
+        };
+    }
+
+    applySettings() {
+        this.window.setMenu(null);
+    }
+
+    static newWindow() {
+        return new EditorWindow();
+    }
 }

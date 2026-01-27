@@ -191,7 +191,8 @@
                 "from": "src/desktop/dist",
                 "to": "."
             },
-            "LICENSE"
+            "LICENSE",
+            "!node_modules"
         ],
         "win": {
             "target": [

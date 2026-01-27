@@ -606,7 +606,7 @@ class MenuBar extends React.Component {
                                         </MenuItem>
                                         {this.props.onClickNewWindow && (
                                             <MenuItem isRtl={this.props.isRtl} onClick={this.handleClickNewWindow}>
-                                                <div className={styles.hasKbd}>
+                                                 <div className={styles.hasKbd}>
                                                     <FormattedMessage
                                                         defaultMessage="New window"
                                                         
