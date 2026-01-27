@@ -115,7 +115,7 @@ export const setupProtocols = () => {
   });
   protocol.handle('attached-file', async () => {
     try {
-      const targetPath = process.argv.slice(IS_DEV ? 2 : 1).find(arg => !arg.startsWith('-'));
+      const targetPath = process.argv.slice(1).find(arg => !arg.startsWith('-') && !arg.endsWith('.js'));
 
       if (!targetPath || hasUsedAttachedFile) {
         return new Response('', { 

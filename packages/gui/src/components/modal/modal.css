@@ -115,6 +115,10 @@
     border-radius: 0;
 }
 
+.full-screen .header {
+    -webkit-app-region: drag;
+}
+
 /*
     Modal header has 3 items:
     |filter     title       x|
@@ -198,6 +202,7 @@ $sides: 20rem;
     flex-basis: $sides;
     justify-content: flex-end;
     z-index: 1;
+    -webkit-app-region: no-drag;
 }
 
 .header-item-close img {
@@ -213,6 +218,7 @@ $sides: 20rem;
     font-weight: normal;
     padding-right: 0;
     padding-left: 0;
+    -webkit-app-region: no-drag;
 }
 
 [dir='rtl'] .back-button img {
@@ -222,6 +228,7 @@ $sides: 20rem;
 .header-item-help {
     padding: 0;
     z-index: 1;
+    -webkit-app-region: no-drag;
 }
 
 [dir='ltr'] .header-item-help {

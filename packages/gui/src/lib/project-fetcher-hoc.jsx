@@ -129,18 +129,18 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                 });
             }
 
-          // or if we are loading something from desktop
-          if (isScratchDesktop()) {
-              try {
-                  const response = await fetch("attached-file://.");
-                  if (response.ok) {
-                      const data = await response.arrayBuffer();
-                      return this.props.onFetchedProjectData(data, loadingState);
-                  }
-              } catch (err) {
-                  // ignore
-              }
-          }
+            // or if we are loading something from desktop
+            if (isScratchDesktop()) {
+                try {
+                    const response = await fetch("attached-file://.");
+                    if (response.ok) {
+                        const data = await response.arrayBuffer();
+                        return this.props.onFetchedProjectData(data, loadingState);
+                    }
+                } catch (err) {
+                    // ignore
+                }
+            }
             // @ts-nocheck
 
             let assetPromise;

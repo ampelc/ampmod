@@ -21,6 +21,10 @@
     right: 0;
     z-index: $z-index-stage-header;
 }
+:global(.is-desktop) .stage-header-wrapper-overlay {
+    height: $menu-bar-height;
+    -webkit-app-region: drag;
+}
 .stage-header-wrapper-overlay.embedded {
     background-color: transparent;
 }
@@ -71,6 +75,7 @@
     padding: 0.375rem;
     user-select: none;
     cursor: pointer;
+    -webkit-app-region: no-drag;
 }
 
 .stage-button:active {

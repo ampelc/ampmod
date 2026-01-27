@@ -690,8 +690,7 @@ if (process.env.BUILD_TARGET === 'desktop') {
                 new CopyWebpackPlugin({
                     patterns: [
                         { from: "./src/desktop/extensions", to: "extensions" },
-                        { from: "./src/desktop/assets", to: "assets" },
-                        { from: "./src/desktop/art", to: "art" },
+                        { from: "./src/desktop/pages", to: "pages" },
                     ],
                 }),
             ]),
