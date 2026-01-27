@@ -1,17 +1,19 @@
 // inspired by https://github.com/TurboWarp/desktop/blob/master/src-main/protocols.js
 
+import electron from 'electron'; const { app } = electron;
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { protocol } from 'electron';
 import { fileURLToPath } from 'node:url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'amp-gui', privileges: { standard: true, supportFetchAPI: true, secure: true } },
   { scheme: 'ampmod-extension-gallery', privileges: { standard: true, supportFetchAPI: true, secure: true } },
   { scheme: 'desktop-info', privileges: { standard: true, supportFetchAPI: true, secure: true } },
+  { scheme: 'attached-file', privileges: { standard: true, supportFetchAPI: true, secure: true } },
 ]);
+
+let hasUsedAttachedFile = false;
 
 const MIME_TYPES = {
   '.txt': 'text/plain',
@@ -25,7 +27,9 @@ const MIME_TYPES = {
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
   '.ttf': 'font/ttf',
-  '.otf': 'font/otf'
+  '.otf': 'font/otf',
+  '.apz': 'application/vnd.ampmod.project',
+  '.sb3': 'application/x.scratch.sb3'
 };
 
 const IS_DEV = process.argv.includes('--dev');
@@ -41,7 +45,7 @@ export const setupProtocols = () => {
       let urlPath = request.url.replace('amp-gui://', '');
       urlPath = urlPath.replace(/^\/+|\/+$/g, '');
 
-      let filePath = path.join(__dirname, 'dist-rendered', urlPath);
+      let filePath = path.join(app.getAppPath(), 'gui', urlPath);
 
       let stat = await fs.stat(filePath);
 
@@ -63,7 +67,7 @@ export const setupProtocols = () => {
   protocol.registerFileProtocol('desktop-info', (request, callback) => {
     let url = request.url.replace('desktop-info://', '');
     url = url.replace(/^\/+|\/+$/g, '');
-    const filePath = path.join(__dirname, 'pages', url);
+    const filePath = path.join(app.getAppPath(), 'pages', url);
     callback({ path: filePath });
   });
   protocol.handle('ampmod-extension-gallery', async (request) => {
@@ -71,7 +75,7 @@ export const setupProtocols = () => {
       let urlPath = request.url.replace('ampmod-extension-gallery://', '');
       urlPath = urlPath.replace(/^\/+|\/+$/g, '');
 
-      let filePath = path.join(__dirname, 'extensions', urlPath);
+      let filePath = path.join(app.getAppPath(), 'extensions', urlPath);
 
       // Auto-append .html if missing AND the raw path does not exist
       let stat;
@@ -107,6 +111,35 @@ export const setupProtocols = () => {
           headers: { 'content-type': 'application/javascript' }
         }
       );
+    }
+  });
+  protocol.handle('attached-file', async () => {
+    try {
+      const targetPath = process.argv.slice(IS_DEV ? 2 : 1).find(arg => !arg.startsWith('-'));
+
+      if (!targetPath || hasUsedAttachedFile) {
+        return new Response('', { 
+          status: 400, 
+          headers: { 'content-type': 'text/plain' } 
+        });
+      }
+
+      const absolutePath = path.resolve(targetPath);
+      const content = await fs.readFile(absolutePath);
+      
+      const ext = path.extname(absolutePath).toLowerCase();
+      const mimeType = MIME_TYPES[ext] || 'application/octet-stream';
+
+      hasUsedAttachedFile = true;
+      return new Response(content, {
+        headers: { 'content-type': mimeType }
+      });
+
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 404,
+        headers: { 'content-type': 'application/json' }
+      });
     }
   });
 };

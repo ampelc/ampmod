@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=AmpMod
+Exec=ampmod %U
+Terminal=false
+Type=Application
+Icon=org.ampmod.ampmod
+StartupWMClass=AmpMod
+Comment=Block-based programming, amplified
+Categories=Development;IDE;Education;

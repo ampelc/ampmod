@@ -2,7 +2,7 @@ import electron from 'electron';
 const { shell, ipcMain, app, dialog, BrowserWindow } = electron;
 import path from 'path';
 import { fileURLToPath } from 'node:url';
-import { APP_NAME } from '@ampmod/branding';
+import { APP_NAME } from 'real-branding';
 import { setupProtocols } from './protocols.js';
 import { createRequire } from 'node:module';
 import { buildContextMenu } from './utilities/build-context-menu.ts';
@@ -10,8 +10,8 @@ import { buildOfflineGallery } from './utilities/build-offline-gallery.ts';
 import fs from 'fs';
 import os from 'os';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// I'm too lazy to find and replace this lol (also it's something called muscle memory :P)
+const __dirname = app.getAppPath();
 
 const require = createRequire(import.meta.url);
 const { version } = require("./../../../../package.json");
@@ -59,7 +59,7 @@ const createWindow = () => {
     height: 900,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.cjs"),
+      preload: path.join(__dirname, "preloads/main.cjs"),
       contextIsolation: true
     },
     titleBarStyle: 'hidden',
@@ -179,7 +179,7 @@ const createWindow = () => {
         show: true,
         title: APP_NAME,
         webPreferences: {
-          preload: path.join(__dirname, "preload-infoPages.cjs"),
+          preload: path.join(__dirname, "preloads/infoPages.cjs"),
           contextIsolation: true
         },
       });
@@ -233,7 +233,7 @@ ipcMain.on('open-desktop-settings', () => {
     height: 600,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "settings/preload.cjs"),
+      preload: path.join(__dirname, "preloads/settings.cjs"),
       nodeIntegration: false,
       contextIsolation: true
     }
@@ -250,7 +250,7 @@ ipcMain.on('open-addon-settings', () => {
     height: 900,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.cjs"),
+      preload: path.join(__dirname, "preloads/main.cjs"),
       nodeIntegration: false,
       contextIsolation: true
     },
@@ -270,7 +270,7 @@ ipcMain.on('open-addon', (_, addonId) => {
     height: 900,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.cjs"),
+      preload: path.join(__dirname, "preloads/main.cjs"),
       nodeIntegration: false,
       contextIsolation: true
     },
@@ -291,7 +291,7 @@ ipcMain.on('open-about', () => {
     resizable: false,
     show: true,
     webPreferences: {
-      preload: path.join(__dirname, "preload-about.cjs"),
+      preload: path.join(__dirname, "preloads/about.cjs"),
       nodeIntegration: false,
       contextIsolation: true
     },

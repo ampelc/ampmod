@@ -63,8 +63,8 @@ const CACHE_EPOCH = `amp-${monorepoPackageJson.version}`;
 
 const base = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    devtool: process.env.SOURCEMAP || (process.env.NODE_ENV === 'production' ? false : 'source-map'),
-    cache: { type: 'filesystem' },
+    devtool: process.env.SOURCEMAP || (process.env.NODE_ENV === 'production' ? false : 'eval-cheap-source-map'),
+    cache: {type: "filesystem"},
     devServer: {
         static: { directory: path.resolve(__dirname, "build") },
         host: "0.0.0.0",
@@ -94,18 +94,17 @@ const base = {
     experiments: {
         futureDefaults: true,
         css: false, // for now
-        outputModule: process.env.BUILD_MODE !== 'standalone',
+        outputModule: process.env.BUILD_MODE !== 'standalone' && !process.env.BUILD_DESKTOP,
     },
     output: {
-        clean: !process.env.CI,
         filename:
-            process.env.NODE_ENV === "production"
+            (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production")
                 ? `js/${CACHE_EPOCH}/[name].[contenthash].js`
                 : "js/[name].js",
         chunkFilename:
-            process.env.NODE_ENV === 'production' ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
+            (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production") ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
         publicPath: root,
-        module: process.env.BUILD_MODE !== 'standalone'
+        module: !process.env.BUILD_DESKTOP && process.env.BUILD_MODE !== 'standalone'
     },
     resolve: {
         symlinks: false,
@@ -117,7 +116,6 @@ const base = {
             'react': path.resolve(__dirname, 'node_modules/react'),
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
             'scratch-render-fonts$': path.resolve(__dirname, 'src/lib/tw-scratch-render-fonts'),
-            '@ampmod/branding$': path.resolve(__dirname, 'src/lib/amp-intercept-branding'),
             'real-branding$': path.resolve(__dirname, '../branding'),
             'react/jsx-dev-runtime': 'react/jsx-dev-runtime.js',
             'react/jsx-runtime': 'react/jsx-runtime.js'
@@ -285,11 +283,11 @@ const base = {
         ...(process.env.BUILD_MODE !== 'standalone' ? [
             new MiniCssExtractPlugin({
                 filename:
-                    process.env.NODE_ENV === 'production'
+                    (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production")
                         ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
                         : 'css/[name].css',
                 chunkFilename:
-                    process.env.NODE_ENV === 'production'
+                    (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production")
                         ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
                         : 'css/[id].css',
                 ignoreOrder: true,
@@ -380,9 +378,16 @@ module.exports = [
             'examples-landing': './src/website/examples/examples.jsx',
             'service-worker-extra': './src/playground/service-worker.js',
         },
+        resolve: {
+            ...base.resolve,
+            alias: {
+                ...base.resolve.alias,
+                '@ampmod/branding$': path.resolve(__dirname, 'src/lib/amp-intercept-branding'),
+            }
+        },
         output: {
             hashFunction: 'sha256',
-            path: process.env.BUILD_TARGET === 'desktop' ? path.resolve(__dirname, 'src/desktop/dist-rendered') : path.resolve(__dirname, 'build')
+            path: process.env.BUILD_TARGET === 'desktop' ? path.resolve(__dirname, 'src/desktop/dist/gui') : path.resolve(__dirname, 'build')
         },
         optimization: {
             runtimeChunk: 'single',
@@ -663,3 +668,57 @@ module.exports = [
           })
         : []
 );
+
+const fs = require('fs');
+const { builtinModules } = require('module');
+
+if (process.env.BUILD_TARGET === 'desktop') {
+    module.exports.push(
+        merge(base, {
+            target: 'electron-main',
+            devtool: false,
+            entry: {
+                main: './src/desktop/index.ts'
+            },
+            output: {
+                path: path.resolve(__dirname, 'src/desktop/dist'),
+                filename: 'main.js'
+            },
+            optimization: { splitChunks: false, runtimeChunk: false, minimize: false },
+            externals: ['electron', 'electron-store', ...builtinModules],
+            plugins: base.plugins.concat([
+                new CopyWebpackPlugin({
+                    patterns: [
+                        { from: "./src/desktop/extensions", to: "extensions" },
+                        { from: "./src/desktop/assets", to: "assets" },
+                        { from: "./src/desktop/art", to: "art" },
+                    ],
+                }),
+            ]),
+        })
+    );
+
+    const preloadDir = path.resolve(__dirname, 'src/desktop/preloads');
+    if (fs.existsSync(preloadDir)) {
+        const preloadFiles = fs.readdirSync(preloadDir).filter(file => file.endsWith('.ts') || file.endsWith('.js') || file.endsWith('.cjs'));
+
+        preloadFiles.forEach(file => {
+            const name = path.parse(file).name;
+            module.exports.push(
+            	merge(base, {
+                    devtool: false,
+                    target: 'electron-preload',
+                    entry: {
+                        [name]: path.join(preloadDir, file)
+                    },
+                    output: {
+                        path: path.resolve(__dirname, 'src/desktop/dist'),
+                        filename: 'preloads/[name].cjs'
+                    },
+                    optimization: { splitChunks: false, runtimeChunk: false, minimize: false },
+                    externals: { electron: 'commonjs electron' }
+               })
+            );
+        });
+    }
+}

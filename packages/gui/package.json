@@ -12,6 +12,7 @@
     "main": "./dist/scratch-gui.js",
     "scripts": {
         "build": "webpack --bail",
+        "build-desktop": "BUILD_TARGET=desktop webpack --bail && electron-builder -c.extraMetadata.main=main.js",
         "clean": "rimraf ./build && mkdirp build && rimraf ./dist && mkdirp dist",
         "i18n:push": "wlc push --project ampmod --component ampmod-editor-interface --file translations/en.json",
         "i18n:src": "rimraf ./translations/messages/src && babel src > tmp.js && rimraf tmp.js && build-i18n-src ./translations/messages/src ./translations/",
@@ -124,6 +125,7 @@
         "cssnano": "^7.1.2",
         "cssnano-preset-advanced": "^7.0.10",
         "electron": "^39.2.2",
+        "electron-builder": "^26.4.0",
         "enzyme": "3.10.0",
         "enzyme-adapter-react-16": "1.15.8",
         "esbuild": "^0.27.0",
@@ -171,9 +173,68 @@
             "editor-msgs(\\.js)?$": "<rootDir>/test/__mocks__/editor-msgs-mock.js"
         }
     },
-    "overrides": {
-        "webpack@4.47.0": {
-            "terser-webpack-plugin": "^4.2.3"
-        }
+    "build": {
+        "appId": "org.ampmod.ampmod",
+        "productName": "AmpMod",
+        "copyright": "Copyright © AmpMod developers",
+        "directories": {
+            "output": "src/desktop/dist",
+            "buildResources": "src/desktop/assets"
+        },
+        "files": [
+            "package.json",
+			{
+                "from": "src/desktop/dist",
+                "to": "."
+            },
+			"LICENSE"
+        ],
+        "win": {
+            "target": ["nsis", "portable"],
+            "icon": "build-assets/icon.ico"
+        },
+        "mac": {
+            "target": "dmg",
+            "category": "public.app-category.developer-tools"
+        },
+        "linux": {
+            "target": [
+                "AppImage",
+                "deb",
+                "pacman",
+                "rpm",
+                "flatpak"
+            ],
+            "category": "Development",
+            "maintainer": "AmpMod",
+            "synopsis": "Block-based programming, amplified."
+        },
+        "flatpak": {
+            "runtime": "org.freedesktop.Platform",
+            "runtimeVersion": "24.08",
+            "sdk": "org.freedesktop.Sdk",
+            "finishArgs": [
+                "--socket=wayland",
+                "--socket=x11",
+                "--share=ipc",
+                "--device=dri",
+                "--share=network",
+                "--filesystem=home"
+            ]
+        },
+        "asar": true,
+        "npmRebuild": true,
+        "fileAssociations": [
+            {
+                "ext": "sb3",
+                "name": "Scratch 3 Project",
+                "role": "Editor"
+            },
+            {
+                "ext": "apz",
+                "name": "AmpMod Project",
+                "role": "Editor"
+            }
+        ]
     }
 }
