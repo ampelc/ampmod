@@ -1,0 +1,41 @@
+name: Close GitHub pull requests
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  close-and-comment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    
+    steps:
+      - name: Close PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            await github.rest.issues.createComment({
+              owner: owner,
+              repo: repo,
+              issue_number: prNumber,
+              body: "Thanks for your contribution. We do not accept PRs on GitHub, but you can submit PRs to https://codeberg.org/ampmod/ampmod instead. Thank you!"
+            });
+
+            await github.rest.pulls.update({
+              owner: owner,
+              repo: repo,
+              pull_number: prNumber,
+              state: "closed"
+            });
+
+            await github.rest.issues.lock({
+              owner,
+              repo,
+              issue_number: prNumber,
+              lock_reason: 'resolved' 
+            });

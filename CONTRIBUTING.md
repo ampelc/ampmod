@@ -19,9 +19,9 @@ is sufficient.
 
 ## Highly discouraged practices
 
-### The Codeberg built-in editor is not an IDE
+### The Codeberg / GitHub built-in editor is not an IDE
 
-We highly discourage using Codeberg's built-in editor as:
+We highly discourage using the built-in editor of any code forge as:
 * It does not contain a development server
 * Your commits are not cryptographically signed
 * It does not detect most syntax errors

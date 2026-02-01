@@ -59,11 +59,6 @@ const Footer = () => {
                                 <a href="https://turbowarp.org" target="_blank" rel="noreferrer">
                                     TurboWarp
                                 </a>
-                            ),
-                            supportScratch: (
-                                <a href="https://scratchfoundation.org/donate">
-                                    <Localise id="amp.footer.disclaimer.supportScratch" />
-                                </a>
                             )
                         }}
                     />
