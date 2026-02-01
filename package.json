@@ -1,6 +1,6 @@
 {
     "name": "ampmod",
-    "version": "0.4.0-canary1",
+    "version": "0.4.0-dev",
     "description": "The AmpMod monorepo",
     "private": true,
     "packageManager": "pnpm@10.24.0",

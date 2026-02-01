@@ -1,6 +1,6 @@
 {
     "name": "scratch-gui",
-    "version": "0.3.0",
+    "version": "0.4.0-dev",
     "description": "Graphical User Interface for creating and running Scratch 3.0 projects",
     "author": "Massachusetts Institute of Technology",
     "license": "GPL-3.0",
@@ -194,28 +194,34 @@
             "LICENSE",
             "!node_modules"
         ],
+        "asarUnpack": [
+            "extensions"
+        ],
         "win": {
             "target": [
                 "nsis",
                 "portable"
-            ],
-            "icon": "build-assets/icon.ico"
+            ]
         },
         "mac": {
             "target": "dmg",
             "category": "public.app-category.developer-tools"
         },
         "linux": {
+            "executableName": "ampmod",
             "target": [
                 "AppImage",
                 "deb",
-                "pacman",
-                "rpm",
-                "flatpak"
+                "tar.gz"
             ],
             "category": "Development",
             "maintainer": "AmpMod",
-            "synopsis": "Block-based programming, amplified."
+            "synopsis": "Block-based programming, amplified.",
+            "desktop": {
+                "entry": {
+                    "StartupWMClass": "ampmod"
+                }
+            }
         },
         "flatpak": {
             "runtime": "org.freedesktop.Platform",
@@ -236,12 +242,14 @@
             {
                 "ext": "sb3",
                 "name": "Scratch 3 Project",
-                "role": "Editor"
+                "role": "Editor",
+                "mimeType": "application/x.scratch.sb3"
             },
             {
                 "ext": "apz",
                 "name": "AmpMod Project",
-                "role": "Editor"
+                "role": "Editor",
+                "mimeType": "application/vnd.ampmod.project"
             }
         ]
     }

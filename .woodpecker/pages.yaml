@@ -26,10 +26,10 @@
 #
 
 when:
-  - event: tag
-    ref: refs/tags/**
-  - event: manual
-    ref: refs/tags/**
+  - event: [tag, manual]
+    ref:
+      include: [ refs/tags/** ]
+      exclude: [ refs/tags/*-dev ]
 
 steps:
     - name: clone-pages

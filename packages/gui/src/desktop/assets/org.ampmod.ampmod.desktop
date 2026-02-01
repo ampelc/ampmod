@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=AmpMod
-Exec=ampmod %U
+# For source install: change this to where you install the app
+Exec=/opt/ampmod/ampmod %U
 Terminal=false
 Type=Application
 Icon=org.ampmod.ampmod
