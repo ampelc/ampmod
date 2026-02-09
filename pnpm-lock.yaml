@@ -562,12 +562,18 @@ importers:
       '@turbowarp/sbdl':
         specifier: ^7.0.0
         version: 7.0.0
+      browserify-zlib:
+        specifier: ^0.2.0
+        version: 0.2.0
       cross-fetch:
         specifier: ^4.1.0
         version: 4.1.0(encoding@0.1.13)
       sha.js:
         specifier: ^2.4.11
         version: 2.4.12
+      stream-browserify:
+        specifier: ^3.0.0
+        version: 3.0.0
     devDependencies:
       '@babel/core':
         specifier: ^7.16.5
@@ -615,11 +621,11 @@ importers:
         specifier: github:TurboWarp/scratch-audio#develop
         version: https://codeload.github.com/TurboWarp/scratch-audio/tar.gz/aba00cd02e36d95407effafa03f3678e4c669b30
       scratch-render:
-        specifier: github:TurboWarp/scratch-render#develop
-        version: https://codeload.github.com/TurboWarp/scratch-render/tar.gz/dd5d399eace4b5bae11906e2237fe67ee6b79d84(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1))
+        specifier: workspace:*
+        version: link:../render
       scratch-vm:
-        specifier: github:TurboWarp/scratch-vm#develop
-        version: https://codeload.github.com/TurboWarp/scratch-vm/tar.gz/722014ee66d323831e30c199c7eaca809aceea65(@turbowarp/scratch-svg-renderer@1.0.202505311824)(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1))
+        specifier: workspace:*
+        version: link:../vm
       style-loader:
         specifier: ^2.0.0
         version: 2.0.0(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1))
@@ -7395,24 +7401,26 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.1.0:
     resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@5.0.15:
     resolution: {integrity: sha512-c9IPMazfRITpmAAKi22dK1VKxGDX9ehhqfABDriL/lzO92xcUKEJPQHrVA/2YHSNFB4iFlykVmWvwo48nr3OxA==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@7.1.2:
     resolution: {integrity: sha512-MJTUg1kjuLeQCJ+ccE4Vpa6kKVXkPYJ2mOCQyUuKLcLQsdrMCpBPUi8qVE6+YuaJkozeA9NusTAw3hLr8Xe5EQ==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   global-agent@3.0.0:
     resolution: {integrity: sha512-PT6XReJ+D07JvGoxQMkT6qji/jVNfX/h364XHZOWeRzy64sSFr+xJ5OX7LI3b4MPQzdL4H8Y8M0xzPpsVMwA8Q==}
@@ -11448,17 +11456,8 @@ packages:
   scratch-translate-extension-languages@0.0.20191118205314:
     resolution: {integrity: sha512-r0lvpgQjPMjbhI2wROrgoXzBhCvWJdkbAqJMfl2CdNqrwBpUXqLvNNtI3VtNLPJAcp9VfxEylkU9lVZ0gvU46Q==}
 
-  scratch-translate-extension-languages@1.0.7:
-    resolution: {integrity: sha512-6+bQU9iVYv23T8J0SjpV6MTugm0y8myh/4DPgu1BGfccysdkaWzu3MkNGQyQRUlbqAiW9wM7ctfv3USPEkzTgg==}
-
   scratch-vm@0.2.0-prerelease.20201125065300:
     resolution: {integrity: sha512-1kU4L6kdlkoIEIMKPyccVSDu1oPLDVbBkmqq5yk9tjLS0wT5Y/PU/P8q3Ey0ZumvNnLPWbw4QzQQl8g/2J/fcw==}
-
-  scratch-vm@https://codeload.github.com/TurboWarp/scratch-vm/tar.gz/722014ee66d323831e30c199c7eaca809aceea65:
-    resolution: {tarball: https://codeload.github.com/TurboWarp/scratch-vm/tar.gz/722014ee66d323831e30c199c7eaca809aceea65}
-    version: 2.1.46
-    peerDependencies:
-      '@turbowarp/scratch-svg-renderer': ^1.0.0-202312300007-62fe825
 
   script-loader@0.7.2:
     resolution: {integrity: sha512-UMNLEvgOAQuzK8ji8qIscM3GIrRCWN6MmMXGD4SD5l6cSycgGsCo0tX5xRnfQcoghqct0tjHjcykgI1PyBE2aA==}
@@ -11869,6 +11868,9 @@ packages:
 
   stream-browserify@2.0.2:
     resolution: {integrity: sha512-nX6hmklHs/gr2FuxYDltq8fJA1GDlxKQCz8O/IM4atRqBH8OORmBNgfvW5gG10GT/qQ9u0CzIvr2X5Pkt6ntqg==}
+
+  stream-browserify@3.0.0:
+    resolution: {integrity: sha512-H73RAHsVBapbim0tU2JwwOiXUj+fikfiaoYAKHF3VJfA0pe2BCzkhAHBlLG6REzE+2WNZcxOXjK7lkso+9euLA==}
 
   stream-combiner@0.2.2:
     resolution: {integrity: sha512-6yHMqgLYDzQDcAkL+tjJDC5nSNuNIx0vZtRZeiPh7Saef7VHX9H5Ijn9l2VIol2zaNYlYEX6KyuT/237A58qEQ==}
@@ -26397,8 +26399,6 @@ snapshots:
 
   scratch-translate-extension-languages@0.0.20191118205314: {}
 
-  scratch-translate-extension-languages@1.0.7: {}
-
   scratch-vm@0.2.0-prerelease.20201125065300(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1)):
     dependencies:
       '@vernier/godirect': 1.5.0
@@ -26418,30 +26418,6 @@ snapshots:
       scratch-sb1-converter: 0.2.7
       scratch-translate-extension-languages: 0.0.20191118205314
       text-encoding: 0.7.0
-      worker-loader: 1.1.1(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1))
-    transitivePeerDependencies:
-      - webpack
-
-  scratch-vm@https://codeload.github.com/TurboWarp/scratch-vm/tar.gz/722014ee66d323831e30c199c7eaca809aceea65(@turbowarp/scratch-svg-renderer@1.0.202505311824)(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1)):
-    dependencies:
-      '@turbowarp/json': 0.1.2
-      '@turbowarp/jszip': 3.12.0
-      '@turbowarp/nanolog': 0.2.0
-      '@turbowarp/scratch-svg-renderer': 1.0.202505311824(scratch-render-fonts@https://codeload.github.com/TurboWarp/scratch-render-fonts/tar.gz/7b6768fc6dfef6b343a06f992587b74807043961)
-      '@vernier/godirect': 1.5.0
-      arraybuffer-loader: 1.0.8
-      atob: 2.1.2
-      btoa: 1.2.1
-      canvas-toBlob: 1.0.0
-      decode-html: 2.0.0
-      diff-match-patch: 1.0.4
-      format-message: 6.2.1
-      htmlparser2: 3.10.0
-      scratch-parser: https://codeload.github.com/TurboWarp/scratch-parser/tar.gz/5e21d953d58d92672956030b9f93402f11249c96
-      scratch-sb1-converter: 0.2.7
-      scratch-translate-extension-languages: 1.0.7
-      text-encoding: 0.7.0
-      uuid: 8.3.2
       worker-loader: 1.1.1(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1))
     transitivePeerDependencies:
       - webpack
@@ -26960,6 +26936,11 @@ snapshots:
     dependencies:
       inherits: 2.0.4
       readable-stream: 2.3.8
+
+  stream-browserify@3.0.0:
+    dependencies:
+      inherits: 2.0.4
+      readable-stream: 3.6.2
 
   stream-combiner@0.2.2:
     dependencies:
@@ -27549,7 +27530,7 @@ snapshots:
     transitivePeerDependencies:
       - bluebird
 
-  terser-webpack-plugin@5.3.16(@swc/core@1.15.11)(webpack@5.104.1):
+  terser-webpack-plugin@5.3.16(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
@@ -28293,7 +28274,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.0
-      terser-webpack-plugin: 5.3.16(@swc/core@1.15.11)(webpack@5.104.1)
+      terser-webpack-plugin: 5.3.16(@swc/core@1.15.11)(webpack@5.104.1(@swc/core@1.15.11)(webpack-cli@6.0.1))
       watchpack: 2.5.1
       webpack-sources: 3.3.3
     optionalDependencies:

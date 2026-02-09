@@ -53,17 +53,24 @@ const makeScaffolding = ({full}) => ({
   },
   module: {
     rules: [
-      {
-        test: /\.jsx?$/,
-        loader: 'babel-loader',
-        include: [
-          path.resolve(__dirname, 'src'),
-          /node_modules[\\/]scratch-[^\\/]+[\\/]src/
-        ],
-        options: {
-          babelrc: false,
-          presets: ['@babel/preset-env']
-        }
+        {
+            test: /\.[jt]s$/,
+            loader: 'swc-loader',
+            include: [
+               path.resolve(__dirname, 'src'),
+               path.resolve(__dirname, '..'),
+               /node_modules[\\/]scratch-[^\\/]+[\\/]src/,
+            ],
+            options: {
+               jsc: {
+                  parser: {
+                        syntax: 'typescript',
+                        decorators: false,
+                        dynamicImport: true
+                  },
+                  target: (process.env.NODE_ENV === 'production' || process.env.BUILD_MODE === 'standalone') ? 'es2022' : 'esnext',
+            }
+         }
       },
       {
         test: /\.(svg|png)$/i,
@@ -140,10 +147,15 @@ const makeWebsite = () => ({
   },
   resolve: {
     alias: {
-      svelte: path.resolve('node_modules', 'svelte')
+      svelte: path.resolve('node_modules', 'svelte'),
     },
-    extensions: ['.mjs', '.js', '.svelte'],
-    mainFields: ['svelte', 'browser', 'module', 'main']
+    fallback: {
+      "zlib": require.resolve("browserify-zlib"),
+      "stream": require.resolve("stream-browserify"),
+    },
+    extensions: ['.mjs', '.js', '.svelte', '.ts'],
+    mainFields: ['svelte', 'browser', 'module', 'main'],
+    conditionNames: ['svelte']
   },
   optimization: {
     splitChunks: {
@@ -194,10 +206,8 @@ const makeWebsite = () => ({
     ...(process.env.BUNDLE_ANALYZER === 'p4' ? [new BundleAnalyzerPlugin()] : [])
   ],
   devServer: {
-    contentBase: './dist/',
+    static: { directory: path.resolve(__dirname, "build") },
     compress: true,
-    overlay: true,
-    inline: false,
     host: '0.0.0.0',
     port: 8947
   },
