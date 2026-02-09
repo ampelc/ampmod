@@ -336,6 +336,7 @@
       'maxClones',
       'fencing',
       'miscLimits',
+      'caseSensitivity',
       'stageWidth',
       'stageHeight',
       'resizeMode',
@@ -403,6 +404,14 @@
         {$_('options.removeMiscLimits')}
       </label>
       <LearnMore slug="remove-misc-limits" />
+    </div>
+    <div class="option">
+      <label>
+        <input type="checkbox" checked={$options.caseSensitivity} on:change={(e) => {
+          $options.caseSensitivity = e.target.checked;
+        }}>
+        {$_('options.caseSensitivity')}
+      </label>
     </div>
     <label class="option">
       {$_('options.username')}
@@ -723,13 +732,13 @@
     <details open={advancedOptionsInitiallyOpen}>
       <summary>{$_('options.advancedSummary')}</summary>
 
-      <div class="option">
+      <!-- <div class="option">
         <label>
           <input type="checkbox" bind:checked={$options.compiler.enabled}>
           {$_('options.enableCompiler')}
         </label>
         <LearnMore slug="disable-compiler" />
-      </div>
+      </div> -->
       <div class="option">
         <label>
           <input type="checkbox" bind:checked={$options.compiler.warpTimer}>

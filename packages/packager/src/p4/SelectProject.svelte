@@ -17,7 +17,7 @@
 
   const defaultProjectId = '60917032';
 
-  const type = writablePersistentStore('SelectProject.type', 'id');
+  const type = writablePersistentStore('SelectProject.type', 'file');
   const projectId = writablePersistentStore('SelectProject.id', defaultProjectId);
   const projectUrl = writablePersistentStore('SelectProject.url', '');
 
@@ -114,7 +114,7 @@
   };
   const handleDrop = ({detail: dataTransfer}) => {
     const name = dataTransfer.files[0].name;
-    if (name.endsWith('.sb') || name.endsWith('.sb2') || name.endsWith('.sb3')) {
+    if (name.endsWith('.sb') || name.endsWith('.sb2') || name.endsWith('.sb3') || name.endsWith('.apz')) {
       $type = 'file';
       setFiles(dataTransfer.files);
     }
@@ -231,7 +231,8 @@
     <p>{$_('select.selectHelp')}</p>
 
     <div class="options">
-      <div class="option">
+      <!-- amp: We don't support packaging Scratch projects -->
+      <!-- <div class="option">
         <label>
           <input type="radio" name="project-type" bind:group={$type} value="id">
           {$_('select.id')}
@@ -239,14 +240,14 @@
         {#if $type === "id"}
           <input type="text" value={getDisplayedProjectURL()} spellcheck="false" on:keypress={submitOnEnter} on:input={handleInput} on:focus={handleFocus}>
         {/if}
-      </div>
+      </div> -->
       <!-- TurboWarp Desktop looks for the file-input-option class for special handling, so be careful when modifying this. -->
       <div class="option file-input-option">
         <label>
           <input type="radio" name="project-type" bind:group={$type} value="file">
           {$_('select.file')}
         </label>
-        <input hidden={$type !== "file"} on:change={handleFileInputChange} bind:this={fileInputElement} type="file" accept=".sb,.sb2,.sb3">
+        <input hidden={$type !== "file"} on:change={handleFileInputChange} bind:this={fileInputElement} type="file" accept=".apz,.sb,.sb2,.sb3">
       </div>
       <div class="option">
         <label>

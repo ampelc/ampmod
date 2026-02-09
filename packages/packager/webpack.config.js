@@ -10,7 +10,9 @@ const EagerDynamicImportPlugin = require('./src/build/eager-dynamic-import-plugi
 const isProduction = process.env.NODE_ENV === 'production';
 const isStandalone = !!process.env.STANDALONE;
 const base = {
-  mode: isProduction ? 'production' : 'development'
+  mode: isProduction ? 'production' : 'development',
+  stats: 'errors-only',
+  
 };
 const dist = path.resolve(__dirname, 'dist');
 const buildId = isProduction ? require('./src/build/generate-scaffolding-build-id') : null;
@@ -32,7 +34,7 @@ const version = getVersion();
 
 const makeScaffolding = ({full}) => ({
   ...base,
-  devtool: isProduction ? '' : 'source-map',
+  devtool: isProduction ? false : 'source-map',
   output: {
     filename: 'scaffolding/[name].js',
     path: dist
@@ -137,7 +139,7 @@ const commonFrontendPlugins = () => [
 
 const makeWebsite = () => ({
   ...base,
-  devtool: isStandalone ? '' : 'source-map',
+  devtool: isStandalone ? false : 'source-map',
   output: {
     filename: isProduction ? 'js/[name].[contenthash].js' : 'js/[name].js',
     path: dist

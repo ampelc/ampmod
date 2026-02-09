@@ -30,23 +30,26 @@ If this is set to an empty string, the link is removed.
 */
 
 module.exports = {
-  APP_NAME: 'TurboWarp Packager',
-  WEBSITE: 'https://packager.turbowarp.org/',
+  APP_NAME: 'AmpMod Packager',
+  WEBSITE: 'https://ampmod.codeberg.page/packager',
   COPYRIGHT_NOTICE: `Copyright (C) 2021-2024 Thomas Weber
+Copyright (C) 2025-2026 AmpElectrecuted
 
 The Source Code Form of this program is available under the terms of the
 Mozilla Public License, v. 2.0. You can obtain a copy of the license at
-https://www.mozilla.org/en-US/MPL/2.0/.`,
-  ACCENT_COLOR: '#ff4c4c',
-  SOURCE_CODE: 'https://github.com/TurboWarp/packager',
+https://www.mozilla.org/en-US/MPL/2.0/.
+
+AmpMod Packager is a modification of the TurboWarp Packager.`,
+  ACCENT_COLOR: '#4fa55c',
+  SOURCE_CODE: 'https://codeberg.org/ampmod/ampmod',
   FEEDBACK_PRIMARY: {
-    name: 'Scratch',
-    link: 'https://scratch.mit.edu/users/GarboMuffin/#comments'
+    name: 'Codeberg',
+    link: 'https://codeberg.org/ampmod/ampmod/issues/'
   },
   FEEDBACK_SECONDARY: {
-    name: 'GitHub',
-    link: 'https://github.com/TurboWarp/packager/issues'
+    name: 'AmpMod Forums',
+    link: 'https://ampmod.flarum.cloud'
   },
   DONATE: '',
-  PRIVACY_POLICY: 'https://turbowarp.org/privacy.html',
+  PRIVACY_POLICY: 'https://ampmod.codeberg.page/privacy',
 };
