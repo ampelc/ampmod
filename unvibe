@@ -1,0 +1,48 @@
+const { execSync } = require('child_process');
+const fs = require('fs');
+
+/**
+ * Filter criteria:
+ * 1. Scans only comment lines starting with //
+ * 2. Matches "Lazy AI" phrases that indicate non-production/demo code.
+ * 3. Only scans existing files changed from Feb 1st, 2025 onwards.
+ */
+const aiPhrases = [
+  /in\s+a\s+real\s*,\s*app/gi,         
+  /this\s+is\s+a\s+placeholder/gi,     
+  /for\s+simplicity\b/gi,              
+  /replace\s+this\s+with\s+actual/gi,  
+  /\bsimple\s+implementation\b/gi,     
+  /you\s+may\s+want\s+to\s+(handle|implement|add)/gi 
+];
+
+try {
+  const gitCommand = 'git log --since="2025-02-01" --name-only --pretty=format: | sort -u';
+  const files = execSync(gitCommand)
+    .toString()
+    .split('\n')
+    .filter(f => f && fs.existsSync(f) && /\.(js|ts|hun|svelte|jsx|tsx)$/.test(f));
+
+  let totalVibes = 0;
+
+  files.forEach(file => {
+    const content = fs.readFileSync(file, 'utf8');
+    const lines = content.split('\n');
+
+    lines.forEach((line, index) => {
+      const trimmed = line.trim();
+      
+      if (trimmed.startsWith('//')) {
+        const hasAiVibe = aiPhrases.some(p => p.test(trimmed));
+        if (hasAiVibe) {
+          totalVibes++;
+          console.log(`[AI Vibe Detected] ${file}:${index + 1} -> "${trimmed}"`);
+        }
+      }
+    });
+  });
+
+  console.log(`\nScan complete. Total "vibe" comments found: ${totalVibes}`);
+} catch (err) {
+  console.error("Error:", err.message);
+}
