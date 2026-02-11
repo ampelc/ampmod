@@ -30,7 +30,15 @@ const getRandomColor = (function () {
     };
 })();
 
+const boxDefaultPropStyle = {};
+
 const Box = props => {
+    props = {
+        ...props,
+        element: typeof props.element === "undefined" ? 'div' : props.element,
+        style: typeof props.style === "undefined" ? boxDefaultPropStyle : props.style
+    };
+
     const {
         alignContent,
         alignItems,
@@ -119,9 +127,5 @@ Box.propTypes = {
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     /** How whitespace should wrap within this block. */
     wrap: PropTypes.oneOf(['nowrap', 'wrap', 'wrap-reverse'])
-};
-Box.defaultProps = {
-    element: 'div',
-    style: {}
 };
 export default Box;

@@ -20,8 +20,4 @@ Label.propTypes = {
     text: PropTypes.string.isRequired
 };
 
-Label.defaultProps = {
-    secondary: false
-};
-
 export default Label;

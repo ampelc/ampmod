@@ -118,9 +118,4 @@ ComingSoonTooltip.propTypes = {
     tooltipId: PropTypes.string.isRequired
 };
 
-ComingSoonTooltip.defaultProps = {
-    delayHide: 0,
-    delayShow: 0
-};
-
 export {ComingSoon as ComingSoonComponent, ComingSoonTooltip};

@@ -13,6 +13,12 @@ import classNames from 'classnames';
 import styles from './input.css';
 
 const Input = props => {
+    props = {
+        ...props,
+        range: typeof props.range === "undefined" ? false : props.range,
+        small: typeof props.small === "undefined" ? false : props.small
+    };
+
     const {small, range, ...componentProps} = props;
     return (
         <input
@@ -29,11 +35,6 @@ Input.propTypes = {
     className: PropTypes.string,
     range: PropTypes.bool,
     small: PropTypes.bool
-};
-
-Input.defaultProps = {
-    range: false,
-    small: false
 };
 
 export default Input;
