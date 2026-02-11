@@ -11,6 +11,7 @@ import ErrorBoundary from '../containers/error-boundary';
 import Header from '../website/components/header/header';
 import Footer from '../website/components/footer/footer';
 import Spinner from '../components/tw-loading-spinner/spinner';
+import {loadServiceWorker} from './load-service-worker';
 
 const Interface = lazy(() => import(/* webpackChunkName: "interface" */ './render-interface'));
 const Embed = lazy(() => import(/* webpackChunkName: "embed" */ './embed'));
@@ -50,6 +51,8 @@ const RedirectWithParams: React.FC<{ to: string }> = ({ to }) => {
   return <Navigate to={`${to}${location.search}${location.hash}`} replace />;
 };
 
+loadServiceWorker();
+
 render(
   <ErrorBoundary>
     <Router basename={String(process.env.ROOT || '').replace(/\/+$/, "")} future={{ v7_startTransition: true }}>
@@ -62,7 +65,7 @@ render(
           <Route path="/credits" element={<Credits />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/editor" element={<Interface />} />
-          <Route path="/player" element={<RedirectWithParams to="/editor" />} />
+          <Route path="/player" element={<Interface isPlayerOnly />} />
           <Route path="/fullscreen" element={<Interface isFullScreen />} />
           <Route path="/addons" element={<AddonSettings />} />
           <Route path="/embed" element={<Embed />} />
@@ -73,7 +76,7 @@ render(
           <Route path="/credits.html" element={<RedirectWithParams to="/credits" />} />
           <Route path="/faq.html" element={<RedirectWithParams to="/faq" />} />
           <Route path="/editor.html" element={<RedirectWithParams to="/editor" />} />
-          <Route path="/player.html" element={<RedirectWithParams to="/editor" />} />
+          <Route path="/player.html" element={<RedirectWithParams to="/player" />} />
           <Route path="/fullscreen.html" element={<RedirectWithParams to="/fullscreen" />} />
           <Route path="/addons.html" element={<RedirectWithParams to="/addons" />} />
           <Route path="/embed.html" element={<RedirectWithParams to="/embed" />} />

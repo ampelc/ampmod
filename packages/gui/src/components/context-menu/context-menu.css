@@ -2,21 +2,31 @@
 @import '../../css/units.css';
 @import '../../css/z-index.css';
 
+@keyframes fadeInMenu {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 .context-menu {
     min-width: 130px;
-    padding: 3px 0;
+    padding: 5px 0;
     margin: 2px 0 0;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     text-align: left;
     color: $text-primary;
     background-color: $ui-white;
     border: 1px solid $ui-black-transparent;
-    border-radius: calc($roundedness / 3);
+    border-radius: calc($margin / 2);
     box-shadow: 0px 0px 5px 1px $shadow;
     pointer-events: none;
+    opacity: 0;
     z-index: $z-index-context-menu;
-    display: flex;
-    flex-direction: column;
+    animation: fadeInMenu 0.25s forwards;
+    font-family: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 [dir=rtl] .context-menu {
@@ -24,20 +34,23 @@
 }
 
 .menu-item {
-    padding: 4px 10px;
+    padding: 8px 12px;
     white-space: nowrap;
     cursor: pointer;
+    transition: 0.1s ease;
     outline: none;
 }
 
 .menu-item[data-highlighted] {
-    background: $badge-background;
+    background: $looks-secondary;
+    color: white;
 }
 
-.menu-item-separator {
+.menu-item-bordered {
     border-top: 1px solid $ui-black-transparent;
+    outline: none; /* Firefox visual bug */
 }
 
-.menu-item-danger {
-    color: $red-primary;
+.menu-item-danger[data-highlighted] {
+    background: $error-primary;
 }

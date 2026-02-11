@@ -647,13 +647,15 @@ Blockly.ScratchBlocks.ProcedureUtils.createArgumentEditor_ = function (
 ) {
     Blockly.Events.disable();
     try {
-        if (argumentType == "n" || argumentType == "s") {
-            var newBlock = this.workspace.newBlock(
-                "argument_editor_string_number"
-            );
-        } else {
-            var newBlock = this.workspace.newBlock("argument_editor_boolean");
+        var inputOpcode;
+        switch (argumentType) {
+          case "n": inputOpcode = "argument_editor_number"; break;
+          case "s": inputOpcode = "argument_editor_string_number"; break;
+          case "b": inputOpcode = "argument_editor_boolean"; break;
         }
+        var newBlock = this.workspace.newBlock(
+            inputOpcode
+        );
         newBlock.setFieldValue(displayName, "TEXT");
         newBlock.setShadow(true);
         if (!this.isInsertionMarker()) {
@@ -762,6 +764,21 @@ Blockly.ScratchBlocks.ProcedureUtils.addStringNumberExternal = function () {
 };
 
 /**
+ * Externally-visible function to add a number argument to the procedure
+ * declaration.
+ * @public
+ */
+Blockly.ScratchBlocks.ProcedureUtils.addNumberExternal = function () {
+    Blockly.WidgetDiv.hide(true);
+    this.procCode_ = this.procCode_ + " %n";
+    this.displayNames_.push("number");
+    this.argumentIds_.push(Blockly.utils.genUid());
+    this.argumentDefaults_.push("");
+    this.updateDisplay_();
+    this.focusLastEditor_();
+};
+
+/**
  * Externally-visible function to get the warp on procedure declaration.
  * @return {boolean} The value of the warp_ property.
  * @public
@@ -862,6 +879,7 @@ Blockly.ScratchBlocks.ProcedureUtils.updateArgumentReporterNames_ = function (
         var block = allBlocks[i];
         if (
             (block.type === "argument_reporter_string_number" ||
+              block.type === "argument_reporter_number" ||
                 block.type === "argument_reporter_boolean") &&
             !block.isShadow()
         ) {
@@ -1042,6 +1060,8 @@ Blockly.Blocks["procedures_declaration"] = {
     addBooleanExternal: Blockly.ScratchBlocks.ProcedureUtils.addBooleanExternal,
     addStringNumberExternal:
         Blockly.ScratchBlocks.ProcedureUtils.addStringNumberExternal,
+    addNumberExternal:
+        Blockly.ScratchBlocks.ProcedureUtils.addNumberExternal,
     onChangeFn: Blockly.ScratchBlocks.ProcedureUtils.updateDeclarationProcCode_,
 };
 
@@ -1116,6 +1136,29 @@ Blockly.Blocks["argument_editor_string_number"] = {
             colourTertiary: Blockly.Colours.textField,
             colourQuaternary: Blockly.Colours.textField,
             extensions: ["output_number", "output_string"],
+        });
+    },
+    // Exist on declaration and arguments editors, with different implementations.
+    removeFieldCallback:
+        Blockly.ScratchBlocks.ProcedureUtils.removeArgumentCallback_,
+};
+
+Blockly.Blocks["argument_editor_number"] = {
+    init: function () {
+        this.jsonInit({
+            message0: " %1",
+            args0: [
+                {
+                    type: "field_input_removable",
+                    name: "TEXT",
+                    text: "foo",
+                },
+            ],
+            colour: Blockly.Colours.textField,
+            colourSecondary: Blockly.Colours.textField,
+            colourTertiary: Blockly.Colours.textField,
+            colourQuaternary: Blockly.Colours.textField,
+            extensions: ["output_number"],
         });
     },
     // Exist on declaration and arguments editors, with different implementations.

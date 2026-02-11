@@ -93,19 +93,6 @@ const Welcome = ({intl, isRtl, onContinue}) => {
                                         values={{APP_NAME}}
                                     />
                                 </p>
-                                <p>
-                                    <i>
-                                        <small>
-                                            <FormattedMessage
-                                                id="amp.welcome.edu"
-                                                 
-                                                defaultMessage="Note for school IT admins: {APP_NAME} is a Scratch modification (like Snap!/BYOB once was). We are an IDE, not a site to play Geometry Dash. An education version of {APP_NAME} will be available soon."
-                                                description="Welcome modal message for educators"
-                                                values={{APP_NAME}}
-                                            />
-                                        </small>
-                                    </i>
-                                </p>
                             </div>
                         )}
 
@@ -118,6 +105,13 @@ const Welcome = ({intl, isRtl, onContinue}) => {
                                         description="Welcome modal theme selection title"
                                     />
                                 </h2>
+                                <p>
+                                    <FormattedMessage
+                                        id="amp.welcome.theme.body"
+                                        defaultMessage="You can change this later in the Settings menu."
+                                        description="Welcome modal theme selection body"
+                                    />
+                                </p>
                                 <ThemeSelector />
                                 <AccentSelector />
                             </div>
@@ -135,7 +129,7 @@ const Welcome = ({intl, isRtl, onContinue}) => {
                                 <p>
                                     <FormattedMessage
                                         id="amp.welcome.help"
-                                        defaultMessage="Check out the {wikiLink}."
+                                        defaultMessage="Check out the official {wikiLink}, where you can find information about how to use {APP_NAME}."
                                         description="Welcome modal help links"
                                         values={{
                                             wikiLink: (
@@ -146,7 +140,8 @@ const Welcome = ({intl, isRtl, onContinue}) => {
                                                 >
                                                     AmpMod Wiki
                                                 </a>
-                                            )
+                                            ),
+                                            APP_NAME
                                         }}
                                     />
                                 </p>

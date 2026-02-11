@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Modal from '../../containers/modal.jsx';
 import styles from './invalid-project-modal.css';
+import { APP_NAME } from '@ampmod/branding';
 
 const messages = defineMessages({
     title: {
@@ -46,6 +47,12 @@ const InvalidProjectModal = props => (
                 spellCheck={false}
                 value={formatError(props.error)}
             />
+
+            {(props.error === 'Unable to verify Scratch Project version.' || props.error === 'Parser only supports Scratch 2.X and above') && (
+                <p>
+                    <strong>Breaking change: {APP_NAME} no longer supports .sb and .sb2 files as we plan to make some major changes to the file format. .sb3 files will remain supported.</strong>
+                </p>
+            )}
 
             {formatError(props.error).includes('validationError') && (
                 <p>

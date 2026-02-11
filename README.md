@@ -1,9 +1,13 @@
-# ![AmpMod](packages/gui/src/website/components/header/ampmod.svg)<br>[![CI status](https://ci.codeberg.org/api/badges/15147/status.svg)](https://ci.codeberg.org/repos/15147) [![Multiple licences, click here for more info](https://img.shields.io/badge/licence-multiple,%20click%20here-blue.svg)](LICENSE.md)
+# AmpMod editor
+
+[![CI status](https://ci.codeberg.org/api/badges/15147/status.svg)](https://ci.codeberg.org/repos/15147) [![Multiple licences, click here for more info](https://img.shields.io/badge/licence-multiple,%20click%20here-blue.svg)](LICENSE.md)
 
 This is the source code for the AmpMod editor. AmpMod (formerly UltiBlocks) is a powerful block-based programming
-language mainly focusing on adding more data types to Scratch, as well as dozens of quality-of-life changes.
+language based off TurboWarp, mainly focusing on advanced data types, as well as dozens of quality-of-life changes.
 
 [![Try AmpMod now!](readme-assets/trynow.svg)](https://ampmod.codeberg.page) 
+
+View this repository [**on Codeberg**](https://codeberg.org/ampmod/ampmod) or [on GitHub](https://github.com/amp-mod/ampmod).
 
 *To access the canary build which has the newest features at the cost of more bugs, see https://ampmod.codeberg.page/@canary*
 
@@ -25,6 +29,9 @@ We have an NPM registry, but it's currently outdated. We hope to update it at so
 packages much easier.
 
 ## Development
+
+**Please read [CONTRIBUTING.md](CONTRIBUTING.md) before you contribute. This might seem pointless, but it is very important
+so you don't end up submitting broken, vibe-coded snippets.**
 
 We use `pnpm` to manage dependencies. To install `pnpm`, run `corepack enable` (Node >= 18) or `npm i -g pnpm` (Node < 18).
 
@@ -48,4 +55,7 @@ you to follow these. However, we recommend you do so.
 
 ## Licence
 
-AmpMod is free software. See [LICENSE.md](LICENSE.md) for more information.
+AmpMod is free software. The root folder is under 0BSD. Each package has its own licence which is symlinked to a file
+in the `licenses` folder.
+
+.woodpecker folder is under GPLv3.

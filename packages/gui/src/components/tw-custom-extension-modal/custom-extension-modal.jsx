@@ -85,7 +85,7 @@ const CustomExtensionModal = props => {
                             value={props.url}
                             onChange={props.onChangeURL}
                             onKeyDown={props.onKeyDown}
-                            placeholder="https://ampmod.codeberg.page/extensions/..."
+                            placeholder="https://raw.codeberg.page/ampmod/extensions/@pages/..."
                             autoFocus
                         />
                     </React.Fragment>

@@ -383,29 +383,114 @@ class ExtensionManager {
         return menuItems;
     }
 
+    /**
+     * Apply defaults for optional block fields.
+     * @param {string} serviceName - the name of the service hosting this extension block
+     * @param {ExtensionBlockMetadata} blockInfo - the block info from the extension
+     * @returns {ExtensionBlockMetadata} - a new block info object which has values for all relevant optional fields.
+     * @private
+     */
     _prepareBlockInfo (serviceName, blockInfo) {
-        if (blockInfo.blockType === BlockType.XML) return {...blockInfo, xml: String(blockInfo.xml) || ''};
-        blockInfo = {
-            blockType: BlockType.COMMAND,
-            terminal: false,
-            blockAllThreads: false,
-            arguments: {},
-            ...blockInfo
-        };
+        if (blockInfo.blockType === BlockType.XML) {
+            blockInfo = Object.assign({}, blockInfo);
+            blockInfo.xml = String(blockInfo.xml) || '';
+            return blockInfo;
+        }
+
+        blockInfo = Object.assign(
+            {},
+            {
+                blockType: BlockType.COMMAND,
+                terminal: false,
+                blockAllThreads: false,
+                arguments: {}
+            },
+            blockInfo
+        );
         blockInfo.text = blockInfo.text || blockInfo.opcode;
 
-        const funcName = blockInfo.func || blockInfo.opcode;
-        const serviceObj = dispatch.services[serviceName];
+        switch (blockInfo.blockType) {
+        case BlockType.EVENT:
+            if (blockInfo.func) {
+                log.warn(
+                    `Ignoring function "${blockInfo.func}" for event block ${blockInfo.opcode}`
+                );
+            }
+            break;
+        case BlockType.BUTTON:
+            if (blockInfo.opcode) {
+                log.warn(
+                    `Ignoring opcode "${blockInfo.opcode}" for button with text: ${blockInfo.text}`
+                );
+            }
+            blockInfo.callFunc = () => {
+                dispatch.call(serviceName, blockInfo.func);
+            };
+            break;
+        case BlockType.LABEL:
+            if (blockInfo.opcode) {
+                log.warn(
+                    `Ignoring opcode "${blockInfo.opcode}" for label: ${blockInfo.text}`
+                );
+            }
+            break;
+        default: {
+            if (!blockInfo.opcode) {
+                throw new Error('Missing opcode for block');
+            }
 
-        const callFunc = dispatch._isRemoteService(serviceName) ?
-            (args, util, realBlockInfo) =>
-                dispatch
-                    .call(serviceName, funcName, args, util, realBlockInfo)
-                    .then(r => (['number', 'string', 'boolean'].includes(typeof r) ? r : `${r}`)) :
-            (args, util, realBlockInfo) => serviceObj[funcName]?.(args, util, realBlockInfo);
+            const funcName = blockInfo.func || blockInfo.opcode;
 
-        blockInfo.func = (args, util) =>
-            callFunc(args, util, blockInfo.isDynamic ? args?.mutation?.blockInfo : blockInfo);
+            const getBlockInfo = blockInfo.isDynamic ?
+                args => args && args.mutation && args.mutation.blockInfo :
+                () => blockInfo;
+            const callBlockFunc = (() => {
+                if (dispatch._isRemoteService(serviceName)) {
+                    return (args, util, realBlockInfo) =>
+                        dispatch
+                            .call(
+                                serviceName,
+                                funcName,
+                                args,
+                                util,
+                                realBlockInfo
+                            )
+                            .then(result => {
+                                // Scratch is only designed to handle these types.
+                                // If any other value comes in such as undefined, null, an object, etc.
+                                // we'll convert it to a string to avoid undefined behavior.
+                                if (
+                                    typeof result === 'number' ||
+                                        typeof result === 'string' ||
+                                        typeof result === 'boolean'
+                                ) {
+                                    return result;
+                                }
+                                return `${result}`;
+                            });
+                }
+
+                // avoid promise latency if we can call direct
+                const serviceObject = dispatch.services[serviceName];
+                if (!serviceObject[funcName]) {
+                    // The function might show up later as a dynamic property of the service object
+                    log.warn(
+                        `Could not find extension block function called ${funcName}`
+                    );
+                }
+                return (args, util, realBlockInfo) =>
+                    serviceObject[funcName](args, util, realBlockInfo);
+            })();
+
+            blockInfo.func = (args, util) => {
+                const realBlockInfo = getBlockInfo(args);
+                // TODO: filter args using the keys of realBlockInfo.arguments? maybe only if sandboxed?
+                return callBlockFunc(args, util, realBlockInfo);
+            };
+            break;
+        }
+        }
+
         return blockInfo;
     }
 

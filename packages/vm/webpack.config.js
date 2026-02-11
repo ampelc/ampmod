@@ -83,8 +83,7 @@ module.exports = [
             'htmlparser2': true,
             'immutable': true,
             'scratch-parser': true,
-            'socket.io-client': true,
-            'text-encoding': true
+            'socket.io-client': true
         }
     }),
     // Playground

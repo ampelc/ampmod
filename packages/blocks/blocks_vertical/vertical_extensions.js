@@ -132,6 +132,18 @@ Blockly.ScratchBlocks.VerticalExtensions.SHAPE_SWITCH_CASE = function () {
 };
 
 /**
+ * Extension to make a block be shaped as a statement, but only allow it to fit in
+ * "switch" statements at the previous connection.
+ * @this {Blockly.Block}
+ * @readonly
+ */
+Blockly.ScratchBlocks.VerticalExtensions.SHAPE_SWITCH_CASE_END = function () {
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, "case");
+    this.setNextStatement(false);
+};
+
+/**
  * Extension to make a block be shaped as a round reporter in Scratch-Blocks.
  * That means the block has inline inputs, a round output shape, without a 'String'
  * output type.
@@ -346,6 +358,10 @@ Blockly.ScratchBlocks.VerticalExtensions.registerAll = function () {
     Blockly.Extensions.register(
         "shape_switch_case",
         Blockly.ScratchBlocks.VerticalExtensions.SHAPE_SWITCH_CASE
+    );
+    Blockly.Extensions.register(
+        "shape_switch_case_end",
+        Blockly.ScratchBlocks.VerticalExtensions.SHAPE_SWITCH_CASE_END
     );
     Blockly.Extensions.register(
         "shape_hat",

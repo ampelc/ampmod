@@ -6,16 +6,16 @@ const defaults = {
     // compatible with the original version due to fields vs inputs.
 
     // Scratch Lab Animated Text - https://lab.scratch.mit.edu/text/
-    text: 'https://extensions.turbowarp.org/lab/text.js',
+    text: 'https://raw.codeberg.page/ampmod/extensions/@pages/lab/text.js',
 
     // Turboloader's AudioStream
     audiostr: 'https://extensions.turbowarp.org/turboloader/audiostream.js',
 
     // https://scratch.mit.edu/discuss/topic/842592/
-    faceSensing: 'https://extensions.turbowarp.org/lab/face-sensing.js',
+    faceSensing: 'https://raw.codeberg.page/ampmod/extensions/@pages/lab/face-sensing.js',
 
     // amp: tw blocks
-    tw: 'https://ampmod.codeberg.page/extensions/turbowarp/tw.js'
+    tw: 'https://raw.codeberg.page/ampmod/extensions/@pages/turbowarp/tw.js'
 };
 
 module.exports = defaults;

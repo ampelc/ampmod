@@ -5,8 +5,6 @@ import overrideDefaultProject from './override-default-project.sb3?bytes';
 import backdrop from './cd21514d0531fdffb22204e0ec5ed84a.svg?raw';
 import costume1 from './applecat.svg?raw';
  
-import {TextEncoder} from '../tw-text-encoder';
-
 const defaultProject = translator => {
     if (overrideDefaultProject.byteLength > 0) {
         return [
@@ -19,13 +17,7 @@ const defaultProject = translator => {
         ];
     }
 
-    let _TextEncoder;
-    if (typeof TextEncoder === 'undefined') {
-        _TextEncoder = require('text-encoding').TextEncoder;
-    } else {
-        _TextEncoder = TextEncoder;
-    }
-    const encoder = new _TextEncoder();
+    const encoder = new TextEncoder();
 
     const projectJson = projectData(translator);
     return [

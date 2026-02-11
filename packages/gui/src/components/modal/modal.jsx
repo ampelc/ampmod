@@ -16,21 +16,6 @@ import styles from './modal.css';
 const ModalComponent = props => {
     const [isClosing, setIsClosing] = useState(false);
 
-    // amp: We need to use this instead of simply closing immediately due
-    // to the closing animation.
-    const handleRequestClose = () => {
-        setIsClosing(true);
-        setTimeout(
-            () => {
-                setIsClosing(false);
-                props.onRequestClose();
-            },
-            // If the user chooses to disable animations in system settings,
-            // respect that setting.
-            document.documentElement.classList.contains('amp-gui-animations-enabled') ? 200 : 0
-        );
-    };
-
     return (
         <ReactModal
             isOpen
@@ -44,7 +29,7 @@ const ModalComponent = props => {
                 [styles.fullScreen]: props.fullScreen,
                 [styles.closing]: isClosing
             })}
-            onRequestClose={handleRequestClose}
+            onRequestClose={props.onRequestClose}
         >
             <Box dir={props.isRtl ? 'rtl' : 'ltr'} direction="column" grow={1}>
                 <div className={classNames(styles.header, props.headerClassName)}>
@@ -67,7 +52,7 @@ const ModalComponent = props => {
                     </div>
                     <div className={classNames(styles.headerItem, styles.headerItemClose)}>
                         {props.fullScreen ? (
-                            <Button className={styles.backButton} iconSrc={backIcon} onClick={handleRequestClose}>
+                            <Button className={styles.backButton} iconSrc={backIcon} onClick={props.onRequestClose}>
                                 <FormattedMessage
                                     defaultMessage="Back"
                                     description="Back button in modal"
@@ -75,7 +60,7 @@ const ModalComponent = props => {
                                 />
                             </Button>
                         ) : (
-                            <CloseButton size={CloseButton.SIZE_LARGE} onClick={handleRequestClose} />
+                            <CloseButton size={CloseButton.SIZE_LARGE} onClick={props.onRequestClose} />
                         )}
                     </div>
                 </div>

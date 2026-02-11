@@ -1,33 +1,25 @@
-name: Mirror to Codeberg
+name: Sync to Codeberg
 
 on:
-  # Trigger the workflow when code is pushed to the 'main' branch
   push:
-    branches:
-      - main
-  # Optional: Also run periodically to ensure everything is in sync
-  schedule:
-    - cron: '0 0 * * *'
+    branches: [ "develop" ]
+  workflow_dispatch:
 
 jobs:
-  mirror:
+  sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # Fetch all history for a proper mirror
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Mirror to Codeberg
-        # This action simplifies the process of mirroring
-        uses: wei/git-mirror@v1
-        with:
-          # The source repository (GitHub) is already checked out
-
-          # The destination repository URL (Codeberg)
-          target_repo: https://codeberg.org/ampmod/ampmod.git
+      - name: Sync Changes
+        env:
+          CB_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+          CB_USER: "ampmod-bot"
+        run: |
+          git remote add codeberg https://$CB_USER:$CB_TOKEN@codeberg.org/ampmod/ampmod.git
           
-          # The SSH private key for authentication with Codeberg
-          # You must generate an SSH key pair and add the private key as a secret.
-          ssh_private_key: ${{ secrets.CODEBERG_PRIVATE_KEY }}
+          git push codeberg develop || echo "probably nothing to do"

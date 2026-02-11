@@ -19,9 +19,9 @@ is sufficient.
 
 ## Highly discouraged practices
 
-### The Codeberg built-in editor is not an IDE
+### The Codeberg / GitHub built-in editor is not an IDE
 
-We highly discourage using Codeberg's built-in editor as:
+We highly discourage using the built-in editor of any code forge as:
 * It does not contain a development server
 * Your commits are not cryptographically signed
 * It does not detect most syntax errors
@@ -61,6 +61,11 @@ at the end of the command.
 
 AmpMod is based off TurboWarp, so if you have modified it before, you know how to modify
 AmpMod as well. If not, check [the dev docs](https://ampmod.codeberg.page/manual/dev).
+
+> [!NOTE]
+> The prefix used for AmpMod-specific files or modifications in Scratch folders is `amp`.
+> For the sake of clarity, please use this prefix instead of leaving your files without it.
+> This prevents conflicts if we merge code from upstream.
 
 ## On joke functionality and loading messages
 

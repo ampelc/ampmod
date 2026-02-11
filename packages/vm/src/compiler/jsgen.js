@@ -717,6 +717,23 @@ class JSGenerator {
             }
             this.source += `}\n`;
             break;
+        case StackOpcode.CONTROL_SWITCH:
+            this.source += `switch (${this.descendInput(node.value)}) {\n`;
+            this.descendStack(node.cases, new Frame(false));
+            this.source += `}\n`;
+            break;
+        case StackOpcode.CONTROL_CASE:
+            this.source += `case (${this.descendInput(node.value)}): {\n`;
+            this.descendStack(node.substack, new Frame(false));
+            this.source += `break;\n`;
+            this.source += `}\n`;
+            break;
+        case StackOpcode.CONTROL_DEFAULT:
+            this.source += `default: {\n`;
+            this.descendStack(node.substack, new Frame(false));
+            this.source += `break;\n`;
+            this.source += `}\n`;
+            break;
         case StackOpcode.CONTROL_REPEAT: {
             const i = this.localVariables.next();
             this.source += `for (var ${i} = ${this.descendInput(node.times)}; ${i} >= 0.5; ${i}--) {\n`;
@@ -769,6 +786,9 @@ class JSGenerator {
             break;
         case StackOpcode.CONTORL_INCR_COUNTER:
             this.source += 'runtime.ext_scratch3_control._counter++;\n';
+            break;
+        case StackOpcode.CONTROL_BREAK:
+            this.source += 'break;\n';
             break;
 
         case StackOpcode.EVENT_BROADCAST:
@@ -1022,6 +1042,15 @@ class JSGenerator {
             this.source += `const ${value} = ${this.descendInput(node.input)};`;
             // blocks like legacy no-ops can return a literal `undefined`
             this.source += `if (${value} !== undefined) runtime.visualReport(target, "${sanitize(this.script.topBlockId)}", ${value});\n`;
+            break;
+        }
+
+        case StackOpcode.BLOCK_ERROR: {
+            const value = this.localVariables.next();
+            this.source += `const ${value} = ${this.descendInput(node.input)};`;
+            // blocks like legacy no-ops can return a literal `undefined`
+            this.source += `if (${value} !== undefined) runtime.blockError(target, "${sanitize(this.script.topBlockId)}", ${value});\n`;
+            this.source += `retire();\n`;
             break;
         }
 

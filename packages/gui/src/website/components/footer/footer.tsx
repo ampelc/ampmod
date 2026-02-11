@@ -36,7 +36,7 @@ const Footer = () => {
                         id="amp.footer.copyright"
                         values={{
                             APP_NAME,
-                            year: new Date().getFullYear(),
+                            year: `2025-${new Date().getFullYear()}`,
                             freeSoftware: (
                                 <a href="LICENSE.txt">
                                     <Localise id="amp.footer.copyright.freeSoftware" />
@@ -104,7 +104,7 @@ const Footer = () => {
                         <a href="https://ampmod.codeberg.page/manual/">
                             <Localise id="tw.footer.manual" />
                         </a>
-                        <a href="https://ampmod.codeberg.page/extensions/">
+                        <a href="https://ampmod.codeberg.page/extensions">
                             <Localise id="tw.footer.extensions" />
                         </a>
                         <a href={APP_SOURCE}>

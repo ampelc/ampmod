@@ -445,6 +445,11 @@ class Runtime extends EventEmitter {
         this.origin = null;
 
         /**
+         * Metadata about the settings the project was saved with.
+         */
+        this.projectSettingsFromJson = {};
+
+        /**
          * Metadata about the platform this VM is part of.
          */
         this.platform = Object.assign({}, platform);
@@ -745,6 +750,14 @@ class Runtime extends EventEmitter {
      */
     static get VISUAL_REPORT () {
         return 'VISUAL_REPORT';
+    }
+
+    /**
+     * Event name for visual error report.
+     * @const {string}
+     */
+    static get BLOCK_ERROR () {
+        return 'BLOCK_ERROR';
     }
 
     /**
@@ -3050,6 +3063,33 @@ class Runtime extends EventEmitter {
         this.emitProjectChanged();
     }
 
+    applyAmpModStoredOptions () {
+        if (!this.projectSettingsFromJson) return;
+
+        const opts = this.projectSettingsFromJson;
+
+        if (opts.runtimeOptions) {
+            this.setRuntimeOptions(opts.runtimeOptions);
+        }
+
+        if (opts.framerate !== null) {
+            this.setFramerate(opts.framerate);
+        }
+
+        if (opts.interpolation !== null) {
+            this.setInterpolation(opts.interpolation);
+        }
+
+        if (Array.isArray(opts.stageSize) && opts.stageSize.length === 2 &&
+            typeof opts.stageSize[0] === 'number' && typeof opts.stageSize[1] === 'number') {
+            this.setStageSize(opts.stageSize[0], opts.stageSize[1]);
+        }
+
+        if (opts.hq !== null && this.renderer) {
+            this.renderer.setUseHighQualityRender(!!opts.hq);
+        }
+    }
+
     /**
      * Eagerly (re)compile all scripts within this project.
      */
@@ -3206,6 +3246,21 @@ class Runtime extends EventEmitter {
     visualReport (target, blockId, value) {
         if (target === this.getEditingTarget()) {
             this.emit(Runtime.VISUAL_REPORT, {
+                id: blockId,
+                value: String(value)
+            });
+        }
+    }
+
+    /**
+     * Emit value for error to show in the blocks.
+     * @param {Target} target The target that the block was run in.
+     * @param {string} blockId ID for the block.
+     * @param {string} value Error message to show associated with the block.
+     */
+    blockError (target, blockId, value) {
+        if (target === this.getEditingTarget()) {
+            this.emit(Runtime.BLOCK_ERROR, {
                 id: blockId,
                 value: String(value)
             });

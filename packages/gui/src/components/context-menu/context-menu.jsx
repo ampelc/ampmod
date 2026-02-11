@@ -20,22 +20,20 @@ const StyledMenuItem = props => (
 
 const BorderedMenuItem = props => (
     <>
-        <div className={styles.menuItemSeparator} />
         <ContextMenu.Separator />
         <ContextMenu.Item
             {...props}
-            className={classNames(styles.menuItem)}
+            className={classNames(styles.menuItem, styles.menuItemBordered)}
         />
     </>
 );
 
 const DangerousMenuItem = props => (
     <>
-        <div className={styles.menuItemSeparator} />
         <ContextMenu.Separator />
         <ContextMenu.Item
             {...props}
-            className={classNames(styles.menuItem, styles.menuItemDanger)}
+            className={classNames(styles.menuItem, styles.menuItemBordered, styles.menuItemDanger)}
         />
     </>
 );

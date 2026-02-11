@@ -38,45 +38,38 @@ class UsernameModal extends React.Component {
     handleFramerateChange(value) {
         const numeric = Number(value) ?? 30;
         this.props.vm.setFramerate(numeric);
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleHighQualityPenChange(e) {
         this.props.vm.renderer.setUseHighQualityRender(e.target.checked);
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleInterpolationChange(e) {
         this.props.vm.setInterpolation(e.target.checked);
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleInfiniteClonesChange(e) {
         this.props.vm.setRuntimeOptions({
             maxClones: e.target.checked ? Infinity : 300
         });
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleRemoveFencingChange(e) {
         this.props.vm.setRuntimeOptions({
             fencing: e.target.checked
         });
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleRemoveLimitsChange(e) {
         this.props.vm.setRuntimeOptions({
             miscLimits: !e.target.checked
         });
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleCaseSensitivityChange(e) {
         this.props.vm.setRuntimeOptions({
             caseSensitivity: e.target.checked
         });
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleWarpTimerChange(e) {
@@ -93,17 +86,14 @@ class UsernameModal extends React.Component {
 
     handleStageWidthChange(value) {
         this.props.vm.setStageSize(value, this.props.customStageSize.height);
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleStageHeightChange(value) {
         this.props.vm.setStageSize(this.props.customStageSize.width, value);
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handlePresetSelected(width, height) {
         this.props.vm.setStageSize(width, height);
-        if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
 
     handleStoreProjectOptions() {

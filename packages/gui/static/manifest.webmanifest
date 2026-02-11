@@ -1,19 +1,25 @@
 {
-    "short_name": "AmpMod",
-    "name": "AmpMod",
-    "description": "The ultimate Scratch mod with new extensions, blocks, dark mode, a compiler, and many more.",
-    "icons": [
-        {
-            "src": "images/192.png",
-            "type": "image/png",
-            "sizes": "192x192"
-        },
-        {
-            "src": "images/512.png",
-            "type": "image/png",
-            "sizes": "512x512"
-        }
-    ],
-    "start_url": "editor",
-    "display": "minimal-ui"
+  "short_name": "AmpMod",
+  "name": "AmpMod",
+  "id": "editor",
+  "description": "Block-based programming, amplified",
+  "icons": [
+    {
+      "src": "images/192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "images/512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "editor",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4fa55c",
+  "categories": ["development"],
+  "prefer_related_applications": false
 }

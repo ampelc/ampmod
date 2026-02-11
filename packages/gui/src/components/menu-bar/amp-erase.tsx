@@ -32,22 +32,30 @@ const EraseButton = () => (
             onClick={eraseData}
         >
             <img src={errorIcon} draggable={false} width={24} height={24} className={styles.icon} />
-            <div className={styles.menuItemTitleAndSubtitle}>
-                <div className={styles.submenuLabel}>
-                    <FormattedMessage
-                        defaultMessage="Build the ark"
-                        description="Button to erase all data"
-                        id="amp.menuBar.erase"
-                    />
+            {process.env.ampmod_mode === 'standalone' ? (
+                <FormattedMessage
+                    defaultMessage="Erase data"
+                    description="Button to erase all data"
+                    id="amp.menuBar.eraseStandalone"
+                />
+            ) : (
+                <div className={styles.menuItemTitleAndSubtitle}>
+                    <div className={styles.submenuLabel}>
+                        <FormattedMessage
+                            defaultMessage="Build the ark"
+                            description="Button to erase all data"
+                            id="amp.menuBar.erase"
+                        />
+                    </div>
+                    <div className={styles.menuItemSubtitle}>
+                        <FormattedMessage
+                            defaultMessage="Think twice before doing this!"
+                            description="Subtitle of the button to erase all data"
+                            id="amp.menuBar.erase.subtitle"
+                        />
+                    </div>
                 </div>
-                <div className={styles.menuItemSubtitle}>
-                    <FormattedMessage
-                        defaultMessage="Think twice before doing this!"
-                        description="Subtitle of the button to erase all data"
-                        id="amp.menuBar.erase.subtitle"
-                    />
-                </div>
-            </div>
+            )}
         </div>
     </MenuItem>
 );

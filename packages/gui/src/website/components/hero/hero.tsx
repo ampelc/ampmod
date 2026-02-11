@@ -40,6 +40,9 @@ export default () => {
                                     <Localise id="hero.create" />
                                 </SmartLink>
                             )}
+                            <SmartLink to="/editor" className={myStyles.primaryButton}>
+                                <Localise id="hero.play" />
+                            </SmartLink>
                             <SmartLink to="/examples" className={myStyles.primaryButton} onMouseEnter={() => process.env.SPA && import(/* webpackChunkName: "examples-landing" */ '../../examples/examples')}>
                                 <Localise id="hero.examples" />
                             </SmartLink>

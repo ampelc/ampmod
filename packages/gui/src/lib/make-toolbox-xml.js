@@ -444,6 +444,7 @@ const events = function (isInitialSetup, isStage, targetId, colors) {
 
 const control = function (isInitialSetup, isStage, targetId, colors) {
     const apple = translate('OPERATORS_JOIN_APPLE', 'apple');
+    const errorMessage = translate('CONTROL_ERROR_MESSAGE', 'Oops! Something went wrong.');
     // Note: the category's secondaryColour matches up with the blocks' tertiary color, both used for border color.
     return `
     <category
@@ -489,7 +490,7 @@ const control = function (isInitialSetup, isStage, targetId, colors) {
                 </shadow>
             </value>
         </block>
-        <!-- ${blockSeparator}
+        ${blockSeparator}
         <block id="switch" type="control_switch">
             <value name="VALUE">
                 <shadow type="text">
@@ -503,10 +504,20 @@ const control = function (isInitialSetup, isStage, targetId, colors) {
                     <field name="TEXT">${apple}</field>
                 </shadow>
             </value>
-        </block>
+        </block> 
+        <block id="default" type="control_default"/>
+        <!--
         ${blockSeparator}
         <block id="async" type="control_async"/> -->
         ${blockSeparator}
+        <block type="control_break"/>
+        <block type="control_error">
+            <value name="MESSAGE">
+                <shadow type="text">
+                    <field name="TEXT">${errorMessage}</field>
+                </shadow>
+            </value>
+        </block>
         <block type="control_stop"/>
         ${blockSeparator}
         ${

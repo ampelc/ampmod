@@ -89,19 +89,21 @@ class HashRouter extends Router {
 class FileHashRouter extends HashRouter {
     constructor(callbacks) {
         super(callbacks);
+        const ext = process.env.SPA ? '' : '.html';
         this.rootPath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
-        this.compat_playerPath = process.env.ampmod_mode === 'lab' ? this.rootPath : `${this.rootPath}editor.html`;
-        this.editorPath = process.env.AW3 ? "/projects/editor" : process.env.ampmod_mode === 'lab' ? this.rootPath : `${this.rootPath}editor.html`;
-        this.fullscreenPath = process.env.AW3 ? "/projects/editor/fullscreen" : `${this.rootPath}fullscreen.html`;
+        this.playerPath = process.env.ampmod_mode === 'lab' ? this.rootPath : `${this.rootPath}player${ext}`;
+        this.editorPath = process.env.AW3 ? "/projects/editor" : process.env.ampmod_mode === 'lab' ? this.rootPath : `${this.rootPath}editor${ext}`;
+        this.fullscreenPath = process.env.AW3 ? "/projects/editor/fullscreen" : `${this.rootPath}fullscreen${ext}`;
     }
 
     onpathchange() {
-        if (process.env.SPA) return;
-
         const pathName = location.pathname;
 
-        if (pathName === this.editorPath || pathName === this.compat_playerPath) {
+        if (pathName === this.editorPath) {
             this.onSetIsPlayerOnly(false);
+            this.onSetIsFullScreen(false);
+        } else if (pathName === this.playerPath) {
+            this.onSetIsPlayerOnly(true);
             this.onSetIsFullScreen(false);
         } else if (pathName === this.fullscreenPath) {
             this.onSetIsFullScreen(true);
@@ -123,7 +125,7 @@ class FileHashRouter extends HashRouter {
         if (isFullScreen) {
             newPathname = this.fullscreenPath;
         } else if (isPlayerOnly) {
-            newPathname = this.editorPath;
+            newPathname = this.playerPath;
         } else {
             newPathname = this.editorPath;
         }
@@ -390,7 +392,7 @@ const TWStateManager = function (WrappedComponent) {
             }
 
             if (
-                !process.env.SPA && (this.props.reduxProjectId !== prevProps.reduxProjectId ||
+                (this.props.reduxProjectId !== prevProps.reduxProjectId ||
                 this.props.isPlayerOnly !== prevProps.isPlayerOnly ||
                 this.props.isFullScreen !== prevProps.isFullScreen)
             ) {

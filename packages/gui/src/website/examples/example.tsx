@@ -28,36 +28,6 @@ interface ExampleProps {
 }
 
 const ExampleModal: React.FC<ExampleModalProps> = (props: ExampleModalProps) => {
-    const [downloadLink, setDownloadLink] = useState<DownloadLink>(null);
-
-    useEffect(() => {
-        const fetchDownloadLink = async (id: ExampleID, title: string) => {
-            try {
-                const module = await examples[id].loader(); // fetch module
-                if (!module) return;
-
-                // unwrap default export if exists
-                const buffer = module;
-
-                // ensure it's ArrayBuffer / Uint8Array
-                if (!((buffer as any) instanceof ArrayBuffer || (buffer as any) instanceof Uint8Array)) {
-                    console.error('Invalid buffer type for download:', buffer);
-                    return;
-                }
-
-                // @ts-ignore
-                const blob = new Blob([buffer], {
-                    type: 'application/x.scratch.sb3'
-                });
-                const url = URL.createObjectURL(blob);
-                setDownloadLink({url, filename: `${title}.apz`});
-            } catch (err) {
-                console.error('Failed to fetch download link:', err);
-            }
-        };
-        fetchDownloadLink(props.id, localise(`examples.apz.${props.id}`));
-    }, [props.id]);
-
     return (
         <Modal
             className={styles.modalContent}
@@ -84,11 +54,9 @@ const ExampleModal: React.FC<ExampleModalProps> = (props: ExampleModalProps) => 
                     <a className={homeStyles.button} href={`editor.html?example=${props.id}`}>
                         <Localise id="examples.open" />
                     </a>
-                    {downloadLink && (
-                        <a className={homeStyles.button} href={downloadLink.url} download={downloadLink.filename}>
-                            <Localise id="examples.download" />
-                        </a>
-                    )}
+                    <a className={homeStyles.button} href={props.url} download={localise(`examples.apz.${props.id}`) + '.apz'}>
+                        <Localise id="examples.download" />
+                    </a>
                 </div>
             </Box>
         </Modal>

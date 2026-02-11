@@ -780,6 +780,20 @@ const serialize = function (runtime, targetId, {allowOptimization = true} = {}) 
         obj.customFonts = fonts;
     }
 
+    // amp: we want to store runtime options directly inside the project rather than in a comment
+    // we don't really care about breaking Scratch compatibility anyways as we use our own file
+    // extension
+    obj.projectSettings = {
+        runtimeOptions: {
+            ...runtime.runtimeOptions,
+            clones: String(runtime.runtimeOptions.clones)
+        },
+        framerate: runtime.frameLoop.framerate,
+        interpolation: runtime.interpolationEnabled,
+        stageSize: [runtime.stageWidth, runtime.stageHeight],
+        hq: runtime.renderer.useHighQualityRender
+    };
+
     // Assemble metadata
     const meta = Object.create(null);
     meta.semver = '3.0.0';
@@ -1550,6 +1564,12 @@ const deserialize = async function (json, runtime, zip, isSingleSprite) {
         .sort((a, b) => a.layerOrder - b.layerOrder);
 
     const monitorObjects = json.monitors || [];
+
+    // eslint-disable-next-line require-atomic-updates
+    runtime.projectSettingsFromJson = json.projectSettings ? {
+        ...json.projectSettings,
+        clones: +json.projectSettings.runtimeOptions.clones
+    } : null;
 
     return (
         fontPromise

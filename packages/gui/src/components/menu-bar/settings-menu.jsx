@@ -14,6 +14,7 @@ import AmpAddonSettings from './amp-addon-settings.tsx';
 import AmpInstallPWA from './amp-install-pwa.tsx';
 import AmpErase from './amp-erase.tsx';
 import AmpShowWelcome from './amp-show-welcome.jsx';
+import AmpVisitWebsiteStandalone from './amp-visit-website-standalone.tsx';
 import {MenuItem} from '../menu/menu.jsx';
 import {APP_NAME} from '@ampmod/branding';
 
@@ -103,14 +104,14 @@ class SettingsMenu extends React.Component {
         const {showAmpErase} = this.state;
 
         return (
-            <div className={menuBarStyles.settingsButton}>
+            <div>
                 <MenuLabel open={settingsMenuOpen} onOpen={onRequestOpen} onClose={onRequestClose}>
                     <img
                         src={settingsIcon}
+                        className={menuBarStyles.icon}
                         draggable={false}
                         width={20}
                         height={20}
-                        className={menuBarStyles.buttonIcon}
                     />
                     <span className={styles.dropdownLabel}>
                         <FormattedMessage
@@ -141,16 +142,20 @@ class SettingsMenu extends React.Component {
                                 </>
                             )}
                             {onClickDesktopSettings && <TWDesktopSettings onClick={onClickDesktopSettings} />}
+                        </MenuSection>
+                        <MenuSection>
                             <AmpAddonSettings handleClickAddonSettings={onClickAddonSettings} />
-                            <AmpInstallPWA />
+                            {process.env.ampmod_mode === "standalone" && <AmpVisitWebsiteStandalone />}
+                            {process.env.ampmod_mode !== 'standalone' && <AmpInstallPWA />}
                             {/* <AmpShowWelcome /> */}
 
-                            {showAmpErase && <AmpErase />}
-
+                            {(showAmpErase || process.env.ampmod_mode === 'standalone') && <AmpErase />}
+                        </MenuSection>
+                        <MenuSection>
                             <MenuItem>
                                 <div className={`${styles.option} ${styles.disabled}`}>
                                     <span className={styles.submenuLabel}>
-                                        {APP_NAME} v{process.env.ampmod_version} {process.env.ampmod_mode === "standalone" && "Standalone (prealpha)"}
+                                        {APP_NAME} v{process.env.ampmod_version}
                                     </span>
                                 </div>
                             </MenuItem>

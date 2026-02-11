@@ -438,7 +438,7 @@ export const galleryLoading = {
             }}
         />
     ),
-    href: 'https://ampmod.codeberg.page/extensions/',
+    href: 'https://ampmod.codeberg.page/extensions',
     extensionId: 'gallery',
     iconURL: galleryIcon,
     description: (
@@ -464,7 +464,7 @@ export const galleryMore = {
             }}
         />
     ),
-    href: 'https://ampmod.codeberg.page/extensions/',
+    href: 'https://ampmod.codeberg.page/extensions',
     extensionId: 'gallery',
     iconURL: galleryIcon,
     description: (
@@ -490,7 +490,7 @@ export const galleryError = {
             }}
         />
     ),
-    href: 'https://ampmod.codeberg.page/extensions/',
+    href: 'https://ampmod.codeberg.page/extensions',
     extensionId: 'gallery',
     iconURL: galleryIcon,
     description: (

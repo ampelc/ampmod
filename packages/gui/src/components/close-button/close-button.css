@@ -18,7 +18,7 @@
 
 .close-button.large:hover {
     transform: scale(1.1, 1.1);
-    box-shadow: 0 0 0 4px $ui-white-transparent-default;
+    box-shadow: 0 0 0 4px $ui-black-transparent-default;
 }
 
 .close-button.large.orange:hover {
@@ -36,7 +36,7 @@
 .large {
     width: 1.75rem;
     height: 1.75rem;
-    box-shadow: 0 0 0 2px $ui-white-transparent-default;
+    box-shadow: 0 0 0 2px $ui-black-transparent-default;
 }
 
 .large.orange {

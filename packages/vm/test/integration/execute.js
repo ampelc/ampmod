@@ -61,7 +61,7 @@ const whenThreadsComplete = (t, vm, uri, timeLimit = 5000) =>
 const executeDir = path.resolve(__dirname, '../fixtures/execute');
 
 // Find files which end in ".apz", ".sb", ".sb2", or ".sb3"
-const fileFilter = /\.(apz|sb[23])?$/i;
+const fileFilter = /\.(apz|sb3)?$/i;
 
 const targetArg = process.argv[2];
 

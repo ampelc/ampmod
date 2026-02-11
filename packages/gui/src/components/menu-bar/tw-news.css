@@ -1,18 +1,26 @@
 @import '../../css/colors.css';
 
 .news {
-    background: $data-primary;
+    background: $pen-tertiary;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0.8em;
+    padding: 0.9em;
     gap: 0.5rem;
     font-weight: bold;
 }
 
-.text {
+.text-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     flex-grow: 1;
+}
+
+.text {
     color: white;
     text-align: center;
 }
@@ -24,4 +32,13 @@
 .close {
     flex-shrink: 0;
     margin-right: 0.5rem;
+}
+
+.button {
+    background: white;
+    padding: 8px 14px;
+    color: $pen-tertiary;
+    text-decoration: none;
+    border-radius: 9999em;
+    font-weight: bold;
 }

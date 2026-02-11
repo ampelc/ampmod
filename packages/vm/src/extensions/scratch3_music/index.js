@@ -12,7 +12,15 @@ const Timer = require('../../util/timer');
  */
 let assetData = {};
 try {
-    assetData = require('./manifest');
+    assetData = process?.env?.ampmod_mode === 'standalone' ? (() => {
+        // eslint-disable-next-line no-alert
+        if (!confirm(
+            'You are about to connect to a server operated by TurboWarp, ' +
+            'an unaffiliated mod AmpMod is based off, to download files for the Music extension. ' +
+            'Are you sure? To prevent this error and download from AmpMod servers,' +
+            'use an online version of AmpMod.')) return;
+        return require('./manifest-turbowarp');
+    })() : require('./manifest');
 } catch (e) {
     // Non-webpack environment, don't worry about assets.
 }

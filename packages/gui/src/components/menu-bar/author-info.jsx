@@ -15,10 +15,10 @@ const ActualAuthorInfo = ({
     username
 }) => (
     <div className={classNames(className, styles.authorInfo)}>
-        <UserAvatar className={styles.avatar} imageUrl={imageUrl} />
+        {imageUrl && <UserAvatar className={styles.avatar} imageUrl={imageUrl} />}
         <div className={styles.titleAuthor}>
             <h1 className={styles.projectTitle}>{projectTitle}</h1>
-            <div>
+            {username && <div>
                 <span className={styles.usernameLine}>
                     <FormattedMessage
                         defaultMessage="by {username}"
@@ -29,7 +29,7 @@ const ActualAuthorInfo = ({
                         }}
                     />
                 </span>
-            </div>
+            </div>}
         </div>
     </div>
 );
@@ -43,7 +43,7 @@ ActualAuthorInfo.propTypes = {
 };
 
 const AuthorInfo = ({projectId, ...props}) =>
-    projectId ? (
+    projectId && projectId !== '0' ? (
         <a
             className={styles.link}
             href={`https://scratch.mit.edu/projects/${projectId}`}
