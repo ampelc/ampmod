@@ -667,13 +667,13 @@ importers:
         version: 8.1.3(@types/react@17.0.91)(react@16.14.0)(typescript@3.9.10)
       react-intl-redux:
         specifier: 2.0.0
-        version: 2.0.0(react-intl@8.1.3(@types/react@17.0.91)(react@16.14.0)(typescript@3.9.10))(react-redux@5.1.2(react@16.14.0)(redux@3.7.2))
+        version: 2.0.0(react-intl@8.1.3(@types/react@17.0.91)(react@16.14.0)(typescript@3.9.10))(react-redux@9.2.0(@types/react@17.0.91)(react@16.14.0)(redux@3.7.2))
       react-popover:
         specifier: 0.5.10
         version: 0.5.10
       react-redux:
-        specifier: 5.1.2
-        version: 5.1.2(react@16.14.0)(redux@3.7.2)
+        specifier: 9.2.0
+        version: 9.2.0(@types/react@17.0.91)(react@16.14.0)(redux@3.7.2)
       react-responsive:
         specifier: 5.0.0
         version: 5.0.0(react@16.14.0)
@@ -10363,12 +10363,6 @@ packages:
 
   react-popover@0.5.10:
     resolution: {integrity: sha512-5SYDTfncywSH00I70oHd4gFRUR8V0rJ4sRADSI/P6G0RVXp9jUgaWloJ0Bk+SFnjpLPuipTKuzQNNd2CTs5Hrw==}
-
-  react-redux@5.1.2:
-    resolution: {integrity: sha512-Ns1G0XXc8hDyH/OcBHOxNgQx9ayH3SPxBnFCOidGKSle8pKihysQw2rG/PmciUQRoclhVBO8HMhiRmGXnDja9Q==}
-    peerDependencies:
-      react: ^0.14.0 || ^15.0.0-0 || ^16.0.0-0
-      redux: ^2.0.0 || ^3.0.0 || ^4.0.0-0
 
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
@@ -24642,11 +24636,11 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  react-intl-redux@2.0.0(react-intl@8.1.3(@types/react@17.0.91)(react@16.14.0)(typescript@3.9.10))(react-redux@5.1.2(react@16.14.0)(redux@3.7.2)):
+  react-intl-redux@2.0.0(react-intl@8.1.3(@types/react@17.0.91)(react@16.14.0)(typescript@3.9.10))(react-redux@9.2.0(@types/react@17.0.91)(react@16.14.0)(redux@3.7.2)):
     dependencies:
       prop-types: 15.8.1
       react-intl: 8.1.3(@types/react@17.0.91)(react@16.14.0)(typescript@3.9.10)
-      react-redux: 5.1.2(react@16.14.0)(redux@3.7.2)
+      react-redux: 9.2.0(@types/react@17.0.91)(react@16.14.0)(redux@3.7.2)
 
   react-intl@8.1.3(@types/react@17.0.91)(react@16.14.0)(typescript@3.9.10):
     dependencies:
@@ -24702,16 +24696,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-redux@5.1.2(react@16.14.0)(redux@3.7.2):
+  react-redux@9.2.0(@types/react@17.0.91)(react@16.14.0)(redux@3.7.2):
     dependencies:
-      '@babel/runtime': 7.28.6
-      hoist-non-react-statics: 3.3.2
-      invariant: 2.2.4
-      loose-envify: 1.4.0
-      prop-types: 15.8.1
+      '@types/use-sync-external-store': 0.0.6
       react: 16.14.0
-      react-is: 16.13.1
-      react-lifecycles-compat: 3.0.4
+      use-sync-external-store: 1.6.0(react@16.14.0)
+    optionalDependencies:
+      '@types/react': 17.0.91
       redux: 3.7.2
 
   react-redux@9.2.0(@types/react@17.0.91)(react@18.3.1)(redux@3.7.2):
@@ -26968,6 +26959,10 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 17.0.91
+
+  use-sync-external-store@1.6.0(react@16.14.0):
+    dependencies:
+      react: 16.14.0
 
   use-sync-external-store@1.6.0(react@18.3.1):
     dependencies:
