@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage, FormattedDate, FormattedTime, FormattedRelative} from 'react-intl';
+import {FormattedMessage, FormattedDate, FormattedTime} from 'react-intl';
 import bindAll from 'lodash.bindall';
 import styles from './restore-point-modal.css';
 import {formatBytes} from '../../lib/tw-bytes-utils';
@@ -92,16 +92,9 @@ class RestorePoint extends React.Component {
                     <div className={styles.restorePointTitle}>{this.props.title}</div>
 
                     <div>
-                        {relativeTimeSupported() && (
-                            <span>
-                                <FormattedRelative value={createdDate} />
-                                {' ('}
-                            </span>
-                        )}
                         <FormattedDate value={createdDate} />
                         {', '}
                         <FormattedTime value={createdDate} />
-                        {relativeTimeSupported() && ')'}
                     </div>
 
                     <div>
