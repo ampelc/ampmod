@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 
 import GreenFlag from '../green-flag/green-flag.jsx';
 import StopAll from '../stop-all/stop-all.jsx';
@@ -68,13 +68,12 @@ Controls.propTypes = {
     active: PropTypes.bool,
     paused: PropTypes.bool,
     className: PropTypes.string,
-    intl: intlShape.isRequired,
     onGreenFlagClick: PropTypes.func.isRequired,
     onStopAllClick: PropTypes.func.isRequired,
     framerate: PropTypes.number,
     interpolation: PropTypes.bool,
     isSmall: PropTypes.bool,
-    turbo: PropTypes.bool
+    turbo: PropTypes.bool,
 };
 
 Controls.defaultProps = {

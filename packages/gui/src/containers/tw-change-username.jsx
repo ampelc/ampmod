@@ -2,7 +2,7 @@ import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import {openUsernameModal} from '../reducers/modals';
 import {closeEditMenu} from '../reducers/menus';
 import isScratchDesktop from '../lib/isScratchDesktop';
@@ -37,7 +37,6 @@ ChangeUsername.propTypes = {
     children: PropTypes.func,
     onOpenUsernameModal: PropTypes.func,
     running: PropTypes.bool,
-    intl: intlShape
 };
 
 const mapStateToProps = state => ({

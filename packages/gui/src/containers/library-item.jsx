@@ -1,7 +1,7 @@
 import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {injectIntl, intlShape, defineMessages} from 'react-intl';
+import { injectIntl, defineMessages } from 'react-intl';
 
 import LibraryItemComponent from '../components/library-item/library-item.jsx';
 
@@ -194,7 +194,7 @@ class LibraryItem extends React.PureComponent {
 }
 
 LibraryItem.propTypes = {
-    intl: intlShape,
+    
     bluetoothRequired: PropTypes.bool,
     collaborator: PropTypes.string,
     description: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),

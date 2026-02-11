@@ -146,7 +146,7 @@ const base = {
                                 pragmaFrag: 'React.Fragment',
                                 throwIfNamespace: true,
                                 development: process.env.NODE_ENV !== 'production',
-                                refresh: process.env.NODE_ENV !== 'production',
+                                // refresh: process.env.NODE_ENV !== 'production',
                                 useBuiltins: true
                             }
                         }
@@ -346,7 +346,7 @@ if (!process.env.CI) {
     base.plugins.push(new webpack.ProgressPlugin());
 }
 if (process.env.NODE_ENV !== "production") {
-    base.plugins.push(new ReactRefreshWebpackPlugin({overlay: false}));
+    // base.plugins.push(new ReactRefreshWebpackPlugin({overlay: false}));
 }
 
 module.exports = [

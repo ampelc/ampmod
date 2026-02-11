@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Box from '../box/box.jsx';
-import {defineMessages, injectIntl, intlShape, FormattedMessage} from 'react-intl';
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import {
     isRendererSupported,
     isNewFunctionSupported,
@@ -60,11 +60,11 @@ const BrowserModal = ({intl, ...props}) => {
                     { }
                     {isNewFunctionSupported() ? null : (
                         // This message should only be seen by website operators, so we don't need to translate it
-                        <p>
+                        (<p>
                             {
                                 "Unable to compile JavaScript with new Function(). This is most likely caused by an overly-strict Content-Security-Policy. The CSP must include 'unsafe-eval'."
                             }
-                        </p>
+                        </p>)
                     )}
 
                     {incompatibleUserscripts.length > 0 && (
@@ -150,10 +150,9 @@ const BrowserModal = ({intl, ...props}) => {
 };
 
 BrowserModal.propTypes = {
-    intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
     isEmbedded: PropTypes.bool,
-    onClickDesktopSettings: PropTypes.func
+    onClickDesktopSettings: PropTypes.func,
 };
 
 export default BrowserModal;

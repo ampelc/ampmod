@@ -2,7 +2,7 @@ import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
 import VM from 'scratch-vm';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import log from '../lib/log';
 
 import extensionLibraryContent, {
@@ -287,14 +287,13 @@ class ExtensionLibrary extends React.PureComponent {
 }
 
 ExtensionLibrary.propTypes = {
-    intl: intlShape.isRequired,
     onCategorySelected: PropTypes.func,
     onEnableProcedureReturns: PropTypes.func,
     onEnableLegacyLists: PropTypes.func,
     onOpenCustomExtensionModal: PropTypes.func,
     onRequestClose: PropTypes.func,
     visible: PropTypes.bool,
-    vm: PropTypes.instanceOf(VM).isRequired  
+    vm: PropTypes.instanceOf(VM).isRequired,
 };
 
 export default injectIntl(ExtensionLibrary);

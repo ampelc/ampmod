@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import Box from '../box/box.jsx';
 import Meter from '../meter/meter.jsx';
 import Waveform from '../waveform/waveform.jsx';
@@ -78,14 +78,13 @@ const RecordingStep = props => (
 );
 
 RecordingStep.propTypes = {
-    intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
     level: PropTypes.number,
     levels: PropTypes.arrayOf(PropTypes.number),
     listening: PropTypes.bool,
     onRecord: PropTypes.func.isRequired,
     onStopRecording: PropTypes.func.isRequired,
-    recording: PropTypes.bool
+    recording: PropTypes.bool,
 };
 
 export default injectIntl(RecordingStep);

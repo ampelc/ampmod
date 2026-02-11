@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {injectIntl, intlShape, defineMessages, FormattedMessage} from 'react-intl';
+import { injectIntl, defineMessages, FormattedMessage } from 'react-intl';
 import bindAll from 'lodash.bindall';
 import styles from './fonts-modal.css';
 import LoadTemporaryFont from './load-temporary-font.jsx';
@@ -167,7 +167,7 @@ class AddCustomFont extends React.Component {
 }
 
 AddCustomFont.propTypes = {
-    intl: intlShape,
+    
     fontManager: PropTypes.shape({
         addCustomFont: PropTypes.func,
         runtime: PropTypes.shape({

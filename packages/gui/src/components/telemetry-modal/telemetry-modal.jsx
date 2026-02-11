@@ -1,7 +1,7 @@
 import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape, FormattedMessage} from 'react-intl';
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ReactModal from 'react-modal';
 
 import Box from '../box/box.jsx';
@@ -207,14 +207,16 @@ class TelemetryModal extends React.PureComponent {
 }
 
 TelemetryModal.propTypes = {
-    intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
-    isTelemetryEnabled: PropTypes.bool, // false=disabled, true=enabled, undefined=undecided
+
+    // false=disabled, true=enabled, undefined=undecided
+    isTelemetryEnabled: PropTypes.bool,
+
     onCancel: PropTypes.func,
     onOptIn: PropTypes.func.isRequired,
     onOptOut: PropTypes.func.isRequired,
     onRequestClose: PropTypes.func,
-    onShowPrivacyPolicy: PropTypes.func
+    onShowPrivacyPolicy: PropTypes.func,
 };
 
 export default injectIntl(TelemetryModal);

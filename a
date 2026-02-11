@@ -1,0 +1,45 @@
+export default function transformer(file, api) {
+  const j = api.jscodeshift;
+  const root = j(file.source);
+
+  // 1. Safer Import Removal
+  root.find(j.ImportDeclaration, { source: { value: 'react-intl' } })
+    .forEach(path => {
+      if (path.value.specifiers) {
+        path.value.specifiers = path.value.specifiers.filter(specifier => {
+          const name = specifier.imported ? specifier.imported.name : null;
+          return name !== 'intlShape' && name !== 'addLocaleData';
+        });
+        if (path.value.specifiers.length === 0) {
+          j(path).remove();
+        }
+      }
+    });
+
+  // 2. Safer PropType Removal
+  // Looks for any assignment to .propTypes
+  root.find(j.AssignmentExpression).filter(path => {
+    return (
+      path.value.left.type === 'MemberExpression' &&
+      path.value.left.property.name === 'propTypes'
+    );
+  }).forEach(path => {
+    if (path.value.right && path.value.right.type === 'ObjectExpression') {
+      path.value.right.properties = path.value.right.properties.filter(prop => {
+        // Only remove it if it's the 'intl' key AND it mentions 'intlShape'
+        const isIntlKey = prop.key && (prop.key.name === 'intl' || prop.key.value === 'intl');
+        if (!isIntlKey) return true;
+        
+        const valueSource = j(prop.value).toSource();
+        return !valueSource.includes('intlShape');
+      });
+    }
+  });
+
+  // 3. Remove calls to addLocaleData
+  root.find(j.CallExpression, {
+    callee: { name: 'addLocaleData' }
+  }).remove();
+
+  return root.toSource({ quote: 'single', trailingComma: true });
+}

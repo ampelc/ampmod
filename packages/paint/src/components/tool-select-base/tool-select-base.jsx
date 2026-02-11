@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {injectIntl, intlShape} from 'react-intl';
+import { injectIntl } from 'react-intl';
 
 import Button from '../button/button.jsx';
 
@@ -35,16 +35,17 @@ const ToolSelectComponent = props => (
 ToolSelectComponent.propTypes = {
     className: PropTypes.string,
     disabled: PropTypes.bool,
+
     imgDescriptor: PropTypes.shape({
         defaultMessage: PropTypes.string,
         description: PropTypes.string,
         id: PropTypes.string
     }).isRequired,
+
     keybinding: PropTypes.string,
     imgSrc: PropTypes.string.isRequired,
-    intl: intlShape.isRequired,
     isSelected: PropTypes.bool.isRequired,
-    onMouseDown: PropTypes.func.isRequired
+    onMouseDown: PropTypes.func.isRequired,
 };
 
 export default injectIntl(ToolSelectComponent);

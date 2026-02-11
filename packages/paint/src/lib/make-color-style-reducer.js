@@ -35,7 +35,7 @@ const makeColorStyleReducer = ({
     // e.g. `fillGradientType` or `strokeGradientType`.
     selectionGradientTypeKey
 }) =>
-    function colorReducer(state, action) {
+    (function colorReducer(state, action) {
         if (typeof state === 'undefined') {
             state = {
                 primary: defaultColor,
@@ -95,6 +95,6 @@ const makeColorStyleReducer = ({
             default:
                 return state;
         }
-    };
+    });
 
 export default makeColorStyleReducer;

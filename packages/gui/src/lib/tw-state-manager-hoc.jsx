@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
 import VM from 'scratch-vm';
 import log from './log';
-import {defineMessages, intlShape, injectIntl} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 
 import {setUsername} from '../reducers/tw';
 import {defaultProjectId, setProjectId} from '../reducers/project-state';
@@ -566,7 +566,7 @@ const TWStateManager = function (WrappedComponent) {
         }
     }
     StateManagerComponent.propTypes = {
-        intl: intlShape,
+        
         customStageSize: PropTypes.shape({
             width: PropTypes.number,
             height: PropTypes.number

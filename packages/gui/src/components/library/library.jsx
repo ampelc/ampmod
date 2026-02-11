@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 
 import LibraryItem from '../../containers/library-item.jsx';
 import Modal from '../../containers/modal.jsx';
@@ -436,10 +436,10 @@ LibraryComponent.propTypes = {
         ),
         PropTypes.instanceOf(Promise)
     ]),
+
     filterable: PropTypes.bool,
     id: PropTypes.string.isRequired,
     persistableKey: PropTypes.string,
-    intl: intlShape.isRequired,
     onItemMouseEnter: PropTypes.func,
     onItemMouseLeave: PropTypes.func,
     onItemSelected: PropTypes.func,
@@ -448,7 +448,7 @@ LibraryComponent.propTypes = {
     showPlayButton: PropTypes.bool,
     tags: PropTypes.arrayOf(PropTypes.shape(TagButton.propTypes)),
     title: PropTypes.string.isRequired,
-    sidebarNotice: PropTypes.object
+    sidebarNotice: PropTypes.object,
 };
 
 LibraryComponent.defaultProps = {

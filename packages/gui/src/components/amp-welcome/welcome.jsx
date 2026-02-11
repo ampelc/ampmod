@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { FormattedMessage, injectIntl, intlShape } from "react-intl";
+import { FormattedMessage, injectIntl } from "react-intl";
 import ReactModal from "react-modal";
 import Box from "../box/box.jsx";
 import styles from "./welcome.css";
@@ -179,9 +179,8 @@ const Welcome = ({intl, isRtl, onContinue}) => {
 };
 
 Welcome.propTypes = {
-    intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
-    onContinue: PropTypes.func.isRequired
+    onContinue: PropTypes.func.isRequired,
 };
 
 export default injectIntl(Welcome);

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 
 import Box from '../box/box.jsx';
 import SpriteInfo from '../../containers/sprite-info.jsx';
@@ -177,11 +177,12 @@ const SpriteSelectorComponent = function (props) {
 
 SpriteSelectorComponent.propTypes = {
     editingTarget: PropTypes.string,
+
     hoveredTarget: PropTypes.shape({
         hoveredSprite: PropTypes.string,
         receivedBlocks: PropTypes.bool
     }),
-    intl: intlShape.isRequired,
+
     onChangeSpriteDirection: PropTypes.func,
     onChangeSpriteDraggability: PropTypes.func,
     onChangeSpriteName: PropTypes.func,
@@ -203,6 +204,7 @@ SpriteSelectorComponent.propTypes = {
     raised: PropTypes.bool,
     selectedId: PropTypes.string,
     spriteFileInput: PropTypes.func,
+
     sprites: PropTypes.shape({
         id: PropTypes.shape({
             costume: PropTypes.shape({
@@ -216,7 +218,8 @@ SpriteSelectorComponent.propTypes = {
             order: PropTypes.number.isRequired
         })
     }),
-    stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired
+
+    stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
 };
 
 export default injectIntl(SpriteSelectorComponent);

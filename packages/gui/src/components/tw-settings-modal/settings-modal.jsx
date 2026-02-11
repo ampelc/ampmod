@@ -1,4 +1,4 @@
-import {defineMessages, FormattedMessage, intlShape, injectIntl} from 'react-intl';
+import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import classNames from 'classnames';
@@ -89,7 +89,7 @@ class UnwrappedSetting extends React.Component {
     }
 }
 UnwrappedSetting.propTypes = {
-    intl: intlShape,
+    
     active: PropTypes.bool,
     help: PropTypes.node,
     primary: PropTypes.node,
@@ -570,7 +570,7 @@ const SettingsModalComponent = props => (
 );
 
 SettingsModalComponent.propTypes = {
-    intl: intlShape,
+    
     onClose: PropTypes.func,
     isEmbedded: PropTypes.bool,
     framerate: PropTypes.number,

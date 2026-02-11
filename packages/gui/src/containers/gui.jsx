@@ -4,7 +4,7 @@ import {compose} from 'redux';
 import {connect} from 'react-redux';
 import ReactModal from 'react-modal';
 import VM from 'scratch-vm';
-import {injectIntl, intlShape} from 'react-intl';
+import { injectIntl } from 'react-intl';
 
 import ErrorBoundaryHOC from '../lib/error-boundary-hoc.jsx';
 import {getIsError, getIsShowingProject} from '../reducers/project-state';
@@ -129,7 +129,7 @@ GUI.propTypes = {
     cloudHost: PropTypes.string,
     error: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
     fetchingProject: PropTypes.bool,
-    intl: intlShape,
+    
     isError: PropTypes.bool,
     isEmbedded: PropTypes.bool,
     isFullScreen: PropTypes.bool,

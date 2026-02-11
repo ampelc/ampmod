@@ -5,7 +5,7 @@ import Waveform from '../waveform/waveform.jsx';
 import Meter from '../meter/meter.jsx';
 import AudioTrimmer from '../../containers/audio-trimmer.jsx';
 import TWRenderRecoloredImage from '../../lib/tw-recolor/render.jsx';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 
 import styles from './record-modal.css';
 import backIcon from '!!../../lib/tw-recolor/build!./icon--back.svg';
@@ -85,7 +85,6 @@ const PlaybackStep = props => (
 
 PlaybackStep.propTypes = {
     encoding: PropTypes.bool.isRequired,
-    intl: intlShape.isRequired,
     levels: PropTypes.arrayOf(PropTypes.number).isRequired,
     onBack: PropTypes.func.isRequired,
     onPlay: PropTypes.func.isRequired,
@@ -96,7 +95,7 @@ PlaybackStep.propTypes = {
     playhead: PropTypes.number,
     playing: PropTypes.bool.isRequired,
     trimEnd: PropTypes.number.isRequired,
-    trimStart: PropTypes.number.isRequired
+    trimStart: PropTypes.number.isRequired,
 };
 
 export default injectIntl(PlaybackStep);

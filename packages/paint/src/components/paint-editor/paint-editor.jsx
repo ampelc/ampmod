@@ -1,6 +1,6 @@
 import paper from '@turbowarp/paper';
 import classNames from 'classnames';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -60,7 +60,7 @@ const messages = defineMessages({
 const PaintEditorComponent = props => (
     <div className={styles.editorContainer} dir={props.rtl ? 'rtl' : 'ltr'} data-paint-theme={props.theme}>
         {props.canvas !== null ? ( // eslint-disable-line no-negated-condition
-            <div className={styles.editorContainerTop}>
+            (<div className={styles.editorContainerTop}>
                 {/* First row */}
                 <div className={styles.row}>
                     <FixedToolsContainer
@@ -116,13 +116,13 @@ const PaintEditorComponent = props => (
                         </InputGroup>
                     </div>
                 ) : null}
-            </div>
+            </div>)
         ) : null}
 
         <div className={styles.topAlignRow}>
             {/* Modes */}
             {props.canvas !== null && isVector(props.format) ? ( // eslint-disable-line no-negated-condition
-                <div className={styles.modeSelector}>
+                (<div className={styles.modeSelector}>
                     <SelectMode onUpdateImage={props.onUpdateImage} />
                     <ReshapeMode onUpdateImage={props.onUpdateImage} />
                     <BrushMode onUpdateImage={props.onUpdateImage} />
@@ -133,11 +133,11 @@ const PaintEditorComponent = props => (
                     <OvalMode onUpdateImage={props.onUpdateImage} />
                     <RectMode onUpdateImage={props.onUpdateImage} />
                     <RoundedRectMode onUpdateImage={props.onUpdateImage} />
-                </div>
+                </div>)
             ) : null}
 
             {props.canvas !== null && isBitmap(props.format) ? ( // eslint-disable-line no-negated-condition
-                <div className={styles.modeSelector}>
+                (<div className={styles.modeSelector}>
                     <BitBrushMode onUpdateImage={props.onUpdateImage} />
                     <BitLineMode onUpdateImage={props.onUpdateImage} />
                     <BitOvalMode onUpdateImage={props.onUpdateImage} />
@@ -146,7 +146,7 @@ const PaintEditorComponent = props => (
                     <BitFillMode onUpdateImage={props.onUpdateImage} />
                     <BitEraserMode onUpdateImage={props.onUpdateImage} />
                     <BitSelectMode onUpdateImage={props.onUpdateImage} />
-                </div>
+                </div>)
             ) : null}
 
             <div className={styles.controlsContainer}>
@@ -244,7 +244,6 @@ PaintEditorComponent.propTypes = {
     image: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(HTMLImageElement)]),
     imageFormat: PropTypes.string,
     imageId: PropTypes.string,
-    intl: intlShape,
     isEyeDropping: PropTypes.bool,
     name: PropTypes.string,
     onChangeTheme: PropTypes.func.isRequired,
@@ -266,7 +265,7 @@ PaintEditorComponent.propTypes = {
     textArea: PropTypes.instanceOf(Element),
     theme: PropTypes.string,
     width: PropTypes.number,
-    zoomLevelId: PropTypes.string
+    zoomLevelId: PropTypes.string,
 };
 
 export default injectIntl(PaintEditorComponent);

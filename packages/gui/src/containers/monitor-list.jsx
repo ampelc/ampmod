@@ -1,7 +1,7 @@
 import bindAll from 'lodash.bindall';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {injectIntl, intlShape} from 'react-intl';
+import { injectIntl } from 'react-intl';
 
 import {connect} from 'react-redux';
 import {moveMonitorRect, resetMonitorLayout} from '../reducers/monitor-layout';
@@ -41,17 +41,18 @@ class MonitorList extends React.Component {
 }
 
 MonitorList.propTypes = {
-    intl: intlShape.isRequired,
     customStageSize: PropTypes.shape({
         width: PropTypes.number,
         height: PropTypes.number
     }),
+
     monitorLayout: PropTypes.shape({
         monitors: PropTypes.object,  
         savedMonitorPositions: PropTypes.object  
     }).isRequired,
+
     moveMonitorRect: PropTypes.func.isRequired,
-    resetMonitorLayout: PropTypes.func
+    resetMonitorLayout: PropTypes.func,
 };
 const mapStateToProps = state => ({
     customStageSize: state.scratchGui.customStageSize,

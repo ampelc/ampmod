@@ -1,13 +1,9 @@
-import {addLocaleData} from 'react-intl';
 import {updateIntl as superUpdateIntl, IntlProvider, intlReducer} from 'react-intl-redux';
 
 import localeData from 'scratch-l10n';
 import paintMessages from 'scratch-l10n/locales/paint-editor-msgs';
 
-Object.keys(localeData).forEach(locale => {
-    // TODO: will need to handle locales not in the default intl - see www/custom-locales
-    addLocaleData(localeData[locale].localeData);
-});
+Object.keys(localeData).forEach(locale => {});
 
 const intlInitialState = {
     intl: {

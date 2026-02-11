@@ -1,4 +1,4 @@
-import {defineMessages, FormattedMessage, intlShape, injectIntl} from 'react-intl';
+import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Modal from '../../containers/modal.jsx';
@@ -53,12 +53,12 @@ const IntervalSelector = props => (
         {!INTERVAL_OPTIONS.includes(props.value) && (
             // This should never happen unless someone manually edits their storage, so we
             // don't need to worry about making this work good.
-            <option value={props.value}>{`every ${props.value}ms`}</option>
+            (<option value={props.value}>{`every ${props.value}ms`}</option>)
         )}
     </select>
 );
 IntervalSelector.propTypes = {
-    intl: intlShape,
+    
     value: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired
 };
@@ -199,7 +199,7 @@ const RestorePointModal = props => (
 );
 
 RestorePointModal.propTypes = {
-    intl: intlShape,
+    
     interval: PropTypes.number.isRequired,
     onChangeInterval: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,

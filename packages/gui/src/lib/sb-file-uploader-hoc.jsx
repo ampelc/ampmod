@@ -1,7 +1,7 @@
 import bindAll from 'lodash.bindall';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {intlShape, injectIntl} from 'react-intl';
+import { injectIntl } from 'react-intl';
 import {connect} from 'react-redux';
 import log from '../lib/log';
 import sharedMessages from './shared-messages';
@@ -258,7 +258,6 @@ const SBFileUploaderHOC = function (WrappedComponent) {
         canSave: PropTypes.bool,
         cancelFileUpload: PropTypes.func,
         closeFileMenu: PropTypes.func,
-        intl: intlShape.isRequired,
         isLoadingUpload: PropTypes.bool,
         isShowingProject: PropTypes.bool,
         isShowingWithoutId: PropTypes.bool,
@@ -271,6 +270,7 @@ const SBFileUploaderHOC = function (WrappedComponent) {
         requestProjectUpload: PropTypes.func,
         showOpenFilePicker: PropTypes.func,
         userOwnsProject: PropTypes.bool,
+
         vm: PropTypes.shape({
             loadProject: PropTypes.func,
             quit: PropTypes.func,
@@ -278,7 +278,8 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                 draw: PropTypes.func
             })
         }),
-        onSetFileHandle: PropTypes.func
+
+        onSetFileHandle: PropTypes.func,
     };
     SBFileUploaderComponent.defaultProps = {
         showOpenFilePicker: typeof showOpenFilePicker === 'function' && !navigator.userAgent.includes('Android') ? window.showOpenFilePicker.bind(window) : null

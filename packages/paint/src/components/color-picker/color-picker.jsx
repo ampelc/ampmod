@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
 
 import classNames from 'classnames';
 import parseColor from 'parse-color';
@@ -352,7 +352,6 @@ ColorPickerComponent.propTypes = {
     colorIndex: PropTypes.number.isRequired,
     gradientType: PropTypes.oneOf(Object.keys(GradientTypes)).isRequired,
     hue: PropTypes.number.isRequired,
-    intl: intlShape.isRequired,
     isEyeDropping: PropTypes.bool.isRequired,
     mode: PropTypes.oneOf(Object.keys(Modes)),
     onActivateEyeDropper: PropTypes.func.isRequired,
@@ -369,7 +368,7 @@ ColorPickerComponent.propTypes = {
     onTransparent: PropTypes.func.isRequired,
     rtl: PropTypes.bool.isRequired,
     saturation: PropTypes.number.isRequired,
-    shouldShowGradientTools: PropTypes.bool.isRequired
+    shouldShowGradientTools: PropTypes.bool.isRequired,
 };
 
 export default injectIntl(ColorPickerComponent);

@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import omit from 'lodash.omit';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
 import {connect} from 'react-redux';
 import MediaQuery from 'react-responsive';
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
@@ -476,9 +476,15 @@ const GUIComponent = props => {
 GUIComponent.propTypes = {
     accountNavOpen: PropTypes.bool,
     activeTabIndex: PropTypes.number,
-    authorId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]), // can be false
+
+    // can be false
+    authorId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+
     authorThumbnailUrl: PropTypes.string,
-    authorUsername: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]), // can be false
+
+    // can be false
+    authorUsername: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+
     backdropLibraryVisible: PropTypes.bool,
     backpackHost: PropTypes.string,
     backpackVisible: PropTypes.bool,
@@ -499,12 +505,13 @@ GUIComponent.propTypes = {
     children: PropTypes.node,
     costumeLibraryVisible: PropTypes.bool,
     costumesTabVisible: PropTypes.bool,
+
     customStageSize: PropTypes.shape({
         width: PropTypes.number,
         height: PropTypes.number
     }),
+
     enableCommunity: PropTypes.bool,
-    intl: intlShape.isRequired,
     isCreating: PropTypes.bool,
     isEmbedded: PropTypes.bool,
     isFullScreen: PropTypes.bool,
@@ -562,7 +569,7 @@ GUIComponent.propTypes = {
     fontsModalVisible: PropTypes.bool,
     unknownPlatformModalVisible: PropTypes.bool,
     invalidProjectModalVisible: PropTypes.bool,
-    vm: PropTypes.instanceOf(VM).isRequired
+    vm: PropTypes.instanceOf(VM).isRequired,
 };
 
 const mapStateToProps = state => ({

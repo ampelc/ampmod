@@ -13,7 +13,7 @@ import {changeRoundedRectRadius} from '../../reducers/rounded-rect-mode'; // New
 import FontDropdown from '../../containers/font-dropdown.jsx';
 import LiveInputHOC from '../forms/live-input-hoc.jsx';
 import Label from '../forms/label.jsx';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import Input from '../forms/input.jsx';
 import InputGroup from '../input-group/input-group.jsx';
 import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
@@ -319,9 +319,11 @@ ModeToolsComponent.propTypes = {
     format: PropTypes.oneOf(Object.keys(Formats)),
     hasSelectedUncurvedPoints: PropTypes.bool,
     hasSelectedUnpointedPoints: PropTypes.bool,
-    intl: intlShape.isRequired,
     mode: PropTypes.string.isRequired,
-    roundedRectRadius: PropTypes.number, // New propType
+
+    // New propType
+    roundedRectRadius: PropTypes.number,
+
     onBitBrushSliderChange: PropTypes.func.isRequired,
     onBitEraserSliderChange: PropTypes.func.isRequired,
     onBrushSliderChange: PropTypes.func.isRequired,
@@ -336,8 +338,11 @@ ModeToolsComponent.propTypes = {
     onOutlineShapes: PropTypes.func.isRequired,
     onPasteFromClipboard: PropTypes.func.isRequired,
     onPointPoints: PropTypes.func.isRequired,
-    onRoundedRectRadiusChange: PropTypes.func, // New propType
-    onUpdateImage: PropTypes.func.isRequired
+
+    // New propType
+    onRoundedRectRadiusChange: PropTypes.func,
+
+    onUpdateImage: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
