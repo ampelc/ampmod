@@ -60,7 +60,7 @@ class UsernameModal extends React.Component {
 
     handleRemoveFencingChange(e) {
         this.props.vm.setRuntimeOptions({
-            fencing: !e.target.checked
+            fencing: e.target.checked
         });
         if (!this.props.isEmbedded) this.handleStoreProjectOptions();
     }
@@ -183,7 +183,7 @@ const mapStateToProps = state => ({
     highQualityPen: state.scratchGui.tw.highQualityPen,
     interpolation: state.scratchGui.tw.interpolation,
     infiniteClones: state.scratchGui.tw.runtimeOptions.maxClones === Infinity,
-    removeFencing: !state.scratchGui.tw.runtimeOptions.fencing,
+    removeFencing: state.scratchGui.tw.runtimeOptions.fencing,
     removeLimits: !state.scratchGui.tw.runtimeOptions.miscLimits,
     caseSensitivity: state.scratchGui.tw.runtimeOptions.caseSensitivity,
     warpTimer: state.scratchGui.tw.compilerOptions.warpTimer,

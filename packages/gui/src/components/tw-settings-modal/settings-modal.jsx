@@ -228,17 +228,17 @@ const RemoveFencing = props => (
         {...props}
         label={
             <FormattedMessage
-                defaultMessage="Remove Fencing"
+                defaultMessage="Fence Sprites"
                 description="Remove Fencing setting"
-                id="tw.settingsModal.removeFencing"
+                id="amp.settingsModal.fencing"
             />
         }
         help={
             <FormattedMessage
                  
-                defaultMessage="Allows sprites to move offscreen, become as large or as small as they want, and makes touching blocks work offscreen."
+                defaultMessage="Prevents sprites from moving offscreen, becoming as large or as small as they want, or using touching blocks offscreen."
                 description="Remove Fencing setting help"
-                id="tw.settingsModal.removeFencingHelp"
+                id="amp.settingsModal.fencingHelp"
             />
         }
         slug="remove-fencing"
