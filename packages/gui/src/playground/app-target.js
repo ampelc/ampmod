@@ -1,3 +1,4 @@
+import React from 'react';
 import { createRoot } from "react-dom/client";
 import ReactDOM from 'react-dom';
 import {setAppElement} from 'react-modal';
@@ -27,7 +28,7 @@ const render = children => {
         if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches)
             document.documentElement.classList.add('amp-gui-animations-enabled');
         const root = createRoot(appTarget);
-        root.render(children);
+                root.render(React.createElement(React.StrictMode, null, children));
         if (window.SplashEnd) {
             window.SplashEnd();
         }
@@ -37,7 +38,7 @@ const render = children => {
 export const renderToBottom = children => {
     if (!migrationOccurred) {
         const root = createRoot(document.getElementById('app-footer'));
-        root.render(children);
+        root.render(React.createElement(React.StrictMode, null, children));
     }
 };
 
