@@ -26,7 +26,7 @@
 #
 
 when:
-    branch: [develop]
+    branch: [develop, use-git-pages]
     event: [push, manual]
     paths:
         - .woodpecker/*.yaml
