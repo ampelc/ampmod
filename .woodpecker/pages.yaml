@@ -68,15 +68,4 @@ steps:
           CBTOKEN:
               from_secret: cbtoken
       commands:
-          # Set up git in a working way
-          - git config --global --add safe.directory /woodpecker/src/codeberg.org/ampmod/ampmod/amp-build
-          - git config --global user.email "no@thankyou.com"
-          - git config --global user.name "AmpMod Bot"
-          # Navigate to the canary build directory
-          - cd ./amp-build
-          # Remove all previous files, then copy in the new build
-          - git rm -rf ./*
-          - cp -a ../packages/gui/build/. .
-          - git add --all
-          - git commit -m "Woodpecker CI Build at $( env TZ=America/Chicago date +'%Y-%m-%d %X %Z' )"
-          - git push -f -u origin pages
+          - git-pages-cli https://ampmod.codeberg.page --upload-dir packages/gui/build
