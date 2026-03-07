@@ -63,7 +63,7 @@ steps:
           # Only needed for custom domains
           # - cp domains build/.domains
     - name: push
-      image: alpine/git
+      image: codeberg.org/git-pages/git-pages-cli:latest
       environment:
           # secrets must be set in Woodpecker configuration
           CBTOKEN:
