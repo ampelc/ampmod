@@ -5,6 +5,6 @@ const {APP_NAME, APP_WEBSITE, APP_CONTACT} = require('@ampmod/branding');
 module.exports = {
     name: APP_NAME,
     url: APP_WEBSITE,
-    version: process.env.ampmod_version,
+    version: '0.0.0-unknown',
     contact: APP_CONTACT
 };

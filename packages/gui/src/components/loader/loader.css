@@ -217,8 +217,11 @@
     }
 }
 
-.funFact {
+.fun-fact {
     margin-top: 20px;
     font-size: 0.9rem;
     max-width: 600px;
+}
+.fun-fact a {
+   color: inherit;
 }

@@ -65,7 +65,7 @@ render(
           <Route path="/credits" element={<Credits />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/editor" element={<Interface />} />
-          <Route path="/player" element={<RedirectWithParams to="/editor" />} />
+          <Route path="/player" element={<Interface isPlayerOnly />} />
           <Route path="/fullscreen" element={<Interface isFullScreen />} />
           <Route path="/addons" element={<AddonSettings />} />
           <Route path="/embed" element={<Embed />} />
@@ -76,7 +76,7 @@ render(
           <Route path="/credits.html" element={<RedirectWithParams to="/credits" />} />
           <Route path="/faq.html" element={<RedirectWithParams to="/faq" />} />
           <Route path="/editor.html" element={<RedirectWithParams to="/editor" />} />
-          <Route path="/player.html" element={<RedirectWithParams to="/editor" />} />
+          <Route path="/player.html" element={<RedirectWithParams to="/player" />} />
           <Route path="/fullscreen.html" element={<RedirectWithParams to="/fullscreen" />} />
           <Route path="/addons.html" element={<RedirectWithParams to="/addons" />} />
           <Route path="/embed.html" element={<RedirectWithParams to="/embed" />} />

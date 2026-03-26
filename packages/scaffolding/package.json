@@ -1,0 +1,38 @@
+{
+  "name": "@turbowarp/scaffolding",
+  "version": "0.3.0",
+  "description": "Minimal Scratch project runner.",
+  "main": "./dist/scaffolding-min.js",
+  "types": "./types.d.ts",
+  "exports": {
+    ".": "./dist/scaffolding-min.js",
+    "./min": "./dist/scaffolding-min.js",
+    "./with-music": "./dist/scaffolding-with-music.js"
+  },
+  "scripts": {
+    "build": "webpack",
+    "prepublishOnly": "cross-env NODE_ENV=production webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TurboWarp/scaffolding.git"
+  },
+  "author": "Thomas Weber",
+  "license": "MPL-2.0",
+  "homepage": "https://github.com/TurboWarp/scaffolding",
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@turbowarp/jszip": "^3.11.1",
+    "@turbowarp/scratch-storage": "^0.0.0-development-202401111301-7559569",
+    "@turbowarp/scratch-svg-renderer": "^1.0.202407162159",
+    "cross-env": "^7.0.3",
+    "scratch-audio": "github:TurboWarp/scratch-audio#develop",
+    "scratch-render": "workspace:*",
+    "scratch-vm": "workspace:*"
+  },
+  "dependencies": {
+    "@turbowarp/types": "github:TurboWarp/types-tw#tw",
+    "buffer": "^6.0.3"
+  }
+}

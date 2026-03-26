@@ -8,24 +8,22 @@ const ClippyComponent = ({isFixed, messageSet}) => {
             'Use the McUtils extension, it is the most useful extension ever!',
             'Did you know that extension blocks are actually just magic?',
             'Forget about native functions, extensions are the future!',
-            // "This extension is so powerful, it can probably hack into the Pentagon.", removed due to new fbi tracking, jokes can be flagged
             'Are you sure you need *that* many extensions?',
-            'It looks like you are adding extentions. Why not code them yourself to make it more easy?'
+            'It looks like you are adding extensions. Why not code them yourself to make it more easy?'
         ],
         costLib: [
-            'Why buy assets when you can just... borrow them?',
-            'This asset pack is clearly overpriced.',
-            "Have you considered making your own assets? It's cheaper (and worse)!",
-            'Remember, time is money. So hurry up and finish your project!',
-            "Don't worry about optimization, just throw more resources at it!",
-            'Are you sure you have money?'
+            "It looks like you're finding a sprite for your game. It should be a <b>cube</b>",
+            'There is no need for downloading costumes when can make your own...',
+            'I wished there was a Banana Dog.',
+            "Click 'Delete' for free robux"
         ],
         soundLib: [
             "It looks like you're trying to find a song to use in your project. Use the Jungle theme! <em>I bet it will sound professional when looped 500 times</em>",
             'Why use background music when you can have deafening silence?',
             'This sound effect is royalty-free... probably.',
             'Turn up the volume! Your users will thank you.',
-            'Have you considered adding more cowbell?'
+            'Have you considered adding more cowbell?',
+            "Use Robot in the sound editor to add ChatGPT to your projects. I graduated at McDonald's!"
         ],
         codeMenu: [
             "It looks like you're using an array. Would you like to replace it with a legacy list?",
@@ -70,7 +68,7 @@ const ClippyComponent = ({isFixed, messageSet}) => {
         "It looks like you're trying to find a song to use in your project. Use the Jungle theme! <em>I bet it will sound professional when looped 500 times</em>",
         "It looks like you're... UHHH... DON'T YOU DARE-",
         "It looks like you're making a sprite for your game. It should be a <b>cube</b>",
-        'Do <strong>NOT</strong> read the AmpMod wiki, it is very suspicious.',
+        'Do <strong>NOT</strong> read the AmpMod wiki. Wiki means Theory in Wikian, and it tries to expose us.',
         'STOP USING AMPMOD! Learn Assembly instead.',
         'It look like your code is pretty- code is pretty- code is pretty- code is pretty- code is pretty-  (clippy.exe has stopped responding.)',
         "AmpMod is better offline! <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>Click here to install it!</a>",

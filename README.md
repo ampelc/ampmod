@@ -55,4 +55,7 @@ you to follow these. However, we recommend you do so.
 
 ## Licence
 
-AmpMod is free software. See [LICENSE.md](LICENSE.md) for more information.
+AmpMod is free software. The root folder is under 0BSD. Each package has its own licence which is symlinked to a file
+in the `licenses` folder.
+
+.woodpecker folder is under GPLv3.

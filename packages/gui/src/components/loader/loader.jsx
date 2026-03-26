@@ -103,7 +103,7 @@ class LoaderComponent extends React.Component {
             this.lastFunFactIndex = randomIndex;
 
             const randomMessage = pool[randomIndex];
-            this.funFactEl.textContent = randomMessage;
+            this.funFactEl.innerHTML = randomMessage;
             this.funFactEl.classList.add(styles.funFactSlideIn);
             this.funFactEl.classList.add(styles.funFactRoulette);
         }

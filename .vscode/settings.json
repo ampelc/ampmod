@@ -1,5 +1,5 @@
 {
-    "files.associations": {
-        "*.css": "scss"
-    }
+  "files.associations": {
+    "**/packages/gui/**/*.css": "postcss"
+  }
 }

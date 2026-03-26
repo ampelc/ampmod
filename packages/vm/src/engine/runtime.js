@@ -44,7 +44,7 @@ const defaultBlockPackages = {
     scratch3_operators: require('../blocks/scratch3_operators'),
     scratch3_sound: require('../blocks/scratch3_sound'),
     scratch3_sensing: require('../blocks/scratch3_sensing'),
-    ampmod_arrays: require('../blocks/ampmod_arrays'),
+    ampmod_arrays: require('../blocks/ampmod_arrays.ts'),
     scratch3_data: require('../blocks/scratch3_data'),
     scratch3_procedures: require('../blocks/scratch3_procedures')
 };

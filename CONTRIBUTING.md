@@ -29,7 +29,7 @@ We highly discourage using the built-in editor of any code forge as:
 * Many developers typically associate single-file web editors built in to forges with things
   like vibe coding and lack of programming knowledge
 
-Please use an IDE, such as VSCodium or Sublime Text, to contribute if possible.
+Please use an IDE, such as VSCodium, to contribute if possible.
 
 ### Do not modify `develop`
 
@@ -61,6 +61,11 @@ at the end of the command.
 
 AmpMod is based off TurboWarp, so if you have modified it before, you know how to modify
 AmpMod as well. If not, check [the dev docs](https://ampmod.codeberg.page/manual/dev).
+
+> [!NOTE]
+> The prefix used for AmpMod-specific files or modifications in Scratch folders is `amp`.
+> For the sake of clarity, please use this prefix instead of leaving your files without it.
+> This prevents conflicts if we merge code from upstream.
 
 ## On joke functionality and loading messages
 

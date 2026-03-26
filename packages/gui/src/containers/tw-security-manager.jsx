@@ -25,6 +25,9 @@ const manuallyTrustExtension = url => {
  */
 const isTrustedExtension = url =>
     // Always trust AmpMod's official extension repository.
+    url.startsWith('https://raw.codeberg.page/ampmod/extensions/@pages/') ||
+   // Always trust an old prefix also used for the AmpMod extension repository.
+   // This was used until 0.5 but was changed for CORS.
     url.startsWith('https://ampmod.codeberg.page/extensions/') ||
     // Always trust TurboWarp's official extension repository.
     url.startsWith('https://extensions.turbowarp.org/') ||

@@ -63,8 +63,7 @@ const CACHE_EPOCH = `amp-${monorepoPackageJson.version}`;
 
 const base = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    devtool: process.env.SOURCEMAP || (process.env.NODE_ENV === 'production' ? false : 'eval-cheap-source-map'),
-    cache: {type: "filesystem"},
+    devtool: process.env.SOURCEMAP || (process.env.NODE_ENV === 'production' ? false : 'source-map'),
     devServer: {
         static: { directory: path.resolve(__dirname, "build") },
         host: "0.0.0.0",
@@ -367,6 +366,7 @@ module.exports = [
                     'desktop-settings': './src/desktop/settings/settings.jsx',
                 }
                 : {}),
+            'player': './src/playground/player.jsx',
             'fullscreen': './src/playground/fullscreen.jsx',
             'embed': './src/playground/embed.jsx',
             'addon-settings': './src/playground/addon-settings.jsx',
@@ -455,7 +455,7 @@ module.exports = [
                         ...htmlWebpackPluginCommon
                     }),
                     new HtmlWebpackPlugin({
-                        chunks: ['editor'],
+                        chunks: ['player'],
                         template: 'src/playground/index.ejs',
                         filename: 'player.html',
                         title: `${APP_NAME} - ${APP_SLOGAN}`,

@@ -90,7 +90,7 @@ const InputType = {
     COLOR: 0x2000,
 
     /** amp: An array. */
-    ARRAY: 0x0477
+    ARRAY: 0x4000
 };
 
 /**

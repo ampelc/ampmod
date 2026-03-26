@@ -1,5 +1,6 @@
 {
     "hero.create": "Try it out",
+    "hero.play": "Play a project",
     "hero.examples": "See examples",
     "hero.canaryWarning": "This is a canary build. Bugs may be present, and your projects may break when the final version is released. You should not use this version for creating non-test projects.",
     "header.create": "Create",

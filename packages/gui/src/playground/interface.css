@@ -1,4 +1,5 @@
 @import '../css/colors.css';
+@import '../css/units.css';
 
 /* Base styles used by Scratch https://github.com/LLK/scratch-www/blob/develop/src/main.scss */
 h1,
@@ -58,7 +59,7 @@ a {
 .menu {
     margin-bottom: 8px;
 }
-.section {
+.section, .section p {
     margin: 8px 0 8px 0;
 }
 
@@ -115,4 +116,30 @@ a {
 .unshared-update {
     border-color: #ff52526e;
     background-color: #ff525240;
+}
+
+.button {
+    background-color: $motion-primary;
+    color: white;
+    border-radius: $roundedness;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: $motion-tertiary;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  h1 {
+    font-size: 1em;
+  }
+    margin: 5px 0 8px 0;
+    align-items: center;
 }
