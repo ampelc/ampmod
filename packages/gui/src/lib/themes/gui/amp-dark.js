@@ -1,13 +1,13 @@
-import { guiColors as lightGuiColors } from "./light";
+import { guiColors as lightGuiColors } from "./amp-light";
 
 const guiColors = {
     ...lightGuiColors,
 
     "color-scheme": "dark",
 
-    "ui-primary": "#111111",
-    "ui-secondary": "#1e1e1e",
-    "ui-tertiary": "#2e2e2e",
+    "ui-primary": "#1c1c1c",
+    "ui-secondary": "#1f1f1f",
+    "ui-tertiary": "#2f2f2f",
 
     "ui-modal-overlay": "#333333aa",
     "ui-modal-background": "#111111",
@@ -45,6 +45,23 @@ const guiColors = {
     "filter-icon-white": "brightness(0) invert(100%)",
 
     "paint-filter-icon-gray": "brightness(0) invert(1)",
+    "high-contrast-border": "transparent",
+
+    "menu-bar-background": "#181818",
+    "menu-bar-foreground": "white",
+    "menu-bar-background-image": "var(--menu-bar-background-image-classic)",
+    "menu-bar-hover": "#fff2",
+    "progress-bar-outer": "#fff3",
+    "menu-bar-bottom-border": "#fff2",
+    "menu-bar-icon-filter": "",
+    'ui-modal-header-background': '#1f1f1f',
+    'ui-modal-header-foreground': 'white',
+
+    "feedback-background": "var(--looks-secondary)",
+    "feedback-foreground": "white",
+
+    "menu-bar-background-classic": "",
+    "ui-modal-header-background-classic": "",
 };
 
 const blockColors = {
