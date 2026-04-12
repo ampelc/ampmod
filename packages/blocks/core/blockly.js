@@ -65,6 +65,9 @@ goog.require("Blockly.inject");
 goog.require("Blockly.utils");
 goog.require("goog.color");
 
+goog.require('Blockly.FieldExpandableAdd');
+goog.require('Blockly.FieldExpandableRemove');
+
 // Turn off debugging when compiled.
 /* eslint-disable no-unused-vars */
 var CLOSURE_DEFINES = { "goog.DEBUG": false };

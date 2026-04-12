@@ -265,3 +265,137 @@ Blockly.Blocks["arrays_range"] = {
         });
     },
 };
+
+Blockly.Blocks['arrays_expandablemake'] = {
+    /**
+     * Block for creating an array with dynamic placeholders.
+     * Fixed to prevent shadow block ghosting during drags.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.jsonInit({
+            "message0": "array with %1 %2",
+            "args0": [
+                {
+                    "type": "field_expandable_remove",
+                    "name": "REMOVE"
+                },
+                {
+                    "type": "field_expandable_add",
+                    "name": "ADD"
+                }
+            ],
+            "output": "Array",
+            "extensions": ["colours_data_lists", "shape_square"]
+        });
+
+        this.inputs_ = 0;
+        this.placeholders_ = ["apple", "banana", "pear", "orange", "kiwi"];
+
+        // Initial setup
+        for (let i = 0; i < 2; i++) {
+            this.addInput_(i);
+            this.inputs_++;
+        }
+    },
+
+    /**
+     * Save the number of inputs to the XML.
+     */
+    mutationToDom: function () {
+        const container = document.createElement('mutation');
+        container.setAttribute('items', String(this.inputs_));
+        return container;
+    },
+
+    /**
+     * Restore the number of inputs from XML.
+     */
+    domToMutation: function (xmlElement) {
+        const items = parseInt(xmlElement.getAttribute('items'), 10);
+        const newCount = isNaN(items) ? 0 : items;
+
+        // 1. Remove existing inputs to ensure a clean rebuild
+        for (let i = 0; i < this.inputs_; i++) {
+            if (this.getInput('ADD' + i)) {
+                this.removeInput('ADD' + i);
+            }
+        }
+
+        // 2. Update count and rebuild structure
+        this.inputs_ = newCount;
+        for (let i = 0; i < this.inputs_; i++) {
+            this.addInput_(i);
+        }
+    },
+
+    /**
+     * Internal helper to create the input hole.
+     * Shadow blocks are only created when manually expanding, not during drag/load.
+     * @param {number} index The current input index.
+     * @private
+     */
+    addInput_: function (index) {
+        const inputName = 'ADD' + index;
+        if (this.getInput(inputName)) return; // Prevent duplicate inputs
+
+        const input = this.appendValueInput(inputName);
+        input.setCheck(null);
+
+        // Logic check: Only spawn new shadow blocks if this is a live user action
+        // and NOT a re-rendering/dragging event (where recordUndo is usually false/null)
+        const isLiveAction = Blockly.Events.isEnabled() && !this.workspace.isFlyout;
+
+        if (isLiveAction && this.workspace) {
+            const placeholderText = this.placeholders_[index] || "thing";
+            const conn = input.connection;
+
+            if (conn && !conn.targetConnection) {
+                const shadowBlock = this.workspace.newBlock('text');
+                shadowBlock.setShadow(true);
+                if (shadowBlock.getField('TEXT')) {
+                    shadowBlock.setFieldValue(placeholderText, 'TEXT');
+                }
+                shadowBlock.initSvg();
+                shadowBlock.render();
+                conn.connect(shadowBlock.outputConnection);
+            }
+        }
+    },
+
+    /**
+     * Triggered by FieldExpandable buttons.
+     */
+    onExpandableButtonClicked_: function (isAdding) {
+        Blockly.Events.setGroup(true);
+        const oldMutation = Blockly.Xml.domToText(this.mutationToDom());
+
+        if (isAdding) {
+            // Logic for adding a new input
+            this.addInput_(this.inputs_);
+            this.inputs_++;
+        } else {
+            // Logic for removing the last input
+            if (this.inputs_ > 0) {
+                this.inputs_--;
+                const inputName = 'ADD' + this.inputs_;
+                const input = this.getInput(inputName);
+                if (input && input.connection && input.connection.targetBlock()) {
+                    const target = input.connection.targetBlock();
+                    if (target.isShadow()) {
+                        target.dispose();
+                    }
+                }
+                this.removeInput(inputName);
+            }
+        }
+
+        this.initSvg();
+        this.render();
+
+        const newMutation = Blockly.Xml.domToText(this.mutationToDom());
+        Blockly.Events.fire(new Blockly.Events.BlockChange(this,
+            'mutation', null, oldMutation, newMutation));
+        Blockly.Events.setGroup(false);
+    }
+};

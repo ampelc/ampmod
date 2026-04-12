@@ -649,6 +649,10 @@ class JSGenerator {
                 return `[...${this.descendInput(node.array)}, ${this.descendInput(node.item)}]`;
             case InputOpcode.ARRAYS_CONTAINS:
                 return `(Array.isArray(${this.descendInput(node.array)}) ? ${this.descendInput(node.array)}.some(x => x == ${this.descendInput(node.item)}) : false)`;
+            case InputOpcode.ARRAYS_EXPANDABLE_MAKE: {
+                const compiledItems = node.items.map(item => this.descendInput(item));
+                return `[${compiledItems.join(", ")}]`;
+            }
 
             default:
                 log.warn(`JS: Unknown input: ${block.opcode}`, node);
