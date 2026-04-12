@@ -913,20 +913,8 @@ const arrays = function (isInitialSetup, isStage, targetId, colors) {
         id="arrays"
         colour="${colors.primary}"
         secondaryColour="${colors.tertiary}">
-        <block type="arrays_empty_array" />
-        ${blockSeparator}
         <block type="arrays_expandablemake">
-            <mutation items="2"></mutation>
-            <value name="ADD0">
-            <shadow type="text">
-                <field name="TEXT">apple</field>
-            </shadow>
-            </value>
-            <value name="ADD1">
-            <shadow type="text">
-                <field name="TEXT">banana</field>
-            </shadow>
-            </value>
+            <mutation items="0"></mutation>
         </block>
         <block type="arrays_delimited_to_array">
             <value name="TEXT">
