@@ -565,6 +565,21 @@ class ScriptTreeGenerator {
                 return this.createConstantInput(0);
             }
         }
+        case 'operator_mathconst': {
+            const constant = block.fields.CONSTANT.value;
+            switch (constant) {
+                case 'pi':
+                    return this.createConstantInput(Math.PI);
+                case 'e':
+                    return this.createConstantInput(Math.E);
+                case 'infinity':
+                    return this.createConstantInput(Infinity);
+                case '-infinity':
+                    return this.createConstantInput(-Infinity);
+                default:
+                    return this.createConstantInput(0);
+            }
+        }
         case 'operator_mod':
             return new IntermediateInput(InputOpcode.OP_MOD, InputType.NUMBER_OR_NAN, {
                 left: this.descendInputOfBlock(block, 'NUM1').toType(InputType.NUMBER),

@@ -558,3 +558,29 @@ Blockly.Blocks["operator_arrayjoin"] = {
         });
     },
 };
+
+Blockly.Blocks["operator_mathconst"] = {
+    /**
+     * amp: A math constant.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.jsonInit({
+            message0: "%1",
+            args0: [
+                {
+                    type: "field_dropdown",
+                    name: "CONSTANT",
+                    options: [
+                        ["π", "pi"],
+                        ["e", "e"],
+                        ["∞", "infinity"],
+                        ["-∞", "-infinity"],
+                    ],
+                },
+            ],
+            category: Blockly.Categories.operators,
+            extensions: ["colours_operators", "output_number"],
+        });
+    },
+};

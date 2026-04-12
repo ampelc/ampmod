@@ -878,6 +878,7 @@ const operators = function (isInitialSetup, isStage, targetId, colors) {
             </value>
         </block>
         ${blockSeparator}
+        <block type="operator_mathconst"/>
         <block type="operator_mathop">
             <value name="NUM">
                 <shadow type="math_number">
