@@ -1,8 +1,6 @@
-const VERSION = process.env.ampmod_version;
-
-export class AmpMod {
+class AmpMod {
     constructor () {
-        this.version = VERSION;
+        this.version = null;
     }
 
     ampmodWebLoggedIn () {
@@ -10,4 +8,4 @@ export class AmpMod {
     }
 }
 
-export default new AmpMod();
+module.exports = new AmpMod();

@@ -19,7 +19,8 @@ const makeScaffolding = ({withMusic}) => ({
     library: 'Scaffolding',
     libraryTarget: 'umd',
     filename: '[name].js',
-    path: dist
+    path: dist,
+    publicPath: ""
   },
   resolve: {
    fallback: {

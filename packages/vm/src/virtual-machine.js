@@ -1,29 +1,32 @@
 const _TextEncoder = TextEncoder;
-const EventEmitter = require('events');
-const JSZip = require('@turbowarp/jszip');
+const EventEmitter = require("events");
+const JSZip = require("@turbowarp/jszip");
 
-const Buffer = require('buffer').Buffer;
-const centralDispatch = require('./dispatch/central-dispatch');
-const ExtensionManager = require('./extension-support/extension-manager');
-const log = require('./util/log');
-const MathUtil = require('./util/math-util');
-const Runtime = require('./engine/runtime');
-const RenderedTarget = require('./sprites/rendered-target');
-const Sprite = require('./sprites/sprite');
-const StringUtil = require('./util/string-util');
-const formatMessage = require('format-message');
+const Buffer = require("buffer").Buffer;
+const centralDispatch = require("./dispatch/central-dispatch");
+const ExtensionManager = require("./extension-support/extension-manager");
+const log = require("./util/log");
+const MathUtil = require("./util/math-util");
+const Runtime = require("./engine/runtime");
+const RenderedTarget = require("./sprites/rendered-target");
+const Sprite = require("./sprites/sprite");
+const StringUtil = require("./util/string-util");
+const formatMessage = require("format-message");
 
-const Variable = require('./engine/variable');
-const newBlockIds = require('./util/new-block-ids');
+const Variable = require("./engine/variable");
+const newBlockIds = require("./util/new-block-ids");
 
-const {loadCostume} = require('./import/load-costume.js');
-const {loadSound} = require('./import/load-sound.js');
-const {serializeSounds, serializeCostumes} = require('./serialization/serialize-assets');
-require('canvas-toBlob');
-const {exportCostume} = require('./serialization/tw-costume-import-export');
-const Base64Util = require('./util/base64-util');
+const { loadCostume } = require("./import/load-costume.js");
+const { loadSound } = require("./import/load-sound.js");
+const {
+    serializeSounds,
+    serializeCostumes,
+} = require("./serialization/serialize-assets");
+require("canvas-toBlob");
+const { exportCostume } = require("./serialization/tw-costume-import-export");
+const Base64Util = require("./util/base64-util");
 
-const RESERVED_NAMES = ['_mouse_', '_stage_', '_edge_', '_myself_', '_random_'];
+const RESERVED_NAMES = ["_mouse_", "_stage_", "_edge_", "_myself_", "_random_"];
 
 const CORE_EXTENSIONS = [
     // 'motion',
@@ -35,18 +38,20 @@ const CORE_EXTENSIONS = [
     // 'operators',
     // 'variables',
     // 'myBlocks'
-    'pen'
+    "pen",
 ];
 
 // Disable missing translation warnings in console
 formatMessage.setup({
-    missingTranslation: 'ignore'
+    missingTranslation: "ignore",
 });
 
-const createRuntimeService = runtime => {
+const createRuntimeService = (runtime) => {
     const service = {};
-    service._refreshExtensionPrimitives = runtime._refreshExtensionPrimitives.bind(runtime);
-    service._registerExtensionPrimitives = runtime._registerExtensionPrimitives.bind(runtime);
+    service._refreshExtensionPrimitives =
+        runtime._refreshExtensionPrimitives.bind(runtime);
+    service._registerExtensionPrimitives =
+        runtime._registerExtensionPrimitives.bind(runtime);
     return service;
 };
 
@@ -55,7 +60,7 @@ const createRuntimeService = runtime => {
  * @constructor
  */
 class VirtualMachine extends EventEmitter {
-    constructor () {
+    constructor() {
         super();
 
         /**
@@ -63,9 +68,13 @@ class VirtualMachine extends EventEmitter {
          * @type {!Runtime}
          */
         this.runtime = new Runtime();
-        centralDispatch.setService('runtime', createRuntimeService(this.runtime)).catch(e => {
-            log.error(`Failed to register runtime service: ${JSON.stringify(e)}`);
-        });
+        centralDispatch
+            .setService("runtime", createRuntimeService(this.runtime))
+            .catch((e) => {
+                log.error(
+                    `Failed to register runtime service: ${JSON.stringify(e)}`,
+                );
+            });
 
         /**
          * The "currently editing"/selected target ID for the VM.
@@ -81,16 +90,16 @@ class VirtualMachine extends EventEmitter {
         this._dragTarget = null;
 
         // Runtime emits are passed along as VM emits.
-        this.runtime.on(Runtime.SCRIPT_GLOW_ON, glowData => {
+        this.runtime.on(Runtime.SCRIPT_GLOW_ON, (glowData) => {
             this.emit(Runtime.SCRIPT_GLOW_ON, glowData);
         });
-        this.runtime.on(Runtime.SCRIPT_GLOW_OFF, glowData => {
+        this.runtime.on(Runtime.SCRIPT_GLOW_OFF, (glowData) => {
             this.emit(Runtime.SCRIPT_GLOW_OFF, glowData);
         });
-        this.runtime.on(Runtime.BLOCK_GLOW_ON, glowData => {
+        this.runtime.on(Runtime.BLOCK_GLOW_ON, (glowData) => {
             this.emit(Runtime.BLOCK_GLOW_ON, glowData);
         });
-        this.runtime.on(Runtime.BLOCK_GLOW_OFF, glowData => {
+        this.runtime.on(Runtime.BLOCK_GLOW_OFF, (glowData) => {
             this.emit(Runtime.BLOCK_GLOW_OFF, glowData);
         });
         this.runtime.on(Runtime.PROJECT_START, () => {
@@ -105,28 +114,35 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.PROJECT_CHANGED, () => {
             this.emit(Runtime.PROJECT_CHANGED);
         });
-        this.runtime.on(Runtime.VISUAL_REPORT, visualReport => {
+        this.runtime.on(Runtime.VISUAL_REPORT, (visualReport) => {
             this.emit(Runtime.VISUAL_REPORT, visualReport);
         });
-        this.runtime.on(Runtime.TARGETS_UPDATE, emitProjectChanged => {
+        this.runtime.on(Runtime.TARGETS_UPDATE, (emitProjectChanged) => {
             this.emitTargetsUpdate(emitProjectChanged);
         });
-        this.runtime.on(Runtime.MONITORS_UPDATE, monitorList => {
+        this.runtime.on(Runtime.MONITORS_UPDATE, (monitorList) => {
             this.emit(Runtime.MONITORS_UPDATE, monitorList);
         });
-        this.runtime.on(Runtime.BLOCK_DRAG_UPDATE, areBlocksOverGui => {
+        this.runtime.on(Runtime.BLOCK_DRAG_UPDATE, (areBlocksOverGui) => {
             this.emit(Runtime.BLOCK_DRAG_UPDATE, areBlocksOverGui);
         });
         this.runtime.on(Runtime.BLOCK_DRAG_END, (blocks, topBlockId) => {
             this.emit(Runtime.BLOCK_DRAG_END, blocks, topBlockId);
         });
-        this.runtime.on(Runtime.EXTENSION_ADDED, categoryInfo => {
+        this.runtime.on(Runtime.EXTENSION_ADDED, (categoryInfo) => {
             this.emit(Runtime.EXTENSION_ADDED, categoryInfo);
         });
-        this.runtime.on(Runtime.EXTENSION_FIELD_ADDED, (fieldName, fieldImplementation) => {
-            this.emit(Runtime.EXTENSION_FIELD_ADDED, fieldName, fieldImplementation);
-        });
-        this.runtime.on(Runtime.BLOCKSINFO_UPDATE, categoryInfo => {
+        this.runtime.on(
+            Runtime.EXTENSION_FIELD_ADDED,
+            (fieldName, fieldImplementation) => {
+                this.emit(
+                    Runtime.EXTENSION_FIELD_ADDED,
+                    fieldName,
+                    fieldImplementation,
+                );
+            },
+        );
+        this.runtime.on(Runtime.BLOCKSINFO_UPDATE, (categoryInfo) => {
             this.emit(Runtime.BLOCKSINFO_UPDATE, categoryInfo);
         });
         this.runtime.on(Runtime.BLOCKS_NEED_UPDATE, () => {
@@ -135,20 +151,28 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.TOOLBOX_EXTENSIONS_NEED_UPDATE, () => {
             this.extensionManager.refreshBlocks();
         });
-        this.runtime.on(Runtime.PERIPHERAL_LIST_UPDATE, info => {
+        this.runtime.on(Runtime.PERIPHERAL_LIST_UPDATE, (info) => {
             this.emit(Runtime.PERIPHERAL_LIST_UPDATE, info);
         });
-        this.runtime.on(Runtime.USER_PICKED_PERIPHERAL, info => {
+        this.runtime.on(Runtime.USER_PICKED_PERIPHERAL, (info) => {
             this.emit(Runtime.USER_PICKED_PERIPHERAL, info);
         });
-        this.runtime.on(Runtime.PERIPHERAL_CONNECTED, () => this.emit(Runtime.PERIPHERAL_CONNECTED));
-        this.runtime.on(Runtime.PERIPHERAL_REQUEST_ERROR, () => this.emit(Runtime.PERIPHERAL_REQUEST_ERROR));
-        this.runtime.on(Runtime.PERIPHERAL_DISCONNECTED, () => this.emit(Runtime.PERIPHERAL_DISCONNECTED));
-        this.runtime.on(Runtime.PERIPHERAL_CONNECTION_LOST_ERROR, data =>
-            this.emit(Runtime.PERIPHERAL_CONNECTION_LOST_ERROR, data)
+        this.runtime.on(Runtime.PERIPHERAL_CONNECTED, () =>
+            this.emit(Runtime.PERIPHERAL_CONNECTED),
         );
-        this.runtime.on(Runtime.PERIPHERAL_SCAN_TIMEOUT, () => this.emit(Runtime.PERIPHERAL_SCAN_TIMEOUT));
-        this.runtime.on(Runtime.MIC_LISTENING, listening => {
+        this.runtime.on(Runtime.PERIPHERAL_REQUEST_ERROR, () =>
+            this.emit(Runtime.PERIPHERAL_REQUEST_ERROR),
+        );
+        this.runtime.on(Runtime.PERIPHERAL_DISCONNECTED, () =>
+            this.emit(Runtime.PERIPHERAL_DISCONNECTED),
+        );
+        this.runtime.on(Runtime.PERIPHERAL_CONNECTION_LOST_ERROR, (data) =>
+            this.emit(Runtime.PERIPHERAL_CONNECTION_LOST_ERROR, data),
+        );
+        this.runtime.on(Runtime.PERIPHERAL_SCAN_TIMEOUT, () =>
+            this.emit(Runtime.PERIPHERAL_SCAN_TIMEOUT),
+        );
+        this.runtime.on(Runtime.MIC_LISTENING, (listening) => {
             this.emit(Runtime.MIC_LISTENING, listening);
         });
         this.runtime.on(Runtime.RUNTIME_STARTED, () => {
@@ -157,19 +181,19 @@ class VirtualMachine extends EventEmitter {
         this.runtime.on(Runtime.RUNTIME_STOPPED, () => {
             this.emit(Runtime.RUNTIME_STOPPED);
         });
-        this.runtime.on(Runtime.HAS_CLOUD_DATA_UPDATE, hasCloudData => {
+        this.runtime.on(Runtime.HAS_CLOUD_DATA_UPDATE, (hasCloudData) => {
             this.emit(Runtime.HAS_CLOUD_DATA_UPDATE, hasCloudData);
         });
-        this.runtime.on(Runtime.RUNTIME_OPTIONS_CHANGED, runtimeOptions => {
+        this.runtime.on(Runtime.RUNTIME_OPTIONS_CHANGED, (runtimeOptions) => {
             this.emit(Runtime.RUNTIME_OPTIONS_CHANGED, runtimeOptions);
         });
-        this.runtime.on(Runtime.COMPILER_OPTIONS_CHANGED, compilerOptions => {
+        this.runtime.on(Runtime.COMPILER_OPTIONS_CHANGED, (compilerOptions) => {
             this.emit(Runtime.COMPILER_OPTIONS_CHANGED, compilerOptions);
         });
-        this.runtime.on(Runtime.FRAMERATE_CHANGED, framerate => {
+        this.runtime.on(Runtime.FRAMERATE_CHANGED, (framerate) => {
             this.emit(Runtime.FRAMERATE_CHANGED, framerate);
         });
-        this.runtime.on(Runtime.INTERPOLATION_CHANGED, framerate => {
+        this.runtime.on(Runtime.INTERPOLATION_CHANGED, (framerate) => {
             this.emit(Runtime.INTERPOLATION_CHANGED, framerate);
         });
         this.runtime.on(Runtime.STAGE_SIZE_CHANGED, (width, height) => {
@@ -207,52 +231,66 @@ class VirtualMachine extends EventEmitter {
             Variable,
 
             these_broke_before_and_will_break_again: () => {
-                console.warn('You are using unsupported APIs. WHEN your code breaks, do not expect help.');
+                console.warn(
+                    "You are using unsupported APIs. WHEN your code breaks, do not expect help.",
+                );
                 return {
-                    JSGenerator: require('./compiler/jsgen.js'),
-                    IRGenerator: require('./compiler/irgen.js').IRGenerator,
-                    ScriptTreeGenerator: require('./compiler/irgen.js').ScriptTreeGenerator,
-                    IntermediateStackBlock: require('./compiler/intermediate.js').IntermediateStackBlock,
-                    IntermediateInput: require('./compiler/intermediate.js').IntermediateInput,
-                    IntermediateStack: require('./compiler/intermediate.js').IntermediateStack,
-                    IntermediateScript: require('./compiler/intermediate.js').IntermediateScript,
-                    IntermediateRepresentation: require('./compiler/intermediate.js').IntermediateRepresentation,
-                    StackOpcode: require('./compiler/enums.js').StackOpcode,
-                    InputOpcode: require('./compiler/enums.js').InputOpcode,
-                    InputType: require('./compiler/enums.js').InputType,
-                    Thread: require('./engine/thread.js'),
-                    execute: require('./engine/execute.js')
+                    JSGenerator: require("./compiler/jsgen.js"),
+                    IRGenerator: require("./compiler/irgen.js").IRGenerator,
+                    ScriptTreeGenerator: require("./compiler/irgen.js")
+                        .ScriptTreeGenerator,
+                    IntermediateStackBlock:
+                        require("./compiler/intermediate.js")
+                            .IntermediateStackBlock,
+                    IntermediateInput: require("./compiler/intermediate.js")
+                        .IntermediateInput,
+                    IntermediateStack: require("./compiler/intermediate.js")
+                        .IntermediateStack,
+                    IntermediateScript: require("./compiler/intermediate.js")
+                        .IntermediateScript,
+                    IntermediateRepresentation:
+                        require("./compiler/intermediate.js")
+                            .IntermediateRepresentation,
+                    StackOpcode: require("./compiler/enums.js").StackOpcode,
+                    InputOpcode: require("./compiler/enums.js").InputOpcode,
+                    InputType: require("./compiler/enums.js").InputType,
+                    Thread: require("./engine/thread.js"),
+                    execute: require("./engine/execute.js"),
                 };
             },
 
             i_will_not_ask_for_help_when_these_break: () => {
-                this.emit('LEGACY_EXTENSION_API', 'i_will_not_ask_for_help_when_these_break');
+                this.emit(
+                    "LEGACY_EXTENSION_API",
+                    "i_will_not_ask_for_help_when_these_break",
+                );
 
-                const oldCompilerCompatibility = require('./compiler/old-compiler-compatibility.js');
+                const oldCompilerCompatibility = require("./compiler/old-compiler-compatibility.js");
                 oldCompilerCompatibility.enabled = true;
 
                 return {
                     IRGenerator: oldCompilerCompatibility.IRGeneratorStub,
-                    ScriptTreeGenerator: oldCompilerCompatibility.ScriptTreeGeneratorStub,
+                    ScriptTreeGenerator:
+                        oldCompilerCompatibility.ScriptTreeGeneratorStub,
                     JSGenerator: oldCompilerCompatibility.JSGeneratorStub,
-                    Thread: require('./engine/thread.js'),
-                    execute: require('./engine/execute.js')
+                    Thread: require("./engine/thread.js"),
+                    execute: require("./engine/execute.js"),
                 };
-            }
+            },
         };
     }
 
     /**
      * Start running the VM - do this before anything else.
      */
-    start () {
+    start() {
         this.runtime.start();
     }
 
     /**
      * @deprecated Used by old versions of TurboWarp. Superceded by upstream's quit()
      */
-    stop () {
+    stop() {
         this.quit();
     }
 
@@ -260,14 +298,14 @@ class VirtualMachine extends EventEmitter {
      * Quit the VM, clearing any handles which might keep the process alive.
      * Do not use the runtime after calling this method. This method is meant for test shutdown.
      */
-    quit () {
+    quit() {
         this.runtime.quit();
     }
 
     /**
      * "Green flag" handler - start all threads starting with a green flag.
      */
-    greenFlag () {
+    greenFlag() {
         this.runtime.greenFlag();
     }
 
@@ -276,7 +314,7 @@ class VirtualMachine extends EventEmitter {
      * When true, loops don't yield to redraw.
      * @param {boolean} turboModeOn Whether turbo mode should be set.
      */
-    setTurboMode (turboModeOn) {
+    setTurboMode(turboModeOn) {
         this.runtime.turboMode = !!turboModeOn;
         if (this.runtime.turboMode) {
             this.emit(Runtime.TURBO_MODE_ON);
@@ -290,73 +328,73 @@ class VirtualMachine extends EventEmitter {
      * When true, ticks go at 2.0 speed (30 TPS).
      * @param {boolean} compatibilityModeOn Whether compatibility mode is set.
      */
-    setCompatibilityMode (compatibilityModeOn) {
+    setCompatibilityMode(compatibilityModeOn) {
         this.runtime.setCompatibilityMode(!!compatibilityModeOn);
     }
 
-    setFramerate (framerate) {
+    setFramerate(framerate) {
         this.runtime.setFramerate(framerate);
     }
 
-    setInterpolation (interpolationEnabled) {
+    setInterpolation(interpolationEnabled) {
         this.runtime.setInterpolation(interpolationEnabled);
     }
 
-    setRuntimeOptions (runtimeOptions) {
+    setRuntimeOptions(runtimeOptions) {
         this.runtime.setRuntimeOptions(runtimeOptions);
     }
 
-    setCompilerOptions (compilerOptions) {
+    setCompilerOptions(compilerOptions) {
         this.runtime.setCompilerOptions(compilerOptions);
     }
 
-    setStageSize (width, height) {
+    setStageSize(width, height) {
         this.runtime.setStageSize(width, height);
     }
 
-    setInEditor (inEditor) {
+    setInEditor(inEditor) {
         this.runtime.setInEditor(inEditor);
     }
 
-    convertToPackagedRuntime () {
+    convertToPackagedRuntime() {
         this.runtime.convertToPackagedRuntime();
     }
 
-    addAddonBlock (options) {
+    addAddonBlock(options) {
         this.runtime.addAddonBlock(options);
     }
 
-    getAddonBlock (procedureCode) {
+    getAddonBlock(procedureCode) {
         return this.runtime.getAddonBlock(procedureCode);
     }
 
-    storeProjectOptions () {
+    storeProjectOptions() {
         this.runtime.storeProjectOptions();
         if (this.editingTarget.isStage) {
             this.emitWorkspaceUpdate();
         }
     }
 
-    enableDebug () {
+    enableDebug() {
         this.runtime.enableDebug();
-        return 'enabled debug mode';
+        return "enabled debug mode";
     }
 
-    handleExtensionButtonPress (buttonData) {
+    handleExtensionButtonPress(buttonData) {
         this.runtime.handleExtensionButtonPress(buttonData);
     }
 
     /**
      * Stop all threads and running activities.
      */
-    stopAll () {
+    stopAll() {
         this.runtime.stopAll();
     }
 
     /**
      * Clear out current running project data.
      */
-    clear () {
+    clear() {
         this.runtime.dispose();
         this.editingTarget = null;
         this.emitTargetsUpdate(false /* Don't emit project change */);
@@ -365,22 +403,24 @@ class VirtualMachine extends EventEmitter {
     /**
      * Get data for playground. Data comes back in an emitted event.
      */
-    getPlaygroundData () {
+    getPlaygroundData() {
         const instance = this;
         // Only send back thread data for the current editingTarget.
-        const threadData = this.runtime.threads.filter(thread => thread.target === instance.editingTarget);
+        const threadData = this.runtime.threads.filter(
+            (thread) => thread.target === instance.editingTarget,
+        );
         // Remove the target key, since it's a circular reference.
         const filteredThreadData = JSON.stringify(
             threadData,
             (key, value) => {
-                if (key === 'target' || key === 'blockContainer') return;
+                if (key === "target" || key === "blockContainer") return;
                 return value;
             },
-            2
+            2,
         );
-        this.emit('playgroundData', {
+        this.emit("playgroundData", {
             blocks: this.editingTarget.blocks,
-            threads: filteredThreadData
+            threads: filteredThreadData,
         });
     }
 
@@ -389,17 +429,17 @@ class VirtualMachine extends EventEmitter {
      * @param {?string} device Name of virtual I/O device.
      * @param {object} data Any data object to post to the I/O device.
      */
-    postIOData (device, data) {
+    postIOData(device, data) {
         if (this.runtime.ioDevices[device]) {
             this.runtime.ioDevices[device].postData(data);
         }
     }
 
-    setVideoProvider (videoProvider) {
+    setVideoProvider(videoProvider) {
         this.runtime.ioDevices.video.setProvider(videoProvider);
     }
 
-    setCloudProvider (cloudProvider) {
+    setCloudProvider(cloudProvider) {
         this.runtime.ioDevices.cloud.setProvider(cloudProvider);
     }
 
@@ -407,7 +447,7 @@ class VirtualMachine extends EventEmitter {
      * Tell the specified extension to scan for a peripheral.
      * @param {string} extensionId - the id of the extension.
      */
-    scanForPeripheral (extensionId) {
+    scanForPeripheral(extensionId) {
         this.runtime.scanForPeripheral(extensionId);
     }
 
@@ -416,7 +456,7 @@ class VirtualMachine extends EventEmitter {
      * @param {string} extensionId - the id of the extension.
      * @param {number} peripheralId - the id of the peripheral.
      */
-    connectPeripheral (extensionId, peripheralId) {
+    connectPeripheral(extensionId, peripheralId) {
         this.runtime.connectPeripheral(extensionId, peripheralId);
     }
 
@@ -424,7 +464,7 @@ class VirtualMachine extends EventEmitter {
      * Disconnect from the extension's connected peripheral.
      * @param {string} extensionId - the id of the extension.
      */
-    disconnectPeripheral (extensionId) {
+    disconnectPeripheral(extensionId) {
         this.runtime.disconnectPeripheral(extensionId);
     }
 
@@ -433,7 +473,7 @@ class VirtualMachine extends EventEmitter {
      * @param {string} extensionId - the id of the extension.
      * @return {boolean} - whether the extension has a connected peripheral.
      */
-    getPeripheralIsConnected (extensionId) {
+    getPeripheralIsConnected(extensionId) {
         return this.runtime.getPeripheralIsConnected(extensionId);
     }
 
@@ -442,8 +482,12 @@ class VirtualMachine extends EventEmitter {
      * @param {string | object} input A json string, object, or ArrayBuffer representing the project to load.
      * @return {!Promise} Promise that resolves after targets are installed.
      */
-    loadProject (input) {
-        if (typeof input === 'object' && !(input instanceof ArrayBuffer) && !ArrayBuffer.isView(input)) {
+    loadProject(input) {
+        if (
+            typeof input === "object" &&
+            !(input instanceof ArrayBuffer) &&
+            !ArrayBuffer.isView(input)
+        ) {
             // If the input is an object and not any ArrayBuffer
             // or an ArrayBuffer view (this includes all typed arrays and DataViews)
             // turn the object into a JSON string, because we suspect
@@ -452,9 +496,8 @@ class VirtualMachine extends EventEmitter {
             // TODO not sure if we need to check that it also isn't a data view
             input = JSON.stringify(input);
         }
-
         const validationPromise = new Promise((resolve, reject) => {
-            const validate = require('scratch-parser');
+            const validate = require("./parser");
             // The second argument of false below indicates to the validator that the
             // input should be parsed/validated as an entire project (and not a single sprite)
             validate(input, false, (error, res) => {
@@ -466,11 +509,18 @@ class VirtualMachine extends EventEmitter {
         });
 
         return validationPromise
-            .then(validatedInput => this.deserializeProject(validatedInput[0], validatedInput[1]))
+            .then((validatedInput) =>
+                this.deserializeProject(validatedInput[0], validatedInput[1]),
+            )
             .then(() => this.runtime.handleProjectLoaded())
-            .catch(error => {
+            .catch((error) => {
                 // Intentionally rejecting here (want errors to be handled by caller)
-                if (Object.prototype.hasOwnProperty.call(error, 'validationError')) {
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        error,
+                        "validationError",
+                    )
+                ) {
                     return Promise.reject(JSON.stringify(error));
                 }
                 return Promise.reject(error);
@@ -481,15 +531,15 @@ class VirtualMachine extends EventEmitter {
      * Load a project from the Scratch web site, by ID.
      * @param {string} id - the ID of the project to download, as a string.
      */
-    downloadProjectId (id) {
+    downloadProjectId(id) {
         const storage = this.runtime.storage;
         if (!storage) {
-            log.error('No storage module present; cannot load project: ', id);
+            log.error("No storage module present; cannot load project: ", id);
             return;
         }
         const vm = this;
         const promise = storage.load(storage.AssetType.Project, id);
-        promise.then(projectAsset => {
+        promise.then((projectAsset) => {
             if (!projectAsset) {
                 log.error(`Failed to fetch project with id: ${id}`);
                 return null;
@@ -501,7 +551,7 @@ class VirtualMachine extends EventEmitter {
     /**
      * @returns {JSZip} JSZip zip object representing the sb3.
      */
-    _saveProjectZip () {
+    _saveProjectZip() {
         const projectJson = this.toJSON();
 
         // TODO want to eventually move zip creation out of here, and perhaps
@@ -509,7 +559,7 @@ class VirtualMachine extends EventEmitter {
         const zip = new JSZip();
 
         // Put everything in a zip file
-        zip.file('project.json', projectJson);
+        zip.file("project.json", projectJson);
         this._addFileDescsToZip(this.serializeAssets(), zip);
 
         // Use a fixed modification date for the files in the zip instead of letting JSZip use the
@@ -522,12 +572,12 @@ class VirtualMachine extends EventEmitter {
         }
 
         // Tell JSZip to only compress file formats where there will be a significant gain.
-        const COMPRESSABLE_FORMATS = ['.json', '.svg', '.wav', '.ttf', '.otf'];
+        const COMPRESSABLE_FORMATS = [".json", ".svg", ".wav", ".ttf", ".otf"];
         for (const file of Object.values(zip.files)) {
-            if (COMPRESSABLE_FORMATS.some(ext => file.name.endsWith(ext))) {
-                file.options.compression = 'DEFLATE';
+            if (COMPRESSABLE_FORMATS.some((ext) => file.name.endsWith(ext))) {
+                file.options.compression = "DEFLATE";
             } else {
-                file.options.compression = 'STORE';
+                file.options.compression = "STORE";
             }
         }
 
@@ -538,11 +588,11 @@ class VirtualMachine extends EventEmitter {
      * @param {JSZip.OutputType} [type] JSZip output type. Defaults to 'blob' for Scratch compatibility.
      * @returns {Promise<unknown>} Compressed sb3 file in a type determined by the type argument.
      */
-    saveProjectSb3 (type) {
+    saveProjectSb3(type) {
         return this._saveProjectZip().generateAsync({
             // Don't configure compression here. _saveProjectZip() will set it for each file.
-            type: type || 'blob',
-            mimeType: 'application/vnd.ampmod.project'
+            type: type || "blob",
+            mimeType: "application/vnd.ampmod.project",
         });
     }
 
@@ -551,11 +601,11 @@ class VirtualMachine extends EventEmitter {
      * @returns {StreamHelper} JSZip StreamHelper object generating the compressed sb3.
      * See: https://stuk.github.io/jszip/documentation/api_streamhelper.html
      */
-    saveProjectSb3Stream (type) {
+    saveProjectSb3Stream(type) {
         return this._saveProjectZip().generateInternalStream({
-            type: type || 'arraybuffer',
-            mimeType: 'application/vnd.ampmod.project',
-            compression: 'DEFLATE'
+            type: type || "arraybuffer",
+            mimeType: "application/vnd.ampmod.project",
+            compression: "DEFLATE",
         });
     }
 
@@ -565,11 +615,11 @@ class VirtualMachine extends EventEmitter {
      * manipulating them (except project.json, which is created by this function).
      * @returns {Record<string, Uint8Array>} Map of file name to the raw data for that file.
      */
-    saveProjectSb3DontZip () {
+    saveProjectSb3DontZip() {
         const projectJson = this.toJSON();
 
         const files = {
-            'project.json': new _TextEncoder().encode(projectJson)
+            "project.json": new _TextEncoder().encode(projectJson),
         };
         for (const fileDesc of this.serializeAssets()) {
             files[fileDesc.fileName] = fileDesc.fileContent;
@@ -581,13 +631,15 @@ class VirtualMachine extends EventEmitter {
     /**
      * @type {Array<object>} Array of all assets currently in the runtime
      */
-    get assets () {
+    get assets() {
         const costumesAndSounds = this.runtime.targets.reduce(
             (acc, target) =>
                 acc
-                    .concat(target.sprite.sounds.map(sound => sound.asset))
-                    .concat(target.sprite.costumes.map(costume => costume.asset)),
-            []
+                    .concat(target.sprite.sounds.map((sound) => sound.asset))
+                    .concat(
+                        target.sprite.costumes.map((costume) => costume.asset),
+                    ),
+            [],
         );
         const fonts = this.runtime.fontManager.serializeAssets();
         return [...costumesAndSounds, ...fonts];
@@ -597,17 +649,19 @@ class VirtualMachine extends EventEmitter {
      * @param {string} targetId Optional ID of target to export
      * @returns {Array<{fileName: string; fileContent: Uint8Array;}} list of file descs
      */
-    serializeAssets (targetId) {
+    serializeAssets(targetId) {
         const costumeDescs = serializeCostumes(this.runtime, targetId);
         const soundDescs = serializeSounds(this.runtime, targetId);
-        const fontDescs = this.runtime.fontManager.serializeAssets().map(asset => ({
-            fileName: `${asset.assetId}.${asset.dataFormat}`,
-            fileContent: asset.data
-        }));
+        const fontDescs = this.runtime.fontManager
+            .serializeAssets()
+            .map((asset) => ({
+                fileName: `${asset.assetId}.${asset.dataFormat}`,
+                fileContent: asset.data,
+            }));
         return [...costumeDescs, ...soundDescs, ...fontDescs];
     }
 
-    _addFileDescsToZip (fileDescs, zip) {
+    _addFileDescsToZip(fileDescs, zip) {
         // TODO: sort files, smallest first
         for (let i = 0; i < fileDescs.length; i++) {
             const currFileDesc = fileDescs[i];
@@ -627,20 +681,20 @@ class VirtualMachine extends EventEmitter {
      * @return {object} A generated zip of the sprite and its assets in the format
      * specified by optZipType or blob by default.
      */
-    exportSprite (targetId, optZipType) {
+    exportSprite(targetId, optZipType) {
         const spriteJson = this.toJSON(targetId);
 
         const zip = new JSZip();
-        zip.file('sprite.json', spriteJson);
+        zip.file("sprite.json", spriteJson);
         this._addFileDescsToZip(this.serializeAssets(targetId), zip);
 
         return zip.generateAsync({
-            type: typeof optZipType === 'string' ? optZipType : 'blob',
-            mimeType: 'application/vnd.ampmod.sprite',
-            compression: 'DEFLATE',
+            type: typeof optZipType === "string" ? optZipType : "blob",
+            mimeType: "application/vnd.ampmod.sprite",
+            compression: "DEFLATE",
             compressionOptions: {
-                level: 6
-            }
+                level: 6,
+            },
         });
     }
 
@@ -650,9 +704,11 @@ class VirtualMachine extends EventEmitter {
      * @param {*} serializationOptions Options to pass to the serializer
      * @return {string} Serialized state of the runtime.
      */
-    toJSON (optTargetId, serializationOptions) {
-        const sb3 = require('./serialization/sb3');
-        return StringUtil.stringify(sb3.serialize(this.runtime, optTargetId, serializationOptions));
+    toJSON(optTargetId, serializationOptions) {
+        const sb3 = require("./serialization/sb3");
+        return StringUtil.stringify(
+            sb3.serialize(this.runtime, optTargetId, serializationOptions),
+        );
     }
 
     // TODO do we still need this function? Keeping it here so as not to introduce
@@ -662,8 +718,10 @@ class VirtualMachine extends EventEmitter {
      * @param {string} json JSON string representing a project.
      * @returns {Promise} Promise that resolves after the project has loaded
      */
-    fromJSON (json) {
-        log.warn('fromJSON is now just a wrapper around loadProject, please use that function instead.');
+    fromJSON(json) {
+        log.warn(
+            "fromJSON is now just a wrapper around loadProject, please use that function instead.",
+        );
         return this.loadProject(json);
     }
 
@@ -673,32 +731,32 @@ class VirtualMachine extends EventEmitter {
      * @param {?JSZip} zip Optional zipped project containing assets to be loaded.
      * @returns {Promise} Promise that resolves after the project has loaded
      */
-    deserializeProject (projectJSON, zip) {
+    deserializeProject(projectJSON, zip) {
         // Clear the current runtime
         this.clear();
 
-        if (typeof performance !== 'undefined') {
-            performance.mark('scratch-vm-deserialize-start');
+        if (typeof performance !== "undefined") {
+            performance.mark("scratch-vm-deserialize-start");
         }
         const runtime = this.runtime;
         const deserializePromise = function () {
             const projectVersion = projectJSON.projectVersion;
             if (projectVersion === 3) {
-                const sb3 = require('./serialization/sb3');
+                const sb3 = require("./serialization/sb3");
                 return sb3.deserialize(projectJSON, runtime, zip);
             }
             // TODO: reject with an Error (possible breaking API change!)
             // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject('Unable to verify Scratch Project version.');
+            return Promise.reject("Unable to verify Scratch Project version.");
         };
-        return deserializePromise().then(({targets, extensions}) => {
-            if (typeof performance !== 'undefined') {
-                performance.mark('scratch-vm-deserialize-end');
+        return deserializePromise().then(({ targets, extensions }) => {
+            if (typeof performance !== "undefined") {
+                performance.mark("scratch-vm-deserialize-end");
                 try {
                     performance.measure(
-                        'scratch-vm-deserialize',
-                        'scratch-vm-deserialize-start',
-                        'scratch-vm-deserialize-end'
+                        "scratch-vm-deserialize",
+                        "scratch-vm-deserialize-start",
+                        "scratch-vm-deserialize-end",
                     );
                 } catch (e) {
                     // performance.measure() will throw an error if the start deserialize
@@ -716,12 +774,12 @@ class VirtualMachine extends EventEmitter {
      * @param {string[]} extensionIDs The IDs of the extensions
      * @param {Map<string, string>} extensionURLs A map of extension ID to URL
      */
-    async _loadExtensions (extensionIDs, extensionURLs = new Map()) {
+    async _loadExtensions(extensionIDs, extensionURLs = new Map()) {
         // Load core extensions
         for (const id of CORE_EXTENSIONS) {
             await this.extensionManager.loadExtensionIdAsync(id);
         }
-        const defaultExtensionURLs = require('./extension-support/tw-default-extension-urls');
+        const defaultExtensionURLs = require("./extension-support/tw-default-extension-urls");
         const extensionPromises = [];
         for (const extensionID of extensionIDs) {
             if (this.extensionManager.isExtensionLoaded(extensionID)) {
@@ -732,16 +790,28 @@ class VirtualMachine extends EventEmitter {
             } else {
                 // Custom extension
                 let url = extensionURLs.get(extensionID);
-                if (!url && Object.prototype.hasOwnProperty.call(defaultExtensionURLs, extensionID)) {
+                if (
+                    !url &&
+                    Object.prototype.hasOwnProperty.call(
+                        defaultExtensionURLs,
+                        extensionID,
+                    )
+                ) {
                     url = defaultExtensionURLs[extensionID];
                 }
                 if (!url) {
                     throw new Error(`Unknown extension: ${extensionID}`);
                 }
-                if (await this.securityManager.canLoadExtensionFromProject(url)) {
-                    extensionPromises.push(this.extensionManager.loadExtensionURL(url));
+                if (
+                    await this.securityManager.canLoadExtensionFromProject(url)
+                ) {
+                    extensionPromises.push(
+                        this.extensionManager.loadExtensionURL(url),
+                    );
                 } else {
-                    throw new Error(`Permission to load extension denied: ${extensionID}`);
+                    throw new Error(
+                        `Permission to load extension denied: ${extensionID}`,
+                    );
                 }
             }
         }
@@ -755,22 +825,28 @@ class VirtualMachine extends EventEmitter {
      * @param {boolean} wholeProject - set to true if installing a whole project, as opposed to a single sprite.
      * @returns {Promise} resolved once targets have been installed
      */
-    async installTargets (targets, extensions, wholeProject) {
+    async installTargets(targets, extensions, wholeProject) {
         await this.extensionManager.allAsyncExtensionsLoaded();
 
-        targets = targets.filter(target => !!target);
+        targets = targets.filter((target) => !!target);
 
-        return this._loadExtensions(extensions.extensionIDs, extensions.extensionURLs).then(() => {
-            targets.forEach(target => {
+        return this._loadExtensions(
+            extensions.extensionIDs,
+            extensions.extensionURLs,
+        ).then(() => {
+            targets.forEach((target) => {
                 this.runtime.addTarget(target);
                 /** @type RenderedTarget */ target.updateAllDrawableProperties();
                 // Ensure unique sprite name
-                if (target.isSprite()) this.renameSprite(target.id, target.getName());
+                if (target.isSprite())
+                    this.renameSprite(target.id, target.getName());
             });
             // Sort the executable targets by layerOrder.
             // Remove layerOrder property after use.
-            this.runtime.executableTargets.sort((a, b) => a.layerOrder - b.layerOrder);
-            targets.forEach(target => {
+            this.runtime.executableTargets.sort(
+                (a, b) => a.layerOrder - b.layerOrder,
+            );
+            targets.forEach((target) => {
                 delete target.layerOrder;
             });
 
@@ -794,7 +870,9 @@ class VirtualMachine extends EventEmitter {
             this.emitTargetsUpdate(false /* Don't emit project change */);
             this.emitWorkspaceUpdate();
             this.runtime.setEditingTarget(this.editingTarget);
-            this.runtime.ioDevices.cloud.setStage(this.runtime.getTargetForStage());
+            this.runtime.ioDevices.cloud.setStage(
+                this.runtime.getTargetForStage(),
+            );
         });
     }
 
@@ -804,9 +882,13 @@ class VirtualMachine extends EventEmitter {
      * @param {string | object} input A json string, object, or ArrayBuffer representing the project to load.
      * @return {!Promise} Promise that resolves after targets are installed.
      */
-    addSprite (input) {
-        const errorPrefix = 'Sprite Upload Error:';
-        if (typeof input === 'object' && !(input instanceof ArrayBuffer) && !ArrayBuffer.isView(input)) {
+    addSprite(input) {
+        const errorPrefix = "Sprite Upload Error:";
+        if (
+            typeof input === "object" &&
+            !(input instanceof ArrayBuffer) &&
+            !ArrayBuffer.isView(input)
+        ) {
             // If the input is an object and not any ArrayBuffer
             // or an ArrayBuffer view (this includes all typed arrays and DataViews)
             // turn the object into a JSON string, because we suspect
@@ -817,7 +899,7 @@ class VirtualMachine extends EventEmitter {
         }
 
         const validationPromise = new Promise((resolve, reject) => {
-            const validate = require('scratch-parser');
+            const validate = require("./parser");
             // The second argument of true below indicates to the parser/validator
             // that the given input should be treated as a single sprite and not
             // an entire project
@@ -828,22 +910,35 @@ class VirtualMachine extends EventEmitter {
         });
 
         return validationPromise
-            .then(validatedInput => {
+            .then((validatedInput) => {
                 const projectVersion = validatedInput[0].projectVersion;
                 if (projectVersion === 2) {
-                    return this._addSprite2(validatedInput[0], validatedInput[1]);
+                    return this._addSprite2(
+                        validatedInput[0],
+                        validatedInput[1],
+                    );
                 }
                 if (projectVersion === 3) {
-                    return this._addSprite3(validatedInput[0], validatedInput[1]);
+                    return this._addSprite3(
+                        validatedInput[0],
+                        validatedInput[1],
+                    );
                 }
                 // TODO: reject with an Error (possible breaking API change!)
                 // eslint-disable-next-line prefer-promise-reject-errors
-                return Promise.reject(`${errorPrefix} Unable to verify sprite version.`);
+                return Promise.reject(
+                    `${errorPrefix} Unable to verify sprite version.`,
+                );
             })
             .then(() => this.runtime.emitProjectChanged())
-            .catch(error => {
+            .catch((error) => {
                 // Intentionally rejecting here (want errors to be handled by caller)
-                if (Object.prototype.hasOwnProperty.call(error, 'validationError')) {
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        error,
+                        "validationError",
+                    )
+                ) {
                     return Promise.reject(JSON.stringify(error));
                 }
                 // TODO: reject with an Error (possible breaking API change!)
@@ -859,7 +954,7 @@ class VirtualMachine extends EventEmitter {
      * @returns {Promise} Promise that resolves after the sprite is added
      */
     // eslint-disable-next-line no-unused-vars
-    _addSprite2 (sprite, zip) {
+    _addSprite2(sprite, zip) {
         // noop
     }
 
@@ -869,12 +964,14 @@ class VirtualMachine extends EventEmitter {
      * @param {?ArrayBuffer} zip Optional zip of assets being referenced by target json
      * @returns {Promise} Promise that resolves after the sprite is added
      */
-    _addSprite3 (sprite, zip) {
+    _addSprite3(sprite, zip) {
         // Validate & parse
-        const sb3 = require('./serialization/sb3');
+        const sb3 = require("./serialization/sb3");
         return sb3
             .deserialize(sprite, this.runtime, zip, true)
-            .then(({targets, extensions}) => this.installTargets(targets, extensions, false));
+            .then(({ targets, extensions }) =>
+                this.installTargets(targets, extensions, false),
+            );
     }
 
     /**
@@ -889,10 +986,17 @@ class VirtualMachine extends EventEmitter {
      * @param {string} optVersion - if this is 2, load costume as sb2, otherwise load costume as sb3.
      * @returns {?Promise} - a promise that resolves when the costume has been added
      */
-    addCostume (md5ext, costumeObject, optTargetId, optVersion) {
-        const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
+    addCostume(md5ext, costumeObject, optTargetId, optVersion) {
+        const target = optTargetId
+            ? this.runtime.getTargetById(optTargetId)
+            : this.editingTarget;
         if (target) {
-            return loadCostume(md5ext, costumeObject, this.runtime, optVersion).then(() => {
+            return loadCostume(
+                md5ext,
+                costumeObject,
+                this.runtime,
+                optVersion,
+            ).then(() => {
                 target.addCostume(costumeObject);
                 target.setCostume(target.getCostumes().length - 1);
                 this.runtime.emitProjectChanged();
@@ -914,11 +1018,16 @@ class VirtualMachine extends EventEmitter {
      * @property {number} [bitmapResolution] - the resolution scale for a bitmap costume.
      * @returns {?Promise} - a promise that resolves when the costume has been added
      */
-    addCostumeFromLibrary (md5ext, costumeObject) {
+    addCostumeFromLibrary(md5ext, costumeObject) {
         // TODO: reject with an Error (possible breaking API change!)
         // eslint-disable-next-line prefer-promise-reject-errors
         if (!this.editingTarget) return Promise.reject();
-        return this.addCostume(md5ext, costumeObject, this.editingTarget.id, 2 /* optVersion */);
+        return this.addCostume(
+            md5ext,
+            costumeObject,
+            this.editingTarget.id,
+            2 /* optVersion */,
+        );
     }
 
     /**
@@ -926,7 +1035,7 @@ class VirtualMachine extends EventEmitter {
      * @param {!int} costumeIndex Index of costume to duplicate
      * @returns {?Promise} - a promise that resolves when the costume has been decoded and added
      */
-    duplicateCostume (costumeIndex) {
+    duplicateCostume(costumeIndex) {
         const originalCostume = this.editingTarget.getCostumes()[costumeIndex];
         const clone = Object.assign({}, originalCostume);
         const md5ext = `${clone.assetId}.${clone.dataFormat}`;
@@ -942,10 +1051,14 @@ class VirtualMachine extends EventEmitter {
      * @param {!int} soundIndex Index of sound to duplicate
      * @returns {?Promise} - a promise that resolves when the sound has been decoded and added
      */
-    duplicateSound (soundIndex) {
+    duplicateSound(soundIndex) {
         const originalSound = this.editingTarget.getSounds()[soundIndex];
         const clone = Object.assign({}, originalSound);
-        return loadSound(clone, this.runtime, this.editingTarget.sprite.soundBank).then(() => {
+        return loadSound(
+            clone,
+            this.runtime,
+            this.editingTarget.sprite.soundBank,
+        ).then(() => {
             this.editingTarget.addSound(clone, soundIndex + 1);
             this.emitTargetsUpdate();
         });
@@ -956,7 +1069,7 @@ class VirtualMachine extends EventEmitter {
      * @param {int} costumeIndex - the index of the costume to be renamed.
      * @param {string} newName - the desired new name of the costume (will be modified if already in use).
      */
-    renameCostume (costumeIndex, newName) {
+    renameCostume(costumeIndex, newName) {
         this.editingTarget.renameCostume(costumeIndex, newName);
         this.emitTargetsUpdate();
     }
@@ -967,7 +1080,7 @@ class VirtualMachine extends EventEmitter {
      * @return {?function} A function to restore the deleted costume, or null,
      * if no costume was deleted.
      */
-    deleteCostume (costumeIndex) {
+    deleteCostume(costumeIndex) {
         const deletedCostume = this.editingTarget.deleteCostume(costumeIndex);
         if (deletedCostume) {
             const target = this.editingTarget;
@@ -986,10 +1099,16 @@ class VirtualMachine extends EventEmitter {
      * @param {string} optTargetId - the id of the target to add to, if not the editing target.
      * @returns {?Promise} - a promise that resolves when the sound has been decoded and added
      */
-    addSound (soundObject, optTargetId) {
-        const target = optTargetId ? this.runtime.getTargetById(optTargetId) : this.editingTarget;
+    addSound(soundObject, optTargetId) {
+        const target = optTargetId
+            ? this.runtime.getTargetById(optTargetId)
+            : this.editingTarget;
         if (target) {
-            return loadSound(soundObject, this.runtime, target.sprite.soundBank).then(() => {
+            return loadSound(
+                soundObject,
+                this.runtime,
+                target.sprite.soundBank,
+            ).then(() => {
                 target.addSound(soundObject);
                 this.emitTargetsUpdate();
             });
@@ -1003,7 +1122,7 @@ class VirtualMachine extends EventEmitter {
      * @param {int} soundIndex - the index of the sound to be renamed.
      * @param {string} newName - the desired new name of the sound (will be modified if already in use).
      */
-    renameSound (soundIndex, newName) {
+    renameSound(soundIndex, newName) {
         this.editingTarget.renameSound(soundIndex, newName);
         this.emitTargetsUpdate();
     }
@@ -1013,10 +1132,11 @@ class VirtualMachine extends EventEmitter {
      * @param {int} soundIndex - the index of the sound to be got.
      * @return {AudioBuffer} the sound's audio buffer.
      */
-    getSoundBuffer (soundIndex) {
+    getSoundBuffer(soundIndex) {
         const id = this.editingTarget.sprite.sounds[soundIndex].soundId;
         if (id && this.runtime && this.runtime.audioEngine) {
-            return this.editingTarget.sprite.soundBank.getSoundPlayer(id).buffer;
+            return this.editingTarget.sprite.soundBank.getSoundPlayer(id)
+                .buffer;
         }
         return null;
     }
@@ -1027,12 +1147,13 @@ class VirtualMachine extends EventEmitter {
      * @param {AudioBuffer} newBuffer - new audio buffer for the audio engine.
      * @param {ArrayBuffer} soundEncoding - the new (wav) encoded sound to be stored
      */
-    updateSoundBuffer (soundIndex, newBuffer, soundEncoding) {
+    updateSoundBuffer(soundIndex, newBuffer, soundEncoding) {
         const sound = this.editingTarget.sprite.sounds[soundIndex];
         if (sound && sound.broken) delete sound.broken;
         const id = sound ? sound.soundId : null;
         if (id && this.runtime && this.runtime.audioEngine) {
-            this.editingTarget.sprite.soundBank.getSoundPlayer(id).buffer = newBuffer;
+            this.editingTarget.sprite.soundBank.getSoundPlayer(id).buffer =
+                newBuffer;
         }
         // Update sound in runtime
         if (soundEncoding) {
@@ -1041,14 +1162,14 @@ class VirtualMachine extends EventEmitter {
             // Sounds that were formerly 'adpcm', but were updated in sound editor
             // will not get decoded by the audio engine correctly unless the format
             // is updated as below.
-            sound.format = '';
+            sound.format = "";
             const storage = this.runtime.storage;
             sound.asset = storage.createAsset(
                 storage.AssetType.Sound,
                 storage.DataFormat.WAV,
                 soundEncoding,
                 null,
-                true // generate md5
+                true, // generate md5
             );
             sound.assetId = sound.asset.assetId;
             sound.dataFormat = storage.DataFormat.WAV;
@@ -1069,7 +1190,7 @@ class VirtualMachine extends EventEmitter {
      * @return {?Function} A function to restore the sound that was deleted,
      * or null, if no sound was deleted.
      */
-    deleteSound (soundIndex) {
+    deleteSound(soundIndex) {
         const target = this.editingTarget;
         const deletedSound = this.editingTarget.deleteSound(soundIndex);
         if (deletedSound) {
@@ -1089,13 +1210,16 @@ class VirtualMachine extends EventEmitter {
      * @return {string} the costume's SVG string if it's SVG,
      *     a dataURI if it's a PNG or JPG, or null if it couldn't be found or decoded.
      */
-    getCostume (costumeIndex) {
+    getCostume(costumeIndex) {
         const asset = this.editingTarget.getCostumes()[costumeIndex].asset;
         if (!asset || !this.runtime || !this.runtime.storage) return null;
         const format = asset.dataFormat;
         if (format === this.runtime.storage.DataFormat.SVG) {
             return asset.decodeText();
-        } else if (format === this.runtime.storage.DataFormat.PNG || format === this.runtime.storage.DataFormat.JPG) {
+        } else if (
+            format === this.runtime.storage.DataFormat.PNG ||
+            format === this.runtime.storage.DataFormat.JPG
+        ) {
             return asset.encodeDataURI();
         }
         log.error(`Unhandled format: ${asset.dataFormat}`);
@@ -1107,7 +1231,7 @@ class VirtualMachine extends EventEmitter {
      * @param {Costume} costumeObject scratch-vm costume object
      * @returns {Uint8Array}
      */
-    getExportedCostume (costumeObject) {
+    getExportedCostume(costumeObject) {
         return exportCostume(costumeObject);
     }
 
@@ -1116,7 +1240,7 @@ class VirtualMachine extends EventEmitter {
      * @param {Costume} costumeObject scratch-vm costume object
      * @returns {string} base64 string. Not a data: URI.
      */
-    getExportedCostumeBase64 (costumeObject) {
+    getExportedCostumeBase64(costumeObject) {
         const binaryData = this.getExportedCostume(costumeObject);
         return Base64Util.uint8ArrayToBase64(binaryData);
     }
@@ -1130,17 +1254,29 @@ class VirtualMachine extends EventEmitter {
      * @param {!number} bitmapResolution 1 for bitmaps that have 1 pixel per unit of stage,
      *     2 for double-resolution bitmaps
      */
-    updateBitmap (costumeIndex, bitmap, rotationCenterX, rotationCenterY, bitmapResolution) {
+    updateBitmap(
+        costumeIndex,
+        bitmap,
+        rotationCenterX,
+        rotationCenterY,
+        bitmapResolution,
+    ) {
         return this._updateBitmap(
             this.editingTarget.getCostumes()[costumeIndex],
             bitmap,
             rotationCenterX,
             rotationCenterY,
-            bitmapResolution
+            bitmapResolution,
         );
     }
 
-    _updateBitmap (costume, bitmap, rotationCenterX, rotationCenterY, bitmapResolution) {
+    _updateBitmap(
+        costume,
+        bitmap,
+        rotationCenterX,
+        rotationCenterY,
+        bitmapResolution,
+    ) {
         if (!(costume && this.runtime && this.runtime.renderer)) return;
         if (costume && costume.broken) delete costume.broken;
 
@@ -1151,23 +1287,28 @@ class VirtualMachine extends EventEmitter {
         const bitmapWidth = bitmap.sourceWidth === 0 ? 0 : bitmap.width;
         const bitmapHeight = bitmap.sourceHeight === 0 ? 0 : bitmap.height;
         // @todo: updateBitmapSkin does not take ImageData
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = bitmapWidth;
         canvas.height = bitmapHeight;
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext("2d");
         context.putImageData(bitmap, 0, 0);
 
         // Divide by resolution because the renderer's definition of the rotation center
         // is the rotation center divided by the bitmap resolution
-        this.runtime.renderer.updateBitmapSkin(costume.skinId, canvas, bitmapResolution, [
-            rotationCenterX / bitmapResolution,
-            rotationCenterY / bitmapResolution
-        ]);
+        this.runtime.renderer.updateBitmapSkin(
+            costume.skinId,
+            canvas,
+            bitmapResolution,
+            [
+                rotationCenterX / bitmapResolution,
+                rotationCenterY / bitmapResolution,
+            ],
+        );
 
         // @todo there should be a better way to get from ImageData to a decodable storage format
-        canvas.toBlob(blob => {
+        canvas.toBlob((blob) => {
             const reader = new FileReader();
-            reader.addEventListener('loadend', () => {
+            reader.addEventListener("loadend", () => {
                 const storage = this.runtime.storage;
                 costume.dataFormat = storage.DataFormat.PNG;
                 costume.bitmapResolution = bitmapResolution;
@@ -1177,7 +1318,7 @@ class VirtualMachine extends EventEmitter {
                     costume.dataFormat,
                     Buffer.from(reader.result),
                     null, // id
-                    true // generate md5
+                    true, // generate md5
                 );
                 costume.assetId = costume.asset.assetId;
                 costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
@@ -1197,16 +1338,24 @@ class VirtualMachine extends EventEmitter {
      * @param {number} rotationCenterX x of point about which the costume rotates, relative to its upper left corner
      * @param {number} rotationCenterY y of point about which the costume rotates, relative to its upper left corner
      */
-    updateSvg (costumeIndex, svg, rotationCenterX, rotationCenterY) {
-        return this._updateSvg(this.editingTarget.getCostumes()[costumeIndex], svg, rotationCenterX, rotationCenterY);
+    updateSvg(costumeIndex, svg, rotationCenterX, rotationCenterY) {
+        return this._updateSvg(
+            this.editingTarget.getCostumes()[costumeIndex],
+            svg,
+            rotationCenterX,
+            rotationCenterY,
+        );
     }
 
-    _updateSvg (costume, svg, rotationCenterX, rotationCenterY) {
+    _updateSvg(costume, svg, rotationCenterX, rotationCenterY) {
         if (costume && costume.broken) delete costume.broken;
         if (costume && this.runtime && this.runtime.renderer) {
             costume.rotationCenterX = rotationCenterX;
             costume.rotationCenterY = rotationCenterY;
-            this.runtime.renderer.updateSVGSkin(costume.skinId, svg, [rotationCenterX, rotationCenterY]);
+            this.runtime.renderer.updateSVGSkin(costume.skinId, svg, [
+                rotationCenterX,
+                rotationCenterY,
+            ]);
             costume.size = this.runtime.renderer.getSkinSize(costume.skinId);
         }
         const storage = this.runtime.storage;
@@ -1219,7 +1368,7 @@ class VirtualMachine extends EventEmitter {
             costume.dataFormat,
             new _TextEncoder().encode(svg),
             null,
-            true // generate md5
+            true, // generate md5
         );
         costume.assetId = costume.asset.assetId;
         costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
@@ -1236,7 +1385,7 @@ class VirtualMachine extends EventEmitter {
      * @property {number} [bitmapResolution] - the resolution scale for a bitmap backdrop.
      * @returns {?Promise} - a promise that resolves when the backdrop has been added
      */
-    addBackdrop (md5ext, backdropObject) {
+    addBackdrop(md5ext, backdropObject) {
         return loadCostume(md5ext, backdropObject, this.runtime).then(() => {
             const stage = this.runtime.getTargetForStage();
             stage.addCostume(backdropObject);
@@ -1250,20 +1399,24 @@ class VirtualMachine extends EventEmitter {
      * @param {string} targetId ID of a target whose sprite to rename.
      * @param {string} newName New name of the sprite.
      */
-    renameSprite (targetId, newName) {
+    renameSprite(targetId, newName) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
             if (!target.isSprite()) {
-                throw new Error('Cannot rename non-sprite targets.');
+                throw new Error("Cannot rename non-sprite targets.");
             }
             const sprite = target.sprite;
             if (!sprite) {
-                throw new Error('No sprite associated with this target.');
+                throw new Error("No sprite associated with this target.");
             }
             if (newName && RESERVED_NAMES.indexOf(newName) === -1) {
                 const names = this.runtime.targets
-                    .filter(runtimeTarget => runtimeTarget.isSprite() && runtimeTarget.id !== target.id)
-                    .map(runtimeTarget => runtimeTarget.sprite.name);
+                    .filter(
+                        (runtimeTarget) =>
+                            runtimeTarget.isSprite() &&
+                            runtimeTarget.id !== target.id,
+                    )
+                    .map((runtimeTarget) => runtimeTarget.sprite.name);
                 const oldName = sprite.name;
                 const newUnusedName = StringUtil.unusedName(newName, names);
                 sprite.name = newUnusedName;
@@ -1273,13 +1426,17 @@ class VirtualMachine extends EventEmitter {
                 const allTargets = this.runtime.targets;
                 for (let i = 0; i < allTargets.length; i++) {
                     const currTarget = allTargets[i];
-                    currTarget.blocks.updateAssetName(oldName, newName, 'sprite');
+                    currTarget.blocks.updateAssetName(
+                        oldName,
+                        newName,
+                        "sprite",
+                    );
                 }
 
                 if (newUnusedName !== oldName) this.emitTargetsUpdate();
             }
         } else {
-            throw new Error('No target with the provided id.');
+            throw new Error("No target with the provided id.");
         }
     }
 
@@ -1288,20 +1445,25 @@ class VirtualMachine extends EventEmitter {
      * @param {string} targetId ID of a target whose sprite to delete.
      * @return {Function} Returns a function to restore the sprite that was deleted
      */
-    deleteSprite (targetId) {
+    deleteSprite(targetId) {
         const target = this.runtime.getTargetById(targetId);
 
         if (target) {
-            const targetIndexBeforeDelete = this.runtime.targets.map(t => t.id).indexOf(target.id);
+            const targetIndexBeforeDelete = this.runtime.targets
+                .map((t) => t.id)
+                .indexOf(target.id);
             if (!target.isSprite()) {
-                throw new Error('Cannot delete non-sprite targets.');
+                throw new Error("Cannot delete non-sprite targets.");
             }
             const sprite = target.sprite;
             if (!sprite) {
-                throw new Error('No sprite associated with this target.');
+                throw new Error("No sprite associated with this target.");
             }
-            const spritePromise = this.exportSprite(targetId, 'uint8array');
-            const restoreSprite = () => spritePromise.then(spriteBuffer => this.addSprite(spriteBuffer));
+            const spritePromise = this.exportSprite(targetId, "uint8array");
+            const restoreSprite = () =>
+                spritePromise.then((spriteBuffer) =>
+                    this.addSprite(spriteBuffer),
+                );
             // Remove monitors from the runtime state and remove the
             // target-specific monitored blocks (e.g. local variables)
             target.deleteMonitors();
@@ -1312,9 +1474,14 @@ class VirtualMachine extends EventEmitter {
                 this.runtime.disposeTarget(sprite.clones[i]);
                 // Ensure editing target is switched if we are deleting it.
                 if (clone === currentEditingTarget) {
-                    const nextTargetIndex = Math.min(this.runtime.targets.length - 1, targetIndexBeforeDelete);
+                    const nextTargetIndex = Math.min(
+                        this.runtime.targets.length - 1,
+                        targetIndexBeforeDelete,
+                    );
                     if (this.runtime.targets.length > 0) {
-                        this.setEditingTarget(this.runtime.targets[nextTargetIndex].id);
+                        this.setEditingTarget(
+                            this.runtime.targets[nextTargetIndex].id,
+                        );
                     } else {
                         this.editingTarget = null;
                     }
@@ -1325,7 +1492,7 @@ class VirtualMachine extends EventEmitter {
             return restoreSprite;
         }
 
-        throw new Error('No target with the provided id.');
+        throw new Error("No target with the provided id.");
     }
 
     /**
@@ -1334,16 +1501,16 @@ class VirtualMachine extends EventEmitter {
      * @returns {Promise} Promise that resolves when duplicated target has
      *     been added to the runtime.
      */
-    duplicateSprite (targetId) {
+    duplicateSprite(targetId) {
         const target = this.runtime.getTargetById(targetId);
         if (!target) {
-            throw new Error('No target with the provided id.');
+            throw new Error("No target with the provided id.");
         } else if (!target.isSprite()) {
-            throw new Error('Cannot duplicate non-sprite targets.');
+            throw new Error("Cannot duplicate non-sprite targets.");
         } else if (!target.sprite) {
-            throw new Error('No sprite associated with this target.');
+            throw new Error("No sprite associated with this target.");
         }
-        return target.duplicate().then(newTarget => {
+        return target.duplicate().then((newTarget) => {
             this.runtime.addTarget(newTarget);
             newTarget.goBehindOther(target);
             this.setEditingTarget(newTarget.id);
@@ -1354,7 +1521,7 @@ class VirtualMachine extends EventEmitter {
      * Set the audio engine for the VM/runtime
      * @param {!AudioEngine} audioEngine The audio engine to attach
      */
-    attachAudioEngine (audioEngine) {
+    attachAudioEngine(audioEngine) {
         this.runtime.attachAudioEngine(audioEngine);
     }
 
@@ -1362,26 +1529,26 @@ class VirtualMachine extends EventEmitter {
      * Set the renderer for the VM/runtime
      * @param {!RenderWebGL} renderer The renderer to attach
      */
-    attachRenderer (renderer) {
+    attachRenderer(renderer) {
         this.runtime.attachRenderer(renderer);
     }
 
     /**
      * @returns {RenderWebGL} The renderer attached to the vm
      */
-    get renderer () {
+    get renderer() {
         return this.runtime && this.runtime.renderer;
     }
 
     // @deprecated
-    attachV2SVGAdapter () {}
+    attachV2SVGAdapter() {}
 
     /**
      * Set the bitmap adapter for the VM/runtime, which converts scratch 2
      * bitmaps to scratch 3 bitmaps. (Scratch 3 bitmaps are all bitmap resolution 2)
      * @param {!function} bitmapAdapter The adapter to attach
      */
-    attachV2BitmapAdapter (bitmapAdapter) {
+    attachV2BitmapAdapter(bitmapAdapter) {
         this.runtime.attachV2BitmapAdapter(bitmapAdapter);
     }
 
@@ -1389,7 +1556,7 @@ class VirtualMachine extends EventEmitter {
      * Set the storage module for the VM/runtime
      * @param {!ScratchStorage} storage The storage module to attach
      */
-    attachStorage (storage) {
+    attachStorage(storage) {
         this.runtime.attachStorage(storage);
     }
 
@@ -1400,14 +1567,14 @@ class VirtualMachine extends EventEmitter {
      * @returns {Promise} Promise that resolves when all the blocks have been
      *     updated for a new locale (or empty if locale hasn't changed.)
      */
-    setLocale (locale, messages) {
+    setLocale(locale, messages) {
         if (locale !== formatMessage.setup().locale) {
             formatMessage.setup({
                 locale: locale,
-                translations: {[locale]: messages}
+                translations: { [locale]: messages },
             });
         }
-        this.emit('LOCALE_CHANGED', locale);
+        this.emit("LOCALE_CHANGED", locale);
         return this.extensionManager.refreshBlocks();
     }
 
@@ -1415,7 +1582,7 @@ class VirtualMachine extends EventEmitter {
      * get the current locale for the VM
      * @returns {string} the current locale in the VM
      */
-    getLocale () {
+    getLocale() {
         return formatMessage.setup().locale;
     }
 
@@ -1423,7 +1590,7 @@ class VirtualMachine extends EventEmitter {
      * Handle a Blockly event for the current editing target.
      * @param {!Blockly.Event} e Any Blockly event.
      */
-    blockListener (e) {
+    blockListener(e) {
         if (this.editingTarget) {
             this.editingTarget.blocks.blocklyListen(e);
         }
@@ -1433,7 +1600,7 @@ class VirtualMachine extends EventEmitter {
      * Handle a Blockly event for the flyout.
      * @param {!Blockly.Event} e Any Blockly event.
      */
-    flyoutBlockListener (e) {
+    flyoutBlockListener(e) {
         this.runtime.flyoutBlocks.blocklyListen(e);
     }
 
@@ -1441,10 +1608,10 @@ class VirtualMachine extends EventEmitter {
      * Handle a Blockly event for the flyout to be passed to the monitor container.
      * @param {!Blockly.Event} e Any Blockly event.
      */
-    monitorBlockListener (e) {
+    monitorBlockListener(e) {
         // Filter events by type, since monitor blocks only need to listen to these events.
         // Monitor blocks shouldn't be destroyed when flyout blocks are deleted.
-        if (['create', 'change'].indexOf(e.type) !== -1) {
+        if (["create", "change"].indexOf(e.type) !== -1) {
             this.runtime.monitorBlocks.blocklyListen(e);
         }
     }
@@ -1453,10 +1620,10 @@ class VirtualMachine extends EventEmitter {
      * Handle a Blockly event for the variable map.
      * @param {!Blockly.Event} e Any Blockly event.
      */
-    variableListener (e) {
+    variableListener(e) {
         // Filter events by type, since blocks only needs to listen to these
         // var events.
-        if (['var_create', 'var_rename', 'var_delete'].indexOf(e.type) !== -1) {
+        if (["var_create", "var_rename", "var_delete"].indexOf(e.type) !== -1) {
             this.runtime.getTargetForStage().blocks.blocklyListen(e);
         }
     }
@@ -1464,7 +1631,7 @@ class VirtualMachine extends EventEmitter {
     /**
      * Delete all of the flyout blocks.
      */
-    clearFlyoutBlocks () {
+    clearFlyoutBlocks() {
         this.runtime.flyoutBlocks.deleteAllBlocks();
     }
 
@@ -1476,7 +1643,7 @@ class VirtualMachine extends EventEmitter {
      * (see `emitTargetsUpdate` and `emitWorkspaceUpdate`).
      * @param {string} targetId Id of target to set as editing.
      */
-    setEditingTarget (targetId) {
+    setEditingTarget(targetId) {
         // Has the target id changed? If not, exit.
         if (this.editingTarget && targetId === this.editingTarget.id) {
             return;
@@ -1495,9 +1662,12 @@ class VirtualMachine extends EventEmitter {
      * @param {Block[]} blockObjects
      * @returns {object}
      */
-    exportStandaloneBlocks (blockObjects) {
-        const sb3 = require('./serialization/sb3');
-        const serialized = sb3.serializeStandaloneBlocks(blockObjects, this.runtime);
+    exportStandaloneBlocks(blockObjects) {
+        const sb3 = require("./serialization/sb3");
+        const serialized = sb3.serializeStandaloneBlocks(
+            blockObjects,
+            this.runtime,
+        );
         return serialized;
     }
 
@@ -1510,10 +1680,11 @@ class VirtualMachine extends EventEmitter {
      * shared from that target. This is needed for resolving any potential variable conflicts.
      * @return {!Promise} Promise that resolves when the extensions and blocks have been added.
      */
-    shareBlocksToTarget (blocks, targetId, optFromTargetId) {
-        const sb3 = require('./serialization/sb3');
+    shareBlocksToTarget(blocks, targetId, optFromTargetId) {
+        const sb3 = require("./serialization/sb3");
 
-        const {blocks: copiedBlocks, extensionURLs} = sb3.deserializeStandaloneBlocks(blocks);
+        const { blocks: copiedBlocks, extensionURLs } =
+            sb3.deserializeStandaloneBlocks(blocks);
         newBlockIds(copiedBlocks);
         const target = this.runtime.getTargetById(targetId);
 
@@ -1521,19 +1692,22 @@ class VirtualMachine extends EventEmitter {
             // If the blocks are being shared from another target,
             // resolve any possible variable conflicts that may arise.
             const fromTarget = this.runtime.getTargetById(optFromTargetId);
-            fromTarget.resolveVariableSharingConflictsWithTarget(copiedBlocks, target);
+            fromTarget.resolveVariableSharingConflictsWithTarget(
+                copiedBlocks,
+                target,
+            );
         }
 
         // Create a unique set of extensionIds that are not yet loaded
         const extensionIDs = new Set(
             copiedBlocks
-                .map(b => sb3.getExtensionIdForOpcode(b.opcode))
-                .filter(id => !!id) // Remove ids that do not exist
-                .filter(id => !this.extensionManager.isExtensionLoaded(id)) // and remove loaded extensions
+                .map((b) => sb3.getExtensionIdForOpcode(b.opcode))
+                .filter((id) => !!id) // Remove ids that do not exist
+                .filter((id) => !this.extensionManager.isExtensionLoaded(id)), // and remove loaded extensions
         );
 
         return this._loadExtensions(extensionIDs, extensionURLs).then(() => {
-            copiedBlocks.forEach(block => {
+            copiedBlocks.forEach((block) => {
                 target.blocks.createBlock(block);
             });
             target.blocks.updateTargetSpecificBlocks(target.isStage);
@@ -1547,7 +1721,7 @@ class VirtualMachine extends EventEmitter {
      * @param {!string} targetId Id of target to add the costume.
      * @return {Promise} Promise that resolves when the new costume has been loaded.
      */
-    shareCostumeToTarget (costumeIndex, targetId) {
+    shareCostumeToTarget(costumeIndex, targetId) {
         const originalCostume = this.editingTarget.getCostumes()[costumeIndex];
         const clone = Object.assign({}, originalCostume);
         const md5ext = `${clone.assetId}.${clone.dataFormat}`;
@@ -1566,23 +1740,25 @@ class VirtualMachine extends EventEmitter {
      * @param {!string} targetId Id of target to add the sound.
      * @return {Promise} Promise that resolves when the new sound has been loaded.
      */
-    shareSoundToTarget (soundIndex, targetId) {
+    shareSoundToTarget(soundIndex, targetId) {
         const originalSound = this.editingTarget.getSounds()[soundIndex];
         const clone = Object.assign({}, originalSound);
         const target = this.runtime.getTargetById(targetId);
-        return loadSound(clone, this.runtime, target.sprite.soundBank).then(() => {
-            if (target) {
-                target.addSound(clone);
-                this.emitTargetsUpdate();
-            }
-        });
+        return loadSound(clone, this.runtime, target.sprite.soundBank).then(
+            () => {
+                if (target) {
+                    target.addSound(clone);
+                    this.emitTargetsUpdate();
+                }
+            },
+        );
     }
 
     /**
      * Repopulate the workspace with the blocks of the current editingTarget. This
      * allows us to get around bugs like gui#413.
      */
-    refreshWorkspace () {
+    refreshWorkspace() {
         if (this.editingTarget) {
             this.emitWorkspaceUpdate();
             this.runtime.setEditingTarget(this.editingTarget);
@@ -1598,27 +1774,32 @@ class VirtualMachine extends EventEmitter {
      * Disabled selectively by updates that don't affect project serialization.
      * Defaults to true.
      */
-    emitTargetsUpdate (triggerProjectChange) {
-        if (typeof triggerProjectChange === 'undefined') triggerProjectChange = true;
+    emitTargetsUpdate(triggerProjectChange) {
+        if (typeof triggerProjectChange === "undefined")
+            triggerProjectChange = true;
         let lazyTargetList;
         const getTargetListLazily = () => {
             if (!lazyTargetList) {
                 lazyTargetList = this.runtime.targets
                     .filter(
                         // Don't report clones.
-                        target => !Object.prototype.hasOwnProperty.call(target, 'isOriginal') || target.isOriginal
+                        (target) =>
+                            !Object.prototype.hasOwnProperty.call(
+                                target,
+                                "isOriginal",
+                            ) || target.isOriginal,
                     )
-                    .map(target => target.toJSON());
+                    .map((target) => target.toJSON());
             }
             return lazyTargetList;
         };
-        this.emit('targetsUpdate', {
+        this.emit("targetsUpdate", {
             // [[target id, human readable target name], ...].
-            get targetList () {
+            get targetList() {
                 return getTargetListLazily();
             },
             // Currently editing target id.
-            editingTarget: this.editingTarget ? this.editingTarget.id : null
+            editingTarget: this.editingTarget ? this.editingTarget.id : null,
         });
         if (triggerProjectChange) {
             this.runtime.emitProjectChanged();
@@ -1629,12 +1810,14 @@ class VirtualMachine extends EventEmitter {
      * Emit an Blockly/scratch-blocks compatible XML representation
      * of the current editing target's blocks.
      */
-    emitWorkspaceUpdate () {
+    emitWorkspaceUpdate() {
         // Create a list of broadcast message Ids according to the stage variables
         const stageVariables = this.runtime.getTargetForStage().variables;
         let messageIds = [];
         for (const varId in stageVariables) {
-            if (stageVariables[varId].type === Variable.BROADCAST_MESSAGE_TYPE) {
+            if (
+                stageVariables[varId].type === Variable.BROADCAST_MESSAGE_TYPE
+            ) {
                 messageIds.push(varId);
             }
         }
@@ -1648,7 +1831,9 @@ class VirtualMachine extends EventEmitter {
                     const id = currBlocks[blockId].fields.BROADCAST_OPTION.id;
                     const index = messageIds.indexOf(id);
                     if (index !== -1) {
-                        messageIds = messageIds.slice(0, index).concat(messageIds.slice(index + 1));
+                        messageIds = messageIds
+                            .slice(0, index)
+                            .concat(messageIds.slice(index + 1));
                     }
                 }
             }
@@ -1658,27 +1843,34 @@ class VirtualMachine extends EventEmitter {
             const id = messageIds[i];
             delete this.runtime.getTargetForStage().variables[id];
         }
-        const globalVarMap = Object.assign({}, this.runtime.getTargetForStage().variables);
-        const localVarMap = this.editingTarget.isStage ?
-            Object.create(null) :
-            Object.assign({}, this.editingTarget.variables);
+        const globalVarMap = Object.assign(
+            {},
+            this.runtime.getTargetForStage().variables,
+        );
+        const localVarMap = this.editingTarget.isStage
+            ? Object.create(null)
+            : Object.assign({}, this.editingTarget.variables);
 
-        const globalVariables = Object.keys(globalVarMap).map(k => globalVarMap[k]);
-        const localVariables = Object.keys(localVarMap).map(k => localVarMap[k]);
+        const globalVariables = Object.keys(globalVarMap).map(
+            (k) => globalVarMap[k],
+        );
+        const localVariables = Object.keys(localVarMap).map(
+            (k) => localVarMap[k],
+        );
         const workspaceComments = Object.keys(this.editingTarget.comments)
-            .map(k => this.editingTarget.comments[k])
-            .filter(c => c.blockId === null);
+            .map((k) => this.editingTarget.comments[k])
+            .filter((c) => c.blockId === null);
 
         const xmlString = `<xml xmlns="http://www.w3.org/1999/xhtml">
                             <variables>
-                                ${globalVariables.map(v => v.toXML()).join()}
-                                ${localVariables.map(v => v.toXML(true)).join()}
+                                ${globalVariables.map((v) => v.toXML()).join()}
+                                ${localVariables.map((v) => v.toXML(true)).join()}
                             </variables>
-                            ${workspaceComments.map(c => c.toXML()).join()}
+                            ${workspaceComments.map((c) => c.toXML()).join()}
                             ${this.editingTarget.blocks.toXML(this.editingTarget.comments)}
                         </xml>`;
 
-        this.emit('workspaceUpdate', {xml: xmlString});
+        this.emit("workspaceUpdate", { xml: xmlString });
     }
 
     /**
@@ -1686,12 +1878,12 @@ class VirtualMachine extends EventEmitter {
      * @param {int} drawableId The drawable id to request the target id for
      * @returns {?string} The target id, if found. Will also be null if the target found is the stage.
      */
-    getTargetIdForDrawableId (drawableId) {
+    getTargetIdForDrawableId(drawableId) {
         const target = this.runtime.getTargetByDrawableId(drawableId);
         if (
             target &&
-            Object.prototype.hasOwnProperty.call(target, 'id') &&
-            Object.prototype.hasOwnProperty.call(target, 'isStage') &&
+            Object.prototype.hasOwnProperty.call(target, "id") &&
+            Object.prototype.hasOwnProperty.call(target, "isStage") &&
             !target.isStage
         ) {
             return target.id;
@@ -1705,13 +1897,15 @@ class VirtualMachine extends EventEmitter {
      * @param {!number} newIndex index that the target should be moved to.
      * @returns {boolean} Whether a target was reordered.
      */
-    reorderTarget (targetIndex, newIndex) {
+    reorderTarget(targetIndex, newIndex) {
         let targets = this.runtime.targets;
         targetIndex = MathUtil.clamp(targetIndex, 0, targets.length - 1);
         newIndex = MathUtil.clamp(newIndex, 0, targets.length - 1);
         if (targetIndex === newIndex) return false;
         const target = targets[targetIndex];
-        targets = targets.slice(0, targetIndex).concat(targets.slice(targetIndex + 1));
+        targets = targets
+            .slice(0, targetIndex)
+            .concat(targets.slice(targetIndex + 1));
         targets.splice(newIndex, 0, target);
         this.runtime.targets = targets;
         this.emitTargetsUpdate();
@@ -1725,10 +1919,13 @@ class VirtualMachine extends EventEmitter {
      * @param {!number} newIndex index that the costume should be moved to.
      * @returns {boolean} Whether a costume was reordered.
      */
-    reorderCostume (targetId, costumeIndex, newIndex) {
+    reorderCostume(targetId, costumeIndex, newIndex) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
-            const reorderSuccessful = target.reorderCostume(costumeIndex, newIndex);
+            const reorderSuccessful = target.reorderCostume(
+                costumeIndex,
+                newIndex,
+            );
             if (reorderSuccessful) {
                 this.runtime.emitProjectChanged();
             }
@@ -1744,7 +1941,7 @@ class VirtualMachine extends EventEmitter {
      * @param {!number} newIndex index that the sound should be moved to.
      * @returns {boolean} Whether a sound was reordered.
      */
-    reorderSound (targetId, soundIndex, newIndex) {
+    reorderSound(targetId, soundIndex, newIndex) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
             const reorderSuccessful = target.reorderSound(soundIndex, newIndex);
@@ -1761,7 +1958,7 @@ class VirtualMachine extends EventEmitter {
      * by blocks.
      * @param {string} targetId The id for the target to put into a drag state
      */
-    startDrag (targetId) {
+    startDrag(targetId) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
             this._dragTarget = target;
@@ -1773,12 +1970,16 @@ class VirtualMachine extends EventEmitter {
      * Remove a target from a drag state, so blocks may begin affecting X/Y position again
      * @param {string} targetId The id for the target to remove from the drag state
      */
-    stopDrag (targetId) {
+    stopDrag(targetId) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
             this._dragTarget = null;
             target.stopDrag();
-            this.setEditingTarget(target.sprite && target.sprite.clones[0] ? target.sprite.clones[0].id : target.id);
+            this.setEditingTarget(
+                target.sprite && target.sprite.clones[0]
+                    ? target.sprite.clones[0].id
+                    : target.id,
+            );
         }
     }
 
@@ -1786,7 +1987,7 @@ class VirtualMachine extends EventEmitter {
      * Post/edit sprite info for the current editing target or the drag target.
      * @param {object} data An object with sprite info data to set.
      */
-    postSpriteInfo (data) {
+    postSpriteInfo(data) {
         if (this._dragTarget) {
             this._dragTarget.postSpriteInfo(data);
         } else {
@@ -1806,7 +2007,7 @@ class VirtualMachine extends EventEmitter {
      * @param {!*} value The new value of that variable.
      * @returns {boolean} whether the target and variable were found and updated.
      */
-    setVariableValue (targetId, variableId, value) {
+    setVariableValue(targetId, variableId, value) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
             const variable = target.lookupVariableById(variableId);
@@ -1814,7 +2015,10 @@ class VirtualMachine extends EventEmitter {
                 variable.value = value;
 
                 if (variable.isCloud) {
-                    this.runtime.ioDevices.cloud.requestUpdateVariable(variable.name, variable.value);
+                    this.runtime.ioDevices.cloud.requestUpdateVariable(
+                        variable.name,
+                        variable.value,
+                    );
                 }
 
                 return true;
@@ -1829,7 +2033,7 @@ class VirtualMachine extends EventEmitter {
      * @param {!string} variableId ID of the variable to set.
      * @returns {?*} The value of the variable, or null if it could not be looked up.
      */
-    getVariableValue (targetId, variableId) {
+    getVariableValue(targetId, variableId) {
         const target = this.runtime.getTargetById(targetId);
         if (target) {
             const variable = target.lookupVariableById(variableId);
@@ -1844,7 +2048,7 @@ class VirtualMachine extends EventEmitter {
      * Allow VM consumer to configure the ScratchLink socket creator.
      * @param {Function} factory The custom ScratchLink socket factory.
      */
-    configureScratchLinkSocketFactory (factory) {
+    configureScratchLinkSocketFactory(factory) {
         this.runtime.configureScratchLinkSocketFactory(factory);
     }
 }

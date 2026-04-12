@@ -336,6 +336,7 @@ const looks = function (isInitialSetup, isStage, targetId, costumeName, backdrop
             <block id="${targetId}_size" type="looks_size"/>
         `
         }
+        <block type="looks_geteffect"/>
         ${categorySeparator}
     </category>
     `;
@@ -660,15 +661,16 @@ const strings = function (isInitialSetup, isStage, targetId, colors) {
         id="ampmodstrings"
         colour="${colors.primary}"
         secondaryColour="${colors.tertiary}">
-        <block type="operator_join">
-            <value name="STRING1">
+        <block type="operator_expandablejoin">
+            <mutation items="2"></mutation>
+            <value name="ADD0">
                 <shadow type="text">
                     <field name="TEXT">${apple} </field>
                 </shadow>
             </value>
-            <value name="STRING2">
+            <value name="ADD1">
                 <shadow type="text">
-                    <field name="TEXT">${banana}</field>
+                    <field name="TEXT">${banana} </field>
                 </shadow>
             </value>
         </block>
@@ -877,6 +879,7 @@ const operators = function (isInitialSetup, isStage, targetId, colors) {
             </value>
         </block>
         ${blockSeparator}
+        <block type="operator_mathconst"/>
         <block type="operator_mathop">
             <value name="NUM">
                 <shadow type="math_number">
@@ -913,8 +916,9 @@ const arrays = function (isInitialSetup, isStage, targetId, colors) {
         id="arrays"
         colour="${colors.primary}"
         secondaryColour="${colors.tertiary}">
-        <block type="arrays_empty_array" />
-        ${blockSeparator}
+        <block type="arrays_expandablemake">
+            <mutation items="0"></mutation>
+        </block>
         <block type="arrays_delimited_to_array">
             <value name="TEXT">
                 <shadow type="text">

@@ -218,6 +218,7 @@ const InputOpcode = {
     LOOKS_COSTUME_NUMBER: 'looks.costumeNumber',
     LOOKS_COSTUME_NAME: 'looks.costumeName',
     LOOKS_SIZE_GET: 'looks.size',
+    LOOKS_EFFECT_GET: 'looks.getEffect',
 
     VAR_GET: 'var.get',
 
@@ -314,6 +315,7 @@ const InputOpcode = {
     ARRAYS_INDEX: 'arrays.index',
     ARRAYS_LENGTH: 'arrays.length',
     ARRAYS_CONTAINS: 'arrays.contains',
+    ARRAYS_EXPANDABLE_MAKE: 'arrays.expandableMake',
 
     TW_KEY_LAST_PRESSED: 'tw.lastKeyPressed'
 };

@@ -23,6 +23,7 @@ const ScratchLinkWebSocket = require('../util/scratch-link-websocket');
 const FontManager = require('./tw-font-manager');
 const fetchWithTimeout = require('../util/fetch-with-timeout');
 const platform = require('./tw-platform.js');
+const safeStringify = require('../util/tw-safe-stringify.js');
 
 // Virtual I/O devices.
 const Clock = require('../io/clock');
@@ -3247,7 +3248,7 @@ class Runtime extends EventEmitter {
         if (target === this.getEditingTarget()) {
             this.emit(Runtime.VISUAL_REPORT, {
                 id: blockId,
-                value: String(value)
+                value: safeStringify(value)
             });
         }
     }

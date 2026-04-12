@@ -71,7 +71,7 @@ class GUI extends React.Component {
                 this.props.onOpenUpdateNoticeModal();
             }
 
-            localStorage.setItem(`${lsNamespace}update-notice-shown`, process.env.ampmod_version);
+            localStorage.setItem(`${lsNamespace}update-notice-shown`, currentVersion);
         }
     }
     componentDidUpdate(prevProps) {

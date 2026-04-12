@@ -302,6 +302,8 @@ class JSGenerator {
                 return "target.getCostumes()[target.currentCostume].name";
             case InputOpcode.LOOKS_COSTUME_NUMBER:
                 return "(target.currentCostume + 1)";
+            case InputOpcode.LOOKS_EFFECT_GET:
+                return `target.effects[${JSON.stringify(node.effect)}]`;
 
             case InputOpcode.MOTION_DIRECTION_GET:
                 return "target.direction";
@@ -434,8 +436,10 @@ class JSGenerator {
                 // No compile-time optimizations possible - use fallback method.
                 return `compareGreaterThan(${this.descendInput(left)}, ${this.descendInput(right)})`;
             }
-            case InputOpcode.OP_JOIN:
-                return `(${this.descendInput(node.left)} + ${this.descendInput(node.right)})`;
+            case InputOpcode.OP_JOIN: {
+                const compiledItems = node.items.map(item => this.descendInput(item));
+                return `(${compiledItems.join(" + ")})`;
+            }
             case InputOpcode.OP_ARRAYJOIN:
                 return `(${this.descendInput(node.array)}.join(${this.descendInput(node.delim)}))`;
             case InputOpcode.OP_LENGTH:
@@ -649,6 +653,10 @@ class JSGenerator {
                 return `[...${this.descendInput(node.array)}, ${this.descendInput(node.item)}]`;
             case InputOpcode.ARRAYS_CONTAINS:
                 return `(Array.isArray(${this.descendInput(node.array)}) ? ${this.descendInput(node.array)}.some(x => x == ${this.descendInput(node.item)}) : false)`;
+            case InputOpcode.ARRAYS_EXPANDABLE_MAKE: {
+                const compiledItems = node.items.map(item => this.descendInput(item));
+                return `[${compiledItems.join(", ")}]`;
+            }
 
             default:
                 log.warn(`JS: Unknown input: ${block.opcode}`, node);

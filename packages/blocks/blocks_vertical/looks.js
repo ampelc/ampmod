@@ -225,6 +225,36 @@ Blockly.Blocks["looks_seteffectto"] = {
     },
 };
 
+Blockly.Blocks["looks_geteffect"] = {
+    /**
+     * Block to get graphic effect.
+     * @this Blockly.Block
+     */
+    init: function () {
+        this.jsonInit({
+            message0: Blockly.Msg.LOOKS_GETEFFECT,
+            args0: [
+                {
+                    type: "field_dropdown",
+                    name: "EFFECT",
+                    options: [
+                        [Blockly.Msg.LOOKS_EFFECT_COLOR, "color"],
+                        [Blockly.Msg.LOOKS_EFFECT_FISHEYE, "fisheye"],
+                        [Blockly.Msg.LOOKS_EFFECT_WHIRL, "whirl"],
+                        [Blockly.Msg.LOOKS_EFFECT_PIXELATE, "pixelate"],
+                        [Blockly.Msg.LOOKS_EFFECT_MOSAIC, "mosaic"],
+                        [Blockly.Msg.LOOKS_EFFECT_BRIGHTNESS, "brightness"],
+                        [Blockly.Msg.LOOKS_EFFECT_GHOST, "ghost"],
+                    ],
+                },
+            ],
+            category: Blockly.Categories.looks,
+            checkboxInFlyout: true,
+            extensions: ["colours_looks", "output_number"],
+        });
+    },
+};
+
 Blockly.Blocks["looks_cleargraphiceffects"] = {
     /**
      * Block to clear graphic effects.

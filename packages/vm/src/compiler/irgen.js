@@ -396,6 +396,26 @@ class ScriptTreeGenerator {
                     item: this.descendInputOfBlock(block, "ITEM"),
                 }
             );
+        case 'arrays_expandablemake': {
+            const items = [];
+            // Extract the count from the block's mutation
+            // In many Scratch-based IR generators, this is stored in block.mutation
+            const itemCount = Number(block.mutation.items) || 0;
+
+            for (let i = 0; i < itemCount; i++) {
+                // Descend into each dynamic input (ADD0, ADD1, etc.)
+                const inputName = `ADD${i}`;
+                items.push(this.descendInputOfBlock(block, inputName));
+            }
+
+            return new IntermediateInput(
+                InputOpcode.ARRAYS_EXPANDABLE_MAKE, // Ensure this opcode exists in your InputOpcode enum
+                InputType.ARRAY,
+                {
+                    items: items
+                }
+            );
+        }
 
         case 'event_broadcast_menu': {
             const broadcastOption = block.fields.BROADCAST_OPTION;
@@ -417,6 +437,14 @@ class ScriptTreeGenerator {
             return new IntermediateInput(InputOpcode.LOOKS_COSTUME_NAME, InputType.STRING);
         case 'looks_size':
             return new IntermediateInput(InputOpcode.LOOKS_SIZE_GET, InputType.NUMBER_POS_REAL);
+        case 'looks_geteffect':
+            return new IntermediateInput(
+                InputOpcode.LOOKS_EFFECT_GET,
+                InputType.NUMBER_REAL,
+                {
+                    effect: block.fields.EFFECT.value
+                }
+            );
 
         case 'motion_position':
             return new IntermediateInput(InputOpcode.MOTION_POSITION_GET, InputType.NUMBER_REAL);
@@ -471,9 +499,29 @@ class ScriptTreeGenerator {
             });
         case 'operator_join':
             return new IntermediateInput(InputOpcode.OP_JOIN, InputType.STRING, {
-                left: this.descendInputOfBlock(block, 'STRING1').toType(InputType.STRING),
-                right: this.descendInputOfBlock(block, 'STRING2').toType(InputType.STRING)
+                items: [
+                    this.descendInputOfBlock(block, 'STRING1').toType(InputType.STRING),
+                    this.descendInputOfBlock(block, 'STRING2').toType(InputType.STRING)
+                ]
             });
+        case 'operator_expandablejoin': {
+            const items = [];
+            const itemCount = Number(block.mutation.items) || 0;
+
+            for (let i = 0; i < itemCount; i++) {
+                // Descend into each dynamic input (ADD0, ADD1, etc.)
+                const inputName = `ADD${i}`;
+                items.push(this.descendInputOfBlock(block, inputName).toType(InputType.STRING));
+            }
+
+            return new IntermediateInput(
+                InputOpcode.OP_JOIN,
+                InputType.ARRAY,
+                {
+                    items: items
+                }
+            );
+        }
         case 'operator_arrayjoin':
             return new IntermediateInput(InputOpcode.OP_ARRAYJOIN, InputType.STRING, {
                 array: this.descendInputOfBlock(block, 'ARRAY').toType(InputType.ARRAY),
@@ -535,6 +583,21 @@ class ScriptTreeGenerator {
                 return new IntermediateInput(InputOpcode.OP_POW_10, InputType.NUMBER, {value});
             default:
                 return this.createConstantInput(0);
+            }
+        }
+        case 'operator_mathconst': {
+            const constant = block.fields.CONSTANT.value;
+            switch (constant) {
+                case 'pi':
+                    return this.createConstantInput(Math.PI);
+                case 'e':
+                    return this.createConstantInput(Math.E);
+                case 'infinity':
+                    return this.createConstantInput(Infinity);
+                case '-infinity':
+                    return this.createConstantInput(-Infinity);
+                default:
+                    return this.createConstantInput(0);
             }
         }
         case 'operator_mod':

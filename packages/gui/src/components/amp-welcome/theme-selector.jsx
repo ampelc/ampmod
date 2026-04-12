@@ -12,7 +12,8 @@ import {
     GUI_DARK,
     GUI_AMOLED,
     GUI_HIGH_CONTRAST,
-    Theme
+    Theme,
+    GUI_AMP_DARK
 } from '../../lib/themes/index.js';
 import {closeSettingsMenu} from '../../reducers/menus.js';
 import {setTheme} from '../../reducers/theme.js';
@@ -27,25 +28,30 @@ const options = defineMessages({
         id: 'amp.gui.light'
     },
     [GUI_LIGHT]: {
-        defaultMessage: 'Light (Classic)',
+        defaultMessage: 'Colourful',
         description: 'Light theme option',
-        id: 'amp.gui.lightClassic'
+        id: 'amp.gui.colourful'
+    },
+    [GUI_AMP_DARK]: {
+        defaultMessage: 'Dark',
+        description: 'Light theme option',
+        id: 'amp.gui.dark'
     },
     [GUI_DARK]: {
-        defaultMessage: 'Dark',
+        defaultMessage: 'Dark Colourful',
         description: 'Dark theme option',
-        id: 'amp.gui.dark'
+        id: 'amp.gui.darkColourful'
     },
     [GUI_AMOLED]: {
         defaultMessage: 'AMOLED',
         description: 'AMOLED theme option with true black',
         id: 'amp.gui.amoled'
     },
-    [GUI_HIGH_CONTRAST]: {
+    /*[GUI_HIGH_CONTRAST]: {
         defaultMessage: 'High Contrast (Alpha)',
         description: 'High contrast theme option',
         id: 'amp.gui.highContrast'
-    }
+    }*/
 });
 
 const GuiIcon = ({id}) => (
@@ -56,25 +62,51 @@ const GuiIcon = ({id}) => (
                 backgroundColor: GUI_MAP[id].guiColors['ui-primary'] || GUI_MAP['light'].guiColors['ui-primary']
             }}
         >
+            {/* Menu Bar with a few "dots/lines" */}
             <div
                 className={styles.themeSelectorIconMenubar}
                 style={{
-                    borderBottomColor: GUI_MAP[id].guiColors['high-contrast-border'] || 'transparent',
+                    borderBottom: `1px solid ${GUI_MAP[id].guiColors['menu-bar-bottom-border'] || GUI_MAP[id].guiColors['high-contrast-border'] || 'transparent'}`,
                     backgroundColor:
                         GUI_MAP[id].guiColors['menu-bar-background'] ||
-                        GUI_MAP['light'].guiColors['menu-bar-background']
+                        GUI_MAP['light'].guiColors['menu-bar-background'],
+                    color: GUI_MAP[id].guiColors['menu-bar-foreground'] ||
+                        GUI_MAP['light'].guiColors['menu-bar-foreground']
                 }}
-            />
-            <div
-                className={styles.themeSelectorIconFakeBlocks}
-                style={{
-                    borderColor: GUI_MAP[id].guiColors['ui-black-transparent'],
-                    backgroundColor: GUI_MAP[id].blockColors['workspace'] || '#fff'
-                }}
-            />
+            >
+                <div className={styles.menuDecoration} />
+            </div>
+
+            <div className={styles.themeSelectorIconBody}>
+                {/* Left Sidebar (Categories) */}
+                <div className={styles.themeSelectorIconSidebar}>
+                    <div className={`${styles.dot} ${styles.motion}`} />
+                    <div className={`${styles.dot} ${styles.looks}`} />
+                    <div className={`${styles.dot} ${styles.sounds}`} />
+                </div>
+
+                {/* Workspace (The Blocks Area) */}
+                <div
+                    className={styles.themeSelectorIconFakeBlocks}
+                    style={{
+                        borderColor: GUI_MAP[id].guiColors['ui-black-transparent'],
+                        backgroundColor: GUI_MAP[id].blockColors['workspace'] || '#fff'
+                    }}
+                >
+                    <div className={styles.fakeBlock} style={{backgroundColor: '#ffbf00', width: '80%'}} />
+                    <div className={styles.fakeBlock} style={{backgroundColor: '#9966FF', width: '60%'}} />
+                </div>
+
+                {/* Right Side (Stage and Sprite Pane) */}
+                <div className={styles.themeSelectorIconStage}>
+                    <div className={styles.stageWindow} />
+                    <div className={styles.spriteGrid} style={{backgroundColor: GUI_MAP[id].guiColors['ui-secondary']}} />
+                </div>
+            </div>
         </div>
     </>
 );
+
 
 GuiIcon.propTypes = {
     id: PropTypes.string
@@ -98,13 +130,7 @@ GuiThemeItem.propTypes = {
 const GuiThemeMenu = ({isOpen, isRtl, onChangeTheme, onOpen, theme}) => {
     return (
         <div className={styles.themeSelectorRow}>
-            {[
-                GUI_AMP_LIGHT,
-                GUI_LIGHT,
-                GUI_DARK,
-                GUI_AMOLED
-                // GUI_HIGH_CONTRAST,
-            ].map(id => (
+            {Object.keys(options).map(id => (
                 <GuiThemeItem
                     key={id}
                     id={id}

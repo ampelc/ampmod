@@ -6,6 +6,7 @@ import * as Bowser from "bowser";
 import Localise from "../localise/localise.jsx";
 import classNames from "classnames";
 import SmartLink from "../smart-link/smart-link";
+import isAprilFools from "../../../lib/amp-enable-pranks";
 
 export default () => {
     const [isPhone, setIsPhone] = useState(false);
@@ -22,7 +23,7 @@ export default () => {
                 <div className={myStyles.headerContainerContainer}>
                     <div className={myStyles.headerContent}>
                         <h1 className={styles.headerText}>
-                            <Localise id="appSlogan" />
+                            {isAprilFools ? 'Lamps, amplified' : <Localise id="appSlogan" />}
                         </h1>
 
                         {process.env.ampmod_mode === 'canary' && (
