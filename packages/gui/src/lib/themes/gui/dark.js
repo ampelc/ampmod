@@ -1,76 +1,23 @@
-import {guiColors as lightGuiColors} from './light';
+import { guiColors as ampDarkGuiColors, blockColors } from "./amp-dark";
 
 const guiColors = {
-    ...lightGuiColors,
+    ...ampDarkGuiColors,
 
-    'color-scheme': 'dark',
+    "ui-primary": "#111111",
+    "ui-secondary": "#1e1e1e",
+    "ui-tertiary": "#2e2e2e",
 
-    'ui-primary': '#111111',
-    'ui-secondary': '#1e1e1e',
-    'ui-tertiary': '#2e2e2e',
-
-    'ui-modal-overlay': '#333333aa',
-    'ui-modal-background': '#111111',
-    'ui-modal-foreground': '#eeeeee',
-
-    'ui-white': '#111111',
+    'ui-modal-header-background': 'var(--ui-modal-header-background-classic, var(--looks-secondary))',
+    'ui-modal-header-foreground': 'hsla(0, 100%, 100%, 1)' /* #FFFFFF */,
     'progress-bar-outer': 'hsla(0, 100%, 100%, 0.25)',
-
-    'ui-black-transparent': '#ffffff26',
-
-    'text-primary': '#eeeeee',
-
-    'assets-background': '#111111',
-
-    'input-background': '#1e1e1e',
-
-    'popover-background': '#1e1e1e',
-
-    'badge-background': '#16202c',
-    'badge-border': '#203652',
-
-    'fullscreen-background': '#111111',
-    'fullscreen-accent': '#111111',
-
-    'page-background': '#111111',
-    'page-foreground': '#eeeeee',
-
-    'project-title-inactive': 'var(--ui-secondary)',
-    'project-title-hover': '#ffffff3f',
-
-    'link-color': '#44aaff',
-
-    'filter-icon-black': 'invert(100%)',
-    'filter-icon-gray': 'grayscale(100%) brightness(1.7)',
-    'filter-icon-white': 'brightness(0) invert(100%)',
-
-    'paint-filter-icon-gray': 'brightness(0) invert(1)'
+    'menu-bar-hover': 'var(--menu-bar-hover-classic, hsla(0, 0%, 0%, 0.15))',
+    'menu-bar-background': 'var(--menu-bar-background-classic, var(--looks-secondary))',
+    'menu-bar-foreground': '#ffffff',
+    'menu-bar-icon-filter': 'none',
+    'menu-bar-background-image': 'var(--menu-bar-background-image-classic)',
+    'menu-bar-bottom-border': 'transparent',
+    'feedback-background': 'var(--menu-bar-foreground)',
+    'feedback-foreground': 'var(--menu-bar-background)',
 };
 
-const blockColors = {
-    insertionMarker: '#cccccc',
-    workspace: '#1e1e1e',
-    toolboxSelected: '#1e1e1e',
-    toolboxText: '#cccccc',
-    toolbox: '#111111',
-    flyout: '#111111',
-    scrollbar: '#666666',
-    valueReportBackground: '#1e1e1e',
-    valueReportBorder: '#333333',
-    valueReportForeground: '#eeeeee',
-    contextMenuBackground: '#111111',
-    contextMenuBorder: '#ffffff26',
-    contextMenuForeground: '#eeeeee',
-    contextMenuActiveBackground: '#2e2e2e',
-    contextMenuDisabledForeground: '#666666',
-    flyoutLabelColor: '#cccccc',
-    checkboxInactiveBackground: '#222222',
-    checkboxInactiveBorder: '#c8c8c8',
-    buttonBorder: '#c6c6c6',
-    buttonActiveBackground: '#222222',
-    buttonForeground: '#cccccc',
-    zoomIconFilter: 'invert(100%) grayscale(100%) brightness(140%)',
-    gridColor: '#484848'
-};
-
-export {guiColors, blockColors};
+export { guiColors, blockColors };
