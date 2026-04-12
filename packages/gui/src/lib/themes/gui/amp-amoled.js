@@ -1,10 +1,11 @@
-import {guiColors as darkGuiColors} from './dark';
+import {guiColors as darkGuiColors} from './amp-dark';
 
 const guiColors = {
     ...darkGuiColors,
     'ui-primary': '#000000',
     'ui-secondary': '#000000',
     'ui-tertiary': '#222222',
+    "menu-bar-background": "#000000",
 
     'ui-white': '#000000',
 
@@ -17,7 +18,7 @@ const guiColors = {
     'fullscreen-background': '#000000',
     'fullscreen-accent': '#000000',
 
-    'page-background': '#000000'
+    'page-background': '#000000',
 };
 const blockColors = {
     insertionMarker: '#cccccc',
