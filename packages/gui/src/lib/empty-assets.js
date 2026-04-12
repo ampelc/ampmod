@@ -9,13 +9,13 @@
  * @return {object} vm costume object
  */
 const emptyCostume = name => ({
-    name: name,
-    bitmapResolution: 1,
-    dataFormat: 'svg',
-    assetId: 'cd21514d0531fdffb22204e0ec5ed84a',
-    md5ext: 'cd21514d0531fdffb22204e0ec5ed84a.svg',
-    rotationCenterX: 0,
-    rotationCenterY: 0
+    name,
+    "assetId": "cd21514d0531fdffb22204e0ec5ed84a",
+    "skinId": 0,
+    "rotationCenterX": 240,
+    "rotationCenterY": 180,
+    "md5": "cd21514d0531fdffb22204e0ec5ed84a.svg",
+    "dataFormat": "svg",
 });
 
 /**
