@@ -367,6 +367,9 @@ Blockly.Blocks['arrays_expandablemake'] = {
      * Triggered by FieldExpandable buttons.
      */
     onExpandableButtonClicked_: function (isAdding) {
+        if (this.workspace && this.workspace.isFlyout) {
+            return;
+        }
         Blockly.Events.setGroup(true);
         const oldMutation = Blockly.Xml.domToText(this.mutationToDom());
 
