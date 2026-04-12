@@ -396,6 +396,26 @@ class ScriptTreeGenerator {
                     item: this.descendInputOfBlock(block, "ITEM"),
                 }
             );
+        case 'arrays_expandablemake': {
+            const items = [];
+            // Extract the count from the block's mutation
+            // In many Scratch-based IR generators, this is stored in block.mutation
+            const itemCount = Number(block.mutation.items) || 0;
+
+            for (let i = 0; i < itemCount; i++) {
+                // Descend into each dynamic input (ADD0, ADD1, etc.)
+                const inputName = `ADD${i}`;
+                items.push(this.descendInputOfBlock(block, inputName));
+            }
+
+            return new IntermediateInput(
+                InputOpcode.ARRAYS_EXPANDABLE_MAKE, // Ensure this opcode exists in your InputOpcode enum
+                InputType.ARRAY,
+                {
+                    items: items
+                }
+            );
+        }
 
         case 'event_broadcast_menu': {
             const broadcastOption = block.fields.BROADCAST_OPTION;
