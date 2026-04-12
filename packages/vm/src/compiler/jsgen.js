@@ -436,8 +436,10 @@ class JSGenerator {
                 // No compile-time optimizations possible - use fallback method.
                 return `compareGreaterThan(${this.descendInput(left)}, ${this.descendInput(right)})`;
             }
-            case InputOpcode.OP_JOIN:
-                return `(${this.descendInput(node.left)} + ${this.descendInput(node.right)})`;
+            case InputOpcode.OP_JOIN: {
+                const compiledItems = node.items.map(item => this.descendInput(item));
+                return `(${compiledItems.join(" + ")})`;
+            }
             case InputOpcode.OP_ARRAYJOIN:
                 return `(${this.descendInput(node.array)}.join(${this.descendInput(node.delim)}))`;
             case InputOpcode.OP_LENGTH:

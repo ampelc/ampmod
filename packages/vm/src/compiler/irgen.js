@@ -499,9 +499,29 @@ class ScriptTreeGenerator {
             });
         case 'operator_join':
             return new IntermediateInput(InputOpcode.OP_JOIN, InputType.STRING, {
-                left: this.descendInputOfBlock(block, 'STRING1').toType(InputType.STRING),
-                right: this.descendInputOfBlock(block, 'STRING2').toType(InputType.STRING)
+                items: [
+                    this.descendInputOfBlock(block, 'STRING1').toType(InputType.STRING),
+                    this.descendInputOfBlock(block, 'STRING2').toType(InputType.STRING)
+                ]
             });
+        case 'operator_expandablejoin': {
+            const items = [];
+            const itemCount = Number(block.mutation.items) || 0;
+
+            for (let i = 0; i < itemCount; i++) {
+                // Descend into each dynamic input (ADD0, ADD1, etc.)
+                const inputName = `ADD${i}`;
+                items.push(this.descendInputOfBlock(block, inputName).toType(InputType.STRING));
+            }
+
+            return new IntermediateInput(
+                InputOpcode.OP_JOIN,
+                InputType.ARRAY,
+                {
+                    items: items
+                }
+            );
+        }
         case 'operator_arrayjoin':
             return new IntermediateInput(InputOpcode.OP_ARRAYJOIN, InputType.STRING, {
                 array: this.descendInputOfBlock(block, 'ARRAY').toType(InputType.ARRAY),

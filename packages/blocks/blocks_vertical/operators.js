@@ -584,3 +584,149 @@ Blockly.Blocks["operator_mathconst"] = {
         });
     },
 };
+
+Blockly.Blocks['operator_expandablejoin'] = {
+  init: function () {
+    this.jsonInit({
+      // We use a dummy input for the main label so we can change it later
+      "message0": "join %1 %2",
+      "args0": [
+        {
+          "type": "field_expandable_remove",
+          "name": "REMOVE"
+        },
+        {
+          "type": "field_expandable_add",
+          "name": "ADD"
+        }
+      ],
+      "extensions": ["colours_strings", "output_string"]
+    });
+
+    this.placeholders_ = ["apple ", "banana ", "pear ", "orange ", "kiwi "];
+    this.inputs_ = 0; // Start at 0 to keep it clean
+  },
+
+  /**
+   * Internal helper to update labels and create/remove inputs.
+   */
+  updateShape_: function (targetCount, isLoading) {
+    // Add new inputs
+    while (this.inputs_ < targetCount) {
+      const index = this.inputs_;
+      this.inputs_++;
+      const inputName = `ADD${index}`;
+      const input = this.appendValueInput(inputName);
+      
+      // CRITICAL FIX: Only fill shadows if NOT loading from XML
+      if (!isLoading && (this.rendered || this.isInFlyout)) {
+        this.fillInBlock(input.connection, index);
+      }
+    }
+
+    // Remove inputs
+    while (this.inputs_ > targetCount) {
+      this.removeInput(`ADD${this.inputs_ - 1}`);
+      this.inputs_--;
+    }
+    },
+
+  fillInBlock: function (connection, index) {
+    if (connection.sourceBlock_.isInsertionMarker_) return;
+
+    const textValue = this.placeholders_[index] || "item ";
+
+    // 1. Create the XML definition of the shadow block
+    const shadowDom = document.createElement("shadow");
+    shadowDom.setAttribute("type", "text");
+    
+    const fieldDom = document.createElement("field");
+    fieldDom.setAttribute("name", "TEXT");
+    fieldDom.textContent = textValue;
+    
+    shadowDom.appendChild(fieldDom);
+
+    // 2. Register the shadow XML directly to the connection
+    connection.setShadowDom(shadowDom);
+
+    // 3. Spawn the shadow block visually
+    if (connection.respawnShadow_) {
+        // The native Scratch-Blocks way to generate a shadow from its DOM
+        connection.respawnShadow_();
+    } else {
+        // Fallback just in case respawnShadow_ is missing in your specific VM
+        const shadowBlock = Blockly.Xml.domToBlock(shadowDom, this.workspace);
+        shadowBlock.setShadow(true);
+        shadowBlock.outputConnection.connect(connection);
+        if (this.rendered) {
+        shadowBlock.initSvg();
+        shadowBlock.render(false);
+        }
+    }
+    },
+
+  mutationToDom: function () {
+    const container = document.createElement("mutation");
+    container.setAttribute("items", String(this.inputs_));
+    return container;
+  },
+
+  domToMutation: function (xmlElement) {
+    const items = parseInt(xmlElement.getAttribute('items'), 10);
+    const newCount = isNaN(items) ? 0 : items;
+
+    // Update label
+    const labelField = this.getField('MAIN_LABEL');
+    if (labelField) {
+        labelField.setValue(newCount > 0 ? "array with" : Blockly.Msg.ARRAYS_EMPTY_ARRAY);
+    }
+
+    // Remove existing inputs (dispose any live shadows first)
+    for (let i = this.inputs_ - 1; i >= 0; i--) {
+        const input = this.getInput('ADD' + i);
+        if (input && input.connection) {
+            const target = input.connection.targetBlock();
+            if (target && target.isShadow()) {
+                target.dispose(false, false);
+            }
+        }
+        this.removeInput('ADD' + i);
+    }
+    this.inputs_ = 0;
+
+    // Re-create inputs: register shadowDom for future respawning,
+    // but do NOT call respawnShadow_() — the XML loader will attach
+    // the saved block/shadow from the project file itself.
+    for (let i = 0; i < newCount; i++) {
+        const input = this.appendValueInput('ADD' + i);
+        this.inputs_++;
+
+        // Register shadow DOM so it respawns when a real block is later removed
+        const textValue = this.placeholders_[i] || "item";
+        const shadowDom = document.createElement("shadow");
+        shadowDom.setAttribute("type", "text");
+        const fieldDom = document.createElement("field");
+        fieldDom.setAttribute("name", "TEXT");
+        fieldDom.textContent = textValue;
+        shadowDom.appendChild(fieldDom);
+        input.connection.setShadowDom(shadowDom);
+        // ← No respawnShadow_() here! XML loader does the attachment.
+    }
+},
+
+  onExpandableButtonClicked_: function (isAdding) {
+    Blockly.Events.setGroup(true);
+    const oldMutation = Blockly.Xml.domToText(this.mutationToDom());
+
+    const newCount = isAdding ? this.inputs_ + 1 : Math.max(1, this.inputs_ - 1);
+    this.updateShape_(newCount);
+
+    this.initSvg();
+    if (this.rendered) this.render();
+
+    const newMutation = Blockly.Xml.domToText(this.mutationToDom());
+    Blockly.Events.fire(new Blockly.Events.BlockChange(this,
+      'mutation', null, oldMutation, newMutation));
+    Blockly.Events.setGroup(false);
+  }
+};

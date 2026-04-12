@@ -661,15 +661,16 @@ const strings = function (isInitialSetup, isStage, targetId, colors) {
         id="ampmodstrings"
         colour="${colors.primary}"
         secondaryColour="${colors.tertiary}">
-        <block type="operator_join">
-            <value name="STRING1">
+        <block type="operator_expandablejoin">
+            <mutation items="2"></mutation>
+            <value name="ADD0">
                 <shadow type="text">
                     <field name="TEXT">${apple} </field>
                 </shadow>
             </value>
-            <value name="STRING2">
+            <value name="ADD1">
                 <shadow type="text">
-                    <field name="TEXT">${banana}</field>
+                    <field name="TEXT">${banana} </field>
                 </shadow>
             </value>
         </block>
