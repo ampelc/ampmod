@@ -336,6 +336,7 @@ const looks = function (isInitialSetup, isStage, targetId, costumeName, backdrop
             <block id="${targetId}_size" type="looks_size"/>
         `
         }
+        <block type="looks_geteffect"/>
         ${categorySeparator}
     </category>
     `;

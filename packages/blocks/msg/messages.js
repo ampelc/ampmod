@@ -125,6 +125,7 @@ Blockly.Msg.LOOKS_EFFECT_BRIGHTNESS = "brightness";
 Blockly.Msg.LOOKS_EFFECT_GHOST = "ghost";
 Blockly.Msg.LOOKS_CHANGEEFFECTBY = "change %1 effect by %2";
 Blockly.Msg.LOOKS_SETEFFECTTO = "set %1 effect to %2";
+Blockly.Msg.LOOKS_GETEFFECT = "%1 effect";
 Blockly.Msg.LOOKS_CLEARGRAPHICEFFECTS = "clear graphic effects";
 Blockly.Msg.LOOKS_CHANGESIZEBY = "change size by %1";
 Blockly.Msg.LOOKS_SETSIZETO = "set size to %1 %";

@@ -437,6 +437,14 @@ class ScriptTreeGenerator {
             return new IntermediateInput(InputOpcode.LOOKS_COSTUME_NAME, InputType.STRING);
         case 'looks_size':
             return new IntermediateInput(InputOpcode.LOOKS_SIZE_GET, InputType.NUMBER_POS_REAL);
+        case 'looks_geteffect':
+            return new IntermediateInput(
+                InputOpcode.LOOKS_EFFECT_GET,
+                InputType.NUMBER_REAL,
+                {
+                    effect: block.fields.EFFECT.value
+                }
+            );
 
         case 'motion_position':
             return new IntermediateInput(InputOpcode.MOTION_POSITION_GET, InputType.NUMBER_REAL);

@@ -190,6 +190,7 @@ class OpcodeLabels {
             looks_costumenumbername: {category: 'looks'},
             looks_backdropnumbername: {category: 'looks'},
             looks_backdropname: {category: 'looks'},
+            looks_geteffect: {category: 'looks'},
 
             // Data
             data_variable: {category: 'data'},
@@ -252,6 +253,9 @@ class OpcodeLabels {
                 return this._translator(messages.looks_backdropnumber);
             }
             return this._translator(messages.looks_backdropname);
+        };
+        this._opcodeMap.looks_geteffect.labelFn = params => {
+            return `${params.EFFECT} effect`;
         };
         this._opcodeMap.looks_backdropname.labelFn = () => this._translator(messages.looks_backdropname);
 

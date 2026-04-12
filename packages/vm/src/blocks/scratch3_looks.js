@@ -312,7 +312,8 @@ class Scratch3LooksBlocks {
             looks_goforwardbackwardlayers: this.goForwardBackwardLayers,
             looks_size: this.getSize,
             looks_costumenumbername: this.getCostumeNumberName,
-            looks_backdropnumbername: this.getBackdropNumberName
+            looks_backdropnumbername: this.getBackdropNumberName,
+            looks_geteffect: this.getEffect
         };
     }
 
@@ -326,9 +327,13 @@ class Scratch3LooksBlocks {
                 isSpriteSpecific: true,
                 getId: (targetId, fields) => getMonitorIdForBlockWithArgs(`${targetId}_costumenumbername`, fields)
             },
+            looks_geteffect: {
+                isSpriteSpecific: true,
+                getId: (targetId, fields) => getMonitorIdForBlockWithArgs(`${targetId}_geteffect`, fields)
+            },
             looks_backdropnumbername: {
                 getId: (_, fields) => getMonitorIdForBlockWithArgs('backdropnumbername', fields)
-            }
+            },
         };
     }
 
@@ -555,6 +560,9 @@ class Scratch3LooksBlocks {
         let value = Cast.toNumber(args.VALUE);
         value = this.clampEffect(effect, value);
         util.target.setEffect(effect, value);
+    }
+    getEffect(args, util) {
+        return util.target.effects[args.EFFECT];
     }
 
     clearEffects (args, util) {

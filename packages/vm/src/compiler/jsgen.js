@@ -302,6 +302,8 @@ class JSGenerator {
                 return "target.getCostumes()[target.currentCostume].name";
             case InputOpcode.LOOKS_COSTUME_NUMBER:
                 return "(target.currentCostume + 1)";
+            case InputOpcode.LOOKS_EFFECT_GET:
+                return `target.effects[${JSON.stringify(node.effect)}]`;
 
             case InputOpcode.MOTION_DIRECTION_GET:
                 return "target.direction";
