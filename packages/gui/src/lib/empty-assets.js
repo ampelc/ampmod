@@ -10,11 +10,12 @@
  */
 const emptyCostume = name => ({
     name: name,
-    md5: 'cd21514d0531fdffb22204e0ec5ed84a.svg',
-    rotationCenterX: 0,
-    rotationCenterY: 0,
     bitmapResolution: 1,
-    skinId: null
+    dataFormat: 'svg',
+    assetId: 'cd21514d0531fdffb22204e0ec5ed84a',
+    md5ext: 'cd21514d0531fdffb22204e0ec5ed84a.svg',
+    rotationCenterX: 0,
+    rotationCenterY: 0
 });
 
 /**
@@ -26,27 +27,35 @@ const emptyCostume = name => ({
  * @return {object} object expected by vm.addSprite
  */
 const emptySprite = (name, soundName, costumeName) => ({
-    objName: name,
-    sounds: [],
+    name: name,
+    isStage: false,
+    variables: {},
+    lists: {},
+    broadcasts: {},
+    blocks: {},
+    comments: {},
+    currentCostume: 0,
     costumes: [
         {
-            costumeName: costumeName,
-            baseLayerID: -1,
-            baseLayerMD5: 'cd21514d0531fdffb22204e0ec5ed84a.svg',
+            name: costumeName,
             bitmapResolution: 1,
+            dataFormat: 'svg',
+            assetId: 'cd21514d0531fdffb22204e0ec5ed84a',
+            md5ext: 'cd21514d0531fdffb22204e0ec5ed84a.svg',
             rotationCenterX: 0,
             rotationCenterY: 0
         }
     ],
-    currentCostumeIndex: 0,
-    scratchX: 36,
-    scratchY: 28,
-    scale: 1,
-    direction: 90,
-    rotationStyle: 'normal',
-    isDraggable: false,
+    sounds: [],
+    volume: 100,
+    layerOrder: 1,
     visible: true,
-    spriteInfo: {}
+    x: 36,
+    y: 28,
+    size: 100,
+    direction: 90,
+    draggable: false,
+    rotationStyle: 'all around'
 });
 
 export {emptyCostume, emptySprite};
