@@ -124,7 +124,7 @@ class Theme {
     }
 
     static light = new Theme(ACCENT_DEFAULT, GUI_AMP_LIGHT, BLOCKS_DEFAULT);
-    static dark = new Theme(ACCENT_DEFAULT, GUI_DARK, BLOCKS_DEFAULT);
+    static dark = new Theme(ACCENT_DEFAULT, GUI_AMP_DARK, BLOCKS_DEFAULT);
     static highContrast = new Theme(
         ACCENT_DEFAULT,
         GUI_DEFAULT,
