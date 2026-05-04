@@ -97,11 +97,11 @@ const base = {
     },
     output: {
         filename:
-            (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production")
+            (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production")
                 ? `js/${CACHE_EPOCH}/[name].[contenthash].js`
                 : "js/[name].js",
         chunkFilename:
-            (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production") ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
+            (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production") ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
         publicPath: root,
         module: !process.env.BUILD_DESKTOP && process.env.BUILD_MODE !== 'standalone'
     },
@@ -144,7 +144,7 @@ const base = {
                                 pragmaFrag: 'React.Fragment',
                                 throwIfNamespace: true,
                                 development: process.env.NODE_ENV !== 'production',
-                                refresh: process.env.NODE_ENV !== 'production' && process.env.BUILD_TARGET !== 'desktop',
+                                refresh: process.env.NODE_ENV !== 'production' && process.env.BUILD_MODE !== 'desktop',
                                 useBuiltins: true
                             }
                         }
@@ -282,11 +282,11 @@ const base = {
         ...(process.env.BUILD_MODE !== 'standalone' ? [
             new MiniCssExtractPlugin({
                 filename:
-                    (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production")
+                    (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production")
                         ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
                         : 'css/[name].css',
                 chunkFilename:
-                    (process.env.BUILD_TARGET !== "desktop" && process.env.NODE_ENV === "production")
+                    (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production")
                         ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
                         : 'css/[id].css',
                 ignoreOrder: true,
@@ -343,7 +343,7 @@ const base = {
 if (!process.env.CI) {
     base.plugins.push(new webpack.ProgressPlugin());
 }
-if (process.env.NODE_ENV !== "production" && process.env.BUILD_TARGET !== "desktop") {
+if (process.env.NODE_ENV !== "production" && process.env.BUILD_MODE !== "desktop") {
     base.plugins.push(new ReactRefreshWebpackPlugin({overlay: false}));
 }
 
@@ -360,7 +360,7 @@ module.exports = [
                 './src/website/design.css'
             ],
             'editor': './src/playground/editor.jsx',
-            ...(process.env.BUILD_TARGET === "desktop" || process.env.NODE_ENV !== "production"
+            ...(process.env.BUILD_MODE === "desktop" || process.env.NODE_ENV !== "production"
                 ? {
                     'editor-desktop': './src/desktop/render-editor.jsx',
                     'desktop-settings': './src/desktop/settings/settings.jsx',
@@ -387,7 +387,7 @@ module.exports = [
         },
         output: {
             hashFunction: 'sha256',
-            path: process.env.BUILD_TARGET === 'desktop' ? path.resolve(__dirname, 'src/desktop/dist/gui') : path.resolve(__dirname, 'build')
+            path: process.env.BUILD_MODE === 'desktop' ? path.resolve(__dirname, 'src/desktop/dist/gui') : path.resolve(__dirname, 'build')
         },
         optimization: {
             runtimeChunk: 'single',
@@ -405,7 +405,7 @@ module.exports = [
             errorDetails: true
         },
         plugins: base.plugins.concat([
-            ...process.env.BUILD_TARGET === "desktop" || process.env.NODE_ENV !== "production" ? [
+            ...process.env.BUILD_MODE === "desktop" || process.env.NODE_ENV !== "production" ? [
                 new HtmlWebpackPlugin({
                     chunks: ["editor-desktop"],
                     template: "src/playground/index.ejs",
@@ -672,7 +672,7 @@ module.exports = [
 const fs = require('fs');
 const { builtinModules } = require('module');
 
-if (process.env.BUILD_TARGET === 'desktop') {
+if (process.env.BUILD_MODE === 'desktop') {
     module.exports.push(
         merge(base, {
             target: 'electron-main',

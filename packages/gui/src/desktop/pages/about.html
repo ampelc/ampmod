@@ -5,58 +5,45 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        *{margin:0; padding: 0;}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html, body {
-            margin: 0;
-            padding: 0;
             width: 100%;
             height: 100%;
             font-family: Arial, sans-serif;
             background-color: #4fa55c;
             color: white;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             user-select: none;
             -webkit-app-region: drag;
         }
 
-        .content {
-            flex: 1;
+        /* Container following the proportions of image_4aabd8.png */
+        .window {
+            width: 360px;
+            height: 480px;
             display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view {
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            gap: 4px;
+            height: 100%;
+            padding: 5px;
+            gap: 8px;
         }
 
-        h1 {
-            margin: 0 0 10px 0;
-            font-size: 2rem;
-        }
+        .view.active { display: flex;             -webkit-app-region: no-drag; }
 
-        p {
-            margin: 0;
-            font-size: 1rem;
-        }
-
-        a {
-          color: inherit;
-          -webkit-app-region: no-drag;
-        }
-
-        button {
-            background: white;
-            color: #4fa55c;
-            padding: 5px 10px;
-            font-weight: bold;
-            border: 0;
-            border-radius: 4px;
-            cursor: pointer;
-            -webkit-app-region: no-drag;
-        }
-
+        /* Original Branding Styles */
         .logo {
             width: 100px;
             height: 100px;
@@ -65,34 +52,141 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+            margin-bottom: 5px;
+        }
+
+        h1 { font-size: 2rem; margin: 0; }
+        p { font-size: 1rem; opacity: 0.9; }
+
+        .list-group {
+            width: 100%;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-button {
+            background: white;
+            color: black;
+            padding: 8px;
+            font-weight: bold;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            -webkit-app-region: no-drag;
+            font-size: 0.9rem;
+        }
+
+        /* Back header for legal page */
+        .header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            -webkit-app-region: no-drag;
+        }
+
+        .license-box {
+            background: rgba(0,0,0,0.1);
+            border-radius: 6px;
+            padding: 15px;
+            font-size: 0.85rem;
+            text-align: left;
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.4;
         }
 
         .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
             height: 40px;
             background-color: rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
-            padding: 0 10px;
+            font-size: 0.8rem;
         }
+
+        a { color: inherit; -webkit-app-region: no-drag; }
     </style>
 </head>
 <body>
-    <div class="content">
+
+<div class="window">
+    <div id="main" class="view active">
         <div class="logo"></div>
-        <h1>AmpMod</h1>
-        <p>Block-based programming, amplified.</p>
-        <p>Version <span id="version"></span></p>
+        <h1>AmpMod v<span id="version"></span></h1>
+        
+        <div class="list-group">
+            <a href="https://ampmod.codeberg.page" class="nav-button">
+                Website <span>↗</span>
+            </a>
+            <a href="https://codeberg.org/ampmod/ampmod" class="nav-button">
+                Source code <span>↗</span>
+            </a>
+            <button class="nav-button" onclick="showView('legal')">
+                Licencing <span>›</span>
+            </button>
+            <button class="nav-button" onclick="showView('credits')">
+                Credits <span>›</span>
+            </button>
+            <button class="nav-button" style="justify-content: center;" onclick="window.close()">
+                OK
+            </button>
+        </div>
+        
         <p><small id="sysinfo"></small></p>
-        <button onclick="window.close()">OK</button>
-        <script>
-            window.document.getElementById('version').innerText = window._AMP_INTERNAL_API.version();
-            window.document.getElementById('sysinfo').innerText = window._AMP_INTERNAL_API.sysinfo();
-        </script>
     </div>
-    <div class="bottom-bar">
-        <span>AmpMod is free software. <a href="https://codeberg.org/ampmod/ampmod">Contribute on Codeberg.</a></span>
+
+    <div id="legal" class="view">
+        <div class="header">
+            <button class="back-link" onclick="showView('main')">← Back</button>
+            <strong style="flex:1; text-align: center; margin-right: 40px;">Legal</strong>
+        </div>
+        <div class="license-box">
+            This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3 of the License.<br><br>
+            This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See version 3 of the <a href="https://gnu.org/licenses">GNU General Public License</a> for more details.
+        </div>
     </div>
+    <div id="credits" class="view">
+        <div class="header">
+            <button class="back-link" style="position: fixed; left: 10px;top: 30px;" onclick="showView('main')">← Back</button>
+        </div>
+        <iframe src="amp-gui://./credits.html" style="border: 0; position: fixed; top: 60px; left:0; width: 100%; height: calc(100% - 60px);"></iframe>
+    </div>
+</div>
+
+<script>
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    // API injection
+    try {
+        window.document.getElementById('version').innerText = window._AMP_INTERNAL_API.version();
+        window.document.getElementById('sysinfo').innerText = window._AMP_INTERNAL_API.sysinfo();
+    } catch(e) {
+        window.document.getElementById('version').innerText = "I am Error.";
+    }
+</script>
+
 </body>
 </html>
