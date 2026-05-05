@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=AmpMod
+# For source install: change this to where you install the app
+Exec=/opt/ampmod/ampmod %U
+Terminal=false
+Type=Application
+Icon=org.ampmod.ampmod
+StartupWMClass=AmpMod
+Comment=Block-based programming, amplified
+Categories=Development;IDE;Education;

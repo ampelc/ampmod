@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Referer - AmpMod</title>
+        <meta charset="utf8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                margin: 0; padding: 0;
+            }
+            header {
+                background-color: #4fa55c;
+                color: white;
+                text-align: center;
+                padding: 20px 0;
+            }
+            main {
+                max-width: 600px;
+                margin: auto;
+            }
+            @media (prefers-color-scheme: dark) {
+                body { background: #111; color: #eee; }
+                a { color: #4af; }
+            }
+        </style>
+    </head>
+
+    <body>
+        <header>
+            <h1>Referer</h1>
+        </header>
+
+        <main>
+            <p>If this page was in the <code>Referer</code> of a request to your website, it means users are accessing your site using a program created in the desktop app for the <a href="/">AmpMod</a> programming language.</p>
+            <p>Per our <a href="/privacy">privacy policy</a>, we do not track users, so we cannot tell what project made the request or who created the project.</p>
+            <p>If you do not wish for AmpMod desktop projects to make requests to your website, block requests containing <code>AmpMod/</code> in their user agent. AmpMod projects running in the browser will remain unaffected.</p>
+            <p>We only recommend doing this if a project is actively performing denial-of-service attacks on your site, or if it contains sensitive information. The AmpMod developers are not responsible for fetches made by other users' projects.</p>
+        </main>
+    </body>
+</html>

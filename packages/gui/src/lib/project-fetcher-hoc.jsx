@@ -22,6 +22,7 @@ import storage from './storage';
 
 import VM from 'scratch-vm';
 import {fetchProjectMeta} from './tw-project-meta-fetcher-hoc.jsx';
+import {isScratchDesktop} from './isScratchDesktop';
 
 // TW: Temporary hack for project tokens
 const fetchProjectToken = async projectId => {
@@ -72,7 +73,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
             }
         }
 
-        componentDidUpdate(prevProps) {
+        async componentDidUpdate(prevProps) {
             if (prevProps.projectHost !== this.props.projectHost) {
                 storage.setProjectHost(this.props.projectHost);
             }
@@ -83,7 +84,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                 storage.setAssetHost(this.props.assetHost);
             }
             if (this.props.isFetchingWithId && !prevProps.isFetchingWithId) {
-                this.fetchProject(this.props.reduxProjectId, this.props.loadingState);
+                await this.fetchProject(this.props.reduxProjectId, this.props.loadingState);
             }
             if (this.props.isShowingProject && !prevProps.isShowingProject) {
                 this.props.onProjectUnchanged();
@@ -93,7 +94,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
             }
         }
 
-        fetchProject(projectId, loadingState) {
+        async fetchProject(projectId, loadingState) {
             // tw: clear and stop the VM before fetching
             // these will also happen later after the project is fetched, but fetching may take a while and
             // the project shouldn't be running while fetching the new project
@@ -126,6 +127,19 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                     log.error(err);
                     this.props.onError(err);
                 });
+            }
+
+            // or if we are loading something from desktop
+            if (isScratchDesktop()) {
+                try {
+                    const response = await fetch("attached-file://.");
+                    if (response.ok) {
+                        const data = await response.arrayBuffer();
+                        return this.props.onFetchedProjectData(data, loadingState);
+                    }
+                } catch (err) {
+                    // ignore
+                }
             }
             // @ts-nocheck
 

@@ -51,7 +51,7 @@ UserList.propTypes = {
 
 export default function Credits() {
     return <>
-        <Header />
+        {process.env.ampmod_mode !== 'desktop' && <Header />}
         <header className={styles.headerContainer}>
             <h1 className={styles.headerText}>
                 <Localise id="credits.title" values={{APP_NAME}} />
@@ -170,7 +170,7 @@ export default function Credits() {
                     <Localise id="credits.artDescription" />
                 </p>
             </section>
-            <Footer />
+            {process.env.ampmod_mode === 'standalone' && <Footer />}
         </main>
     </>
 };

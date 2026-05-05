@@ -65,7 +65,7 @@ const applyGuiColors = theme => {
         metaThemeColor.setAttribute('name', 'theme-color');
         document.head.appendChild(metaThemeColor);
     }
-    metaThemeColor.setAttribute('content', evaluateCSS(guiColors['menu-bar-background']));
+    metaThemeColor.setAttribute('content', evaluateCSS(guiColors[!theme.gui.endsWith("-classic") ? 'menu-bar-background' : 'looks-secondary']));
 
     // a horrible hack for icons...
     window.Recolor = {

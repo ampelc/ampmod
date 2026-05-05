@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Update - AmpMod</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Shared Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%; font-family: Arial, sans-serif;
+            background-color: #4fa55c; color: white;
+            display: flex; justify-content: center; align-items: center;
+            user-select: none; -webkit-app-region: drag;
+        }
+        .window { width: 360px; height: 480px; display: flex; flex-direction: column; position: relative; padding: 20px; }
+        .content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 15px; -webkit-app-region: no-drag; }
+        
+        .update-icon { width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 3px solid white; }
+        h1 { font-size: 1.8rem; }
+        .version-tag { background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+        
+        .status-box { background: rgba(0,0,0,0.1); border-radius: 8px; padding: 15px; width: 100%; font-size: 0.85rem; text-align: left; overflow-y: auto; max-height: 120px; }
+        
+        .list-group { width: 100%; margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+        .nav-button { background: white; color: #4fa55c; padding: 12px; font-weight: bold; border: 0; border-radius: 6px; cursor: pointer; text-align: center; font-size: 0.95rem; text-decoration: none; }
+        .secondary-button { background: transparent; color: white; border: 1px solid white; }
+        .disabled { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="window">
+    <div class="content" id="loading-state">Checking for updates...</div>
+    
+    <div class="content" id="update-view" style="display: none;">
+        <h1 class="title">New version: <span id="version-label"></span></h1>
+
+        <div class="status-box" id="changelog">
+            Fetching release notes...
+        </div>
+
+        <p>If you can, please consider updating AmpMod to get the latest features and possibly security updates.</p>
+
+        <div class="list-group">
+            <a href="#" class="nav-button" id="download-link">Download for <span id="platform-name">...</span></a>
+            <button class="nav-button secondary-button" onclick="window.close()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const REPO_API = "https://codeberg.org/api/v1/repos/ampmod/ampmod/releases/latest";
+
+    async function checkUpdate() {
+        try {
+            const response = await fetch(REPO_API);
+            const data = await response.json();
+            
+            const platform = getPlatformInfo();
+            const downloadAsset = data.assets.find(asset => asset.name.toLowerCase().endsWith(platform.ext));
+
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('update-view').style.display = 'flex';
+            
+            document.getElementById('version-label').innerText = data.tag_name;
+            document.getElementById('platform-name').innerText = platform.name;
+            document.getElementById('changelog').innerText = data.body || "No release notes provided.";
+            
+            if (downloadAsset) {
+                document.getElementById('download-link').href = downloadAsset.browser_download_url;
+            } else {
+                document.getElementById('download-link').innerText = "Asset not found for " + platform.name;
+                document.getElementById('download-link').classList.add('disabled');
+            }
+        } catch (error) {
+            document.getElementById('loading-state').innerText = "Failed to fetch updates.";
+        }
+    }
+
+    function getPlatformInfo() {
+        const ua = navigator.userAgent.toLowerCase();
+        if (ua.includes("win")) return { name: "Windows", ext: ".exe" };
+        if (ua.includes("mac")) return { name: "macOS", ext: ".dmg" };
+        if (ua.includes("linux")) return { name: "Linux", ext: ".AppImage" };
+        return { name: "Unknown", ext: "" };
+    }
+
+    checkUpdate();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>org.ampmod.ampmod</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0</project_license>
+    <name>AmpMod</name>
+    <summary>Block-based programming, amplified</summary>
+    <description>
+        <h2>What is AmpMod?</h2>
+        <p>
+            AmpMod is a block-based programming language built off TurboWarp that adds 
+            many small but meaningful features to Scratch to make it even better, 
+            such as first-class lists, case sensitivity, and custom extensions.
+        </p>
+        <h2>Build a game easily with block-based programming!</h2>
+        <p>
+            With AmpMod, you can create games, animations, art, and more quickly by 
+            dragging blocks instead of manually typing everything out.
+        </p>
+        <p>Features</p>
+        <p>For programmers:</p>
+        <ul>
+            <li>AmpMod compiles projects to JavaScript to make them run faster than in vanilla Scratch.</li>
+            <li>With arrays, you can create complex list structures and store them as variables.</li>
+            <li>To make AmpMod more powerful, dozens of new unsandboxed extensions are added.</li>
+        </ul>
+        <p>For artists and animators:</p>
+        <ul>
+            <li>AmpMod features new fonts like Comic and Amplification to use in your costumes and backdrops.</li>
+            <li>Creating a rounded rectangle has never been easier with the Rounded Rectangle tool.</li>
+            <li>Custom fonts can be loaded from system font name or a font file.</li>
+        </ul>
+    </description>
+    <launchable type="desktop-id">org.ampmod.ampmod</launchable>
+    <screenshots>
+        <screenshot type="default">
+            <caption>An image of the AmpMod programming interface, with a project featuring a dango in the center, a navigation bar at the top for selecting different demos with Mode 2 currently selected, and a block falling from the dango.</caption>
+            <image>https://codeberg.org/ampmod/ampmod/raw/branch/develop/packages/gui/src/website/components/hero/image.png</image>
+        </screenshot>
+    </screenshots>
+    <content_rating type="oars-1.1" />
+    <provides>
+        <binary>ampmod</binary>
+    </provides>
+    <categories>
+        <category>Development</category>
+        <category>Education</category>
+        <category>IDE</category>
+    </categories>
+    <url type="homepage">https://ampmod.codeberg.page</url>
+    <url type="help">https://ampmod.miraheze.org</url>
+    <developer_name>AmpElectrecuted</developer_name>
+</component>

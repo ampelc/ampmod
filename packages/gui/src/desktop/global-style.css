@@ -1,0 +1,36 @@
+@keyframes fadeInMenu {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+select, select::picker(select) {
+  appearance: base-select;
+}
+
+select::picker(select) {
+  background-color: var(--ui-white);
+  border: 1px solid var(--ui-black-transparent);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding-block: 10px;
+  font-family: 'Inter Variable', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+option {
+  color: var(--text-primary);
+  padding: 8px;
+  cursor: pointer;
+}
+
+option:hover {
+  background-color: var(--motion-primary);
+  color: white;
+  transition: all 0.2s;
+}
+
+option::checkmark {
+  content: '';
+}

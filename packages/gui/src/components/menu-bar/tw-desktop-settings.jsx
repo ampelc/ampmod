@@ -8,7 +8,7 @@ import styles from './settings-menu.css';
 const TWDesktopSettings = props => (
     <MenuItem onClick={props.onClick}>
         <div className={styles.option}>
-            <img src={icon} draggable={false} width={24} height={24} alt="" />
+            <img src={icon} draggable={false} className={styles.icon} width={24} height={24} alt="" />
             <FormattedMessage
                 defaultMessage="Desktop Settings"
                 description="Button in menu bar under settings to open desktop app settings"

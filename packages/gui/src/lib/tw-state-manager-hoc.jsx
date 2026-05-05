@@ -15,6 +15,7 @@ import {defaultStageSize} from '../reducers/custom-stage-size';
 import lsNamespace from './amp-localstorage-namespace';
 import { sizePresets } from '../components/tw-settings-modal/settings-modal';
 import { APP_NAME } from '@ampmod/branding';
+import isScratchDesktop from './isScratchDesktop';
 
 const isStandalone = process.env.NODE_ENV === "standalone";
 
@@ -384,7 +385,7 @@ const TWStateManager = function (WrappedComponent) {
             }
         }
         componentDidUpdate(prevProps) {
-            if (isStandalone) return;
+            if (isStandalone || isScratchDesktop() || false) return;
 
             if (this.props.username !== prevProps.username && this.props.username !== this.doNotPersistUsername) {
                 // TODO: this always restores the current username once at startup, which is unnecessary

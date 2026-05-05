@@ -1,6 +1,6 @@
 {
     "name": "scratch-gui",
-    "version": "0.3.0",
+    "version": "0.4.0-dev",
     "description": "Graphical User Interface for creating and running Scratch 3.0 projects",
     "author": "Massachusetts Institute of Technology",
     "license": "GPL-3.0",
@@ -12,10 +12,13 @@
     "main": "./dist/scratch-gui.js",
     "scripts": {
         "build": "webpack --bail",
+        "build-desktop": "BUILD_MODE=desktop webpack --bail && electron-builder -c.extraMetadata.main=main.js",
         "clean": "rimraf ./build && mkdirp build && rimraf ./dist && mkdirp dist",
         "i18n:push": "wlc push --project ampmod --component ampmod-editor-interface --file translations/en.json",
         "i18n:src": "rimraf ./translations/messages/src && babel src > tmp.js && rimraf tmp.js && build-i18n-src ./translations/messages/src ./translations/",
-        "start": "webpack-dev-server",
+        "start": "webpack serve",
+        "watch-desktop": "rimraf src/desktop/dist && BUILD_MODE=desktop webpack --watch",
+        "start-desktop": "wait-on src/desktop/dist/main.js && electron src/desktop/dist/main.js",
         "test": "pnpm run test:lint && pnpm run test:unit && pnpm run build && pnpm run test:integration",
         "test:integration": "jest --maxWorkers=4 test[\\\\/]integration",
         "test:lint": "eslint . --ext .js,.jsx",
@@ -53,6 +56,7 @@
         "copy-webpack-plugin": "13.0.1",
         "dapjs": "2.3.0",
         "driver.js": "^1.4.0",
+        "electron-store": "^11.0.2",
         "get-float-time-domain-data": "0.1.0",
         "immutable": "3.8.2",
         "intl-messageformat": "^2.2.0",
@@ -110,10 +114,12 @@
         "@babel/preset-env": "7.28.5",
         "@babel/preset-react": "7.28.5",
         "@csstools/postcss-bundler": "^2.0.8",
+        "@electron-forge/cli": "^7.10.2",
         "@formatjs/cli": "^6.7.4",
-        "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
-        "@typescript-eslint/eslint-plugin": "^8.48.0",
-        "@typescript-eslint/parser": "^8.48.0",
+        "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
+        "@types/electron": "^1.6.12",
+        "@typescript-eslint/eslint-plugin": "^8.46.4",
+        "@typescript-eslint/parser": "^8.46.4",
         "babel-core": "7.0.0-bridge.0",
         "babel-loader": "10.0.0",
         "chromedriver": "117.0.3",
@@ -121,8 +127,11 @@
         "css-loader": "^7.1.2",
         "cssnano": "^7.1.2",
         "cssnano-preset-advanced": "^7.0.10",
+        "electron": "^39.2.2",
+        "electron-builder": "^26.4.0",
         "enzyme": "3.10.0",
         "enzyme-adapter-react-16": "1.15.8",
+        "esbuild": "^0.27.0",
         "eslint": "9.39.2",
         "eslint-config-scratch": "9.0.9",
         "eslint-import-resolver-webpack": "0.11.1",
@@ -140,6 +149,7 @@
         "jest-junit": "7.0.0",
         "mini-css-extract-plugin": "^2.9.4",
         "mkdirp": "1.0.4",
+        "nodemon": "^3.1.11",
         "pngquant-bin": "^9.0.0",
         "postcss-nesting": "^13.0.2",
         "postcss-preset-env": "^10.4.0",
@@ -148,6 +158,7 @@
         "redux-mock-store": "1.5.5",
         "rimraf": "2.7.1",
         "selenium-webdriver": "3.6.0",
+        "wait-on": "^9.0.3",
         "web-audio-test-api": "0.5.2",
         "webpack-bundle-analyzer": "^5.1.0",
         "workbox-webpack-plugin": "^7.4.0",
@@ -169,9 +180,80 @@
             "editor-msgs(\\.js)?$": "<rootDir>/test/__mocks__/editor-msgs-mock.js"
         }
     },
-    "overrides": {
-        "webpack@4.47.0": {
-            "terser-webpack-plugin": "^4.2.3"
-        }
+    "build": {
+        "appId": "org.ampmod.ampmod",
+        "productName": "AmpMod",
+        "copyright": "Copyright © AmpMod developers",
+        "directories": {
+            "output": "src/desktop/dist",
+            "buildResources": "src/desktop/assets"
+        },
+        "files": [
+            "package.json",
+            {
+                "from": "src/desktop/dist",
+                "to": "."
+            },
+            "LICENSE",
+            "!node_modules"
+        ],
+        "asarUnpack": [
+            "extensions"
+        ],
+        "win": {
+            "target": [
+                "nsis",
+                "portable"
+            ]
+        },
+        "mac": {
+            "target": "dmg",
+            "category": "public.app-category.developer-tools"
+        },
+        "linux": {
+            "executableName": "ampmod",
+            "target": [
+                "AppImage",
+                "deb",
+                "tar.gz"
+            ],
+            "category": "Development",
+            "maintainer": "AmpMod",
+            "synopsis": "Block-based programming, amplified.",
+            "desktop": {
+                "entry": {
+                    "StartupWMClass": "ampmod"
+                }
+            }
+        },
+        "flatpak": {
+            "runtime": "org.freedesktop.Platform",
+            "runtimeVersion": "24.08",
+            "sdk": "org.freedesktop.Sdk",
+            "finishArgs": [
+                "--socket=wayland",
+                "--socket=x11",
+                "--share=ipc",
+                "--device=dri",
+                "--share=network",
+                "--filesystem=home"
+            ]
+        },
+        "asar": true,
+        "npmRebuild": true,
+        "fileAssociations": [
+            {
+                "ext": "sb3",
+                "name": "Scratch 3 Project",
+                "role": "Editor",
+                "mimeType": "application/x.scratch.sb3"
+            },
+            {
+                "ext": "apz",
+                "name": "AmpMod Project",
+                "role": "Editor",
+                "mimeType": "application/vnd.ampmod.project"
+            }
+        ]
     }
 }

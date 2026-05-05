@@ -15,6 +15,7 @@
  */
 
 @import '../../css/colors.css';
+@import '../../css/units.css';
 @import '../../css/filters.css';
 
 .container {
@@ -48,15 +49,21 @@
 
     .header {
         position: relative;
-        padding: 8px 20px;
+        height: $menu-bar-height;
         background-color: $menu-bar-background;
         color: $menu-bar-foreground;
         box-shadow: 0 2px 5px $shadow;
+        padding: 8px 16px;
+        border-bottom: 1px solid $menu-bar-bottom-border;
+        -webkit-app-region: drag;
+        display: flex;
+        align-items: center;
     }
 
     .header .section {
         width: 100%;
         max-width: 100% !important;
+        height: 100%;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -110,13 +117,15 @@
     }
     .search-input {
         color: $text-primary;
-        width: 400px;
-        height: 16px;
+        max-width: 400px;
+        min-width: 0;
+        height: 12px;
         padding: 10px 0 10px 15px;
         border: none;
         outline: none;
         background-color: transparent;
         font-size: 14px;
+        -webkit-app-region: no-drag;
     }
     .title {
         display: flex;
@@ -602,4 +611,13 @@
             transform: translateY(0);
         }
     }
+}
+
+/* Desktop */
+:global(.desktop-windows) .header {
+    /* This is only an estimate, I don't use Windows */
+    padding-right: calc(var(--zoom-estimate, 164px) + 4px);
+}
+:global(.desktop-linux) .header {
+    padding-right: calc(var(--zoom-estimate, 96px) + 4px);
 }

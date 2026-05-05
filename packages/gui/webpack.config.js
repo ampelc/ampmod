@@ -68,6 +68,7 @@ const base = {
         static: { directory: path.resolve(__dirname, "build") },
         host: "0.0.0.0",
         compress: true,
+        allowedHosts: "all",
         port: process.env.PORT || 8601,
         // allows ROUTING_STYLE=wildcard to work properly
         historyApiFallback: {
@@ -92,18 +93,17 @@ const base = {
     experiments: {
         futureDefaults: true,
         css: false, // for now
-        outputModule: process.env.BUILD_MODE !== 'standalone',
+        outputModule: process.env.BUILD_MODE !== 'standalone' && !process.env.BUILD_DESKTOP,
     },
     output: {
-        clean: !process.env.CI,
         filename:
-            process.env.NODE_ENV === "production"
+            (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production")
                 ? `js/${CACHE_EPOCH}/[name].[contenthash].js`
                 : "js/[name].js",
         chunkFilename:
-            process.env.NODE_ENV === 'production' ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
+            (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production") ? `js/${CACHE_EPOCH}/[name].[contenthash].js` : 'js/[name].js',
         publicPath: root,
-        module: process.env.BUILD_MODE !== 'standalone'
+        module: !process.env.BUILD_DESKTOP && process.env.BUILD_MODE !== 'standalone'
     },
     resolve: {
         symlinks: false,
@@ -115,14 +115,13 @@ const base = {
             'react': path.resolve(__dirname, 'node_modules/react'),
             'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
             'scratch-render-fonts$': path.resolve(__dirname, 'src/lib/tw-scratch-render-fonts'),
-            '@ampmod/branding$': path.resolve(__dirname, 'src/lib/amp-intercept-branding'),
             'real-branding$': path.resolve(__dirname, '../branding'),
             'react/jsx-dev-runtime': 'react/jsx-dev-runtime.js',
             'react/jsx-runtime': 'react/jsx-runtime.js'
         }
     },
     module: {
-        rules: [
+        rules: [    
             {
                 test: /\.[jt]sx?$/,
                 loader: 'swc-loader',
@@ -145,7 +144,7 @@ const base = {
                                 pragmaFrag: 'React.Fragment',
                                 throwIfNamespace: true,
                                 development: process.env.NODE_ENV !== 'production',
-                                refresh: process.env.NODE_ENV !== 'production',
+                                refresh: process.env.NODE_ENV !== 'production' && process.env.BUILD_MODE !== 'desktop',
                                 useBuiltins: true
                             }
                         }
@@ -283,11 +282,11 @@ const base = {
         ...(process.env.BUILD_MODE !== 'standalone' ? [
             new MiniCssExtractPlugin({
                 filename:
-                    process.env.NODE_ENV === 'production'
+                    (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production")
                         ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
                         : 'css/[name].css',
                 chunkFilename:
-                    process.env.NODE_ENV === 'production'
+                    (process.env.BUILD_MODE !== "desktop" && process.env.NODE_ENV === "production")
                         ? `css/${CACHE_EPOCH}/[name].[contenthash].css`
                         : 'css/[id].css',
                 ignoreOrder: true,
@@ -344,7 +343,7 @@ const base = {
 if (!process.env.CI) {
     base.plugins.push(new webpack.ProgressPlugin());
 }
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production" && process.env.BUILD_MODE !== "desktop") {
     base.plugins.push(new ReactRefreshWebpackPlugin({overlay: false}));
 }
 
@@ -361,6 +360,12 @@ module.exports = [
                 './src/website/design.css'
             ],
             'editor': './src/playground/editor.jsx',
+            ...(process.env.BUILD_MODE === "desktop" || process.env.NODE_ENV !== "production"
+                ? {
+                    'editor-desktop': './src/desktop/render-editor.jsx',
+                    'desktop-settings': './src/desktop/settings/settings.jsx',
+                }
+                : {}),
             'player': './src/playground/player.jsx',
             'fullscreen': './src/playground/fullscreen.jsx',
             'embed': './src/playground/embed.jsx',
@@ -373,9 +378,16 @@ module.exports = [
             'examples-landing': './src/website/examples/examples.jsx',
             'service-worker-extra': './src/playground/service-worker.js',
         },
+        resolve: {
+            ...base.resolve,
+            alias: {
+                ...base.resolve.alias,
+                '@ampmod/branding$': path.resolve(__dirname, 'src/lib/amp-intercept-branding'),
+            }
+        },
         output: {
             hashFunction: 'sha256',
-            path: path.resolve(__dirname, 'build')
+            path: process.env.BUILD_MODE === 'desktop' ? path.resolve(__dirname, 'src/desktop/dist/gui') : path.resolve(__dirname, 'build')
         },
         optimization: {
             runtimeChunk: 'single',
@@ -393,6 +405,24 @@ module.exports = [
             errorDetails: true
         },
         plugins: base.plugins.concat([
+            ...process.env.BUILD_MODE === "desktop" || process.env.NODE_ENV !== "production" ? [
+                new HtmlWebpackPlugin({
+                    chunks: ["editor-desktop"],
+                    template: "src/playground/index.ejs",
+                    filename:
+                        'editor-desktop.html',
+                    title: APP_NAME,
+                    ...htmlWebpackPluginCommon
+                }),
+                new HtmlWebpackPlugin({
+                    chunks: ["desktop-settings"],
+                    template: "src/playground/index.ejs",
+                    filename:
+                        'desktop-settings.html',
+                    title: `Desktop Settings - ${APP_NAME}`,
+                    ...htmlWebpackPluginCommon
+                }),
+            ] : [],
             ...(process.env.SPA
                 ? [
                     new HtmlWebpackPlugin({
@@ -638,3 +668,56 @@ module.exports = [
           })
         : []
 );
+
+const fs = require('fs');
+const { builtinModules } = require('module');
+
+if (process.env.BUILD_MODE === 'desktop') {
+    module.exports.push(
+        merge(base, {
+            target: 'electron-main',
+            devtool: false,
+            entry: {
+                main: './src/desktop/index.ts'
+            },
+            output: {
+                path: path.resolve(__dirname, 'src/desktop/dist'),
+                filename: 'main.js'
+            },
+            optimization: { splitChunks: false, runtimeChunk: false, minimize: false },
+            externals: ['electron', 'electron-store', ...builtinModules],
+            plugins: base.plugins.concat([
+                new CopyWebpackPlugin({
+                    patterns: [
+                        { from: "./src/desktop/extensions", to: "extensions" },
+                        { from: "./src/desktop/pages", to: "pages" },
+                    ],
+                }),
+            ]),
+        })
+    );
+
+    const preloadDir = path.resolve(__dirname, 'src/desktop/preloads');
+    if (fs.existsSync(preloadDir)) {
+        const preloadFiles = fs.readdirSync(preloadDir).filter(file => file.endsWith('.ts') || file.endsWith('.js') || file.endsWith('.cjs'));
+
+        preloadFiles.forEach(file => {
+            const name = path.parse(file).name;
+            module.exports.push(
+            	merge(base, {
+                    devtool: false,
+                    target: 'electron-preload',
+                    entry: {
+                        [name]: path.join(preloadDir, file)
+                    },
+                    output: {
+                        path: path.resolve(__dirname, 'src/desktop/dist'),
+                        filename: 'preloads/[name].cjs'
+                    },
+                    optimization: { splitChunks: false, runtimeChunk: false, minimize: false },
+                    externals: { electron: 'commonjs electron' }
+               })
+            );
+        });
+    }
+}
