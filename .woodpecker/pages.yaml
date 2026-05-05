@@ -27,9 +27,13 @@
 
 when:
   - event: tag
-    ref: refs/tags/**
+    ref:
+      include: refs/tags/**
+      exclude: refs/tags/*-dev*
   - event: manual
-    ref: refs/tags/**
+    ref:
+      include: refs/tags/**
+      exclude: refs/tags/*-dev*
 
 steps:
     - name: clone-pages
