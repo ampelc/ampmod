@@ -18,7 +18,6 @@ export const tips = [
     'Tip: You can create your own AmpMod extensions to add new powerful blocks using JavaScript!',
     'Tip: If you want to use AmpMod offline, you can download the standalone HTML build for your browser, or if you want more integration, you can use AmpMod Desktop.',
     'Also try out <a href="https://librekitten.org?utm_source=ampmod_loader" rel="noopener" target="_blank">LibreKitten</a>!',
-    'Also try out <a href="https://scratcheverywhere.github.io/" rel="noopener" target="_blank">Scratch Everywhere</a>!',
     'Also try out <a href="https://omniblocks.github.io/" rel="noopener" target="_blank">OmniBlocks</a>!',
 ];
 
