@@ -1,1 +1,10 @@
-{}
+{
+    "amp.accent.green": "Зелено",
+    "amp.accent.green.old": "Зелено (Класически)",
+    "amp.accent.grey": "Сиво",
+    "amp.browserModal.device": "Това устройство не се поддържа",
+    "amp.browserModal.mobile": "Редактора на {APP_NAME}} не се поддържа на мобилни устройства. Но можете да гледате проекти в сайта на АмпМод.",
+    "amp.confirmDeprecated.1": "Тази представка е спраяна, поради тази причина:",
+    "amp.controls.pause": "Пауза",
+    "amp.controls.play": "Пускане"
+}
