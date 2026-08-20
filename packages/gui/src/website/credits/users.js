@@ -32,9 +32,9 @@ const fromHardcoded = ({userID = '0', username, img = defaultPfp, href = null, r
 
 const contributors = [
     {
-        username: '8to16',
-        href: 'https://scratch.mit.edu/users/8to16',
-        img: 'https://codeberg.org/avatars/1ad3f7a52bee3f23fafe7944d16aca46cd76f7045fe14dbd255536fa0180466d?size=48',
+        username: 'AmpElectrecuted',
+        href: 'https://ampmod.org/users/amp',
+        img: 'https://ampmod.org/uploads/aw3-avatars/2_64.webp',
         role: 'credits.roles.lead'
     },
     {
@@ -51,6 +51,9 @@ const contributors = [
         userID: '157650703',
         username: 'unconstructable13',
         role: 'credits.roles.images'
+    },
+    {
+        username: 'GvYoutube',
     }
 ].map(fromHardcoded);
 
