@@ -43,7 +43,7 @@ const translateGalleryItem = (extension, locale) => ({
 let cachedGallery = null;
 
 const fetchLibrary = async () => {
-    const res = await fetch('https://raw.codeberg.page/ampmod/extensions/@pages/generated-metadata/extensions-v0.json');
+    const res = await fetch('https://extensions.ampmod.org/generated-metadata/extensions-v0.json');
     if (!res.ok) {
         throw new Error(`HTTP status ${res.status}`);
     }
@@ -54,7 +54,7 @@ const fetchLibrary = async () => {
         description: extension.deprecated == extension.description ? null : extension.description,
         descriptionTranslations: extension.descriptionTranslations || {},
         extensionId: extension.id,
-        extensionURL: `https://raw.codeberg.page/ampmod/extensions/@pages/${extension.slug}.js`,
+        extensionURL: `https://extensions.ampmod.org/${extension.slug}.js`,
         iconURL: `https://ampmod.codeberg.page/extensions/${extension.image || 'images/unknown.svg'}`,
         tags: [
             ...(extension.id === 'faceSensing' ? ['scratch'] : extension.isAmpMod ? ['ampmod'] : ['tw']),
@@ -76,7 +76,7 @@ const fetchLibrary = async () => {
         docsURI: extension.docs ? `https://ampmod.codeberg.page/extensions/${extension.slug}` : null,
         samples: extension.samples
             ? extension.samples.map(sample => ({
-                  href: `${process.env.ROOT}editor.html?project_url=https://raw.codeberg.page/ampmod/extensions/@pages/samples/${encodeURIComponent(sample)}`,
+                  href: `${process.env.ROOT}editor.html?project_url=https://extensions.ampmod.org/samples/${encodeURIComponent(sample)}`,
                   text: sample
               }))
             : null,

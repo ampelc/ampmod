@@ -10,7 +10,7 @@ export const buildOfflineGallery = (win: { webContents: { session: any; setWindo
       urls: [
         "https://ampmod.codeberg.page/extensions/*",
         "https://extensions.turbowarp.org/*",
-        "https://raw.codeberg.page/ampmod/extensions/@pages/*" // Added new URL pattern
+        "https://extensions.ampmod.org/*"
       ]
     },
     (details: { url: string | URL; }, callback: (arg0: { cancel?: boolean; redirectURL?: string; }) => void) => {

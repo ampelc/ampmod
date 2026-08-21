@@ -25,7 +25,7 @@ const manuallyTrustExtension = url => {
  */
 const isTrustedExtension = url =>
     // Always trust AmpMod's official extension repository.
-    url.startsWith('https://raw.codeberg.page/ampmod/extensions/@pages/') ||
+    url.startsWith('https://extensions.ampmod.org/') ||
    // Always trust an old prefix also used for the AmpMod extension repository.
    // This was used until 0.5 but was changed for CORS.
     url.startsWith('https://ampmod.codeberg.page/extensions/') ||
@@ -58,6 +58,10 @@ const isAlwaysTrustedForFetching = parsed =>
     parsed.origin === 'https://turbowarp.org' ||
     parsed.origin.endsWith('.turbowarp.org') ||
     parsed.origin.endsWith('.turbowarp.xyz') ||
+    // amp: Any AmpMod service
+    parsed.origin === 'https://ampmod.org' ||
+    parsed.origin.endsWith('.ampmod.org') ||
+    parsed.origin === 'https://ampmod.codeberg.page' ||
     // GitHub API
     // GitHub Pages allows redirects, so not included here.
     parsed.origin === 'https://raw.githubusercontent.com' ||
@@ -69,16 +73,6 @@ const isAlwaysTrustedForFetching = parsed =>
     // amp: Codeberg
     // Codeberg Pages allows redirects, so not included here.
     parsed.origin === 'https://codeberg.org' ||
-    // amp: ampmod.codeberg.page is an exception to the security issue related to redirects since we own it.
-    parsed.origin === 'https://ampmod.codeberg.page' ||
-    // amp: We use this domain for testing.
-    parsed.origin === 'https://notampmod.codeberg.page' ||
-    // amp: AmpMod Wiki
-    parsed.origin === 'https://ampmod.miraheze.org' ||
-    // amp: For some reason the AmpMod Forums does not support CORS access. It should at least
-    // allow it for read-only APIs. Can someone take this request over to FreeFlarum please?
-    // For future proofing we will allow it anyways.
-    parsed.origin === 'https://ampmod.flarum.cloud' ||
     // Sourcehut Pages
     parsed.origin.endsWith('.srht.site') ||
     // Itch
