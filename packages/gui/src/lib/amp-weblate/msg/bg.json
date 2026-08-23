@@ -26,5 +26,18 @@
     "amp.settingsModal.dangerZoneWarning": "Тези опции могат да сменят как се държи програмата на някои блокове и може да развали проекта Ви.",
     "amp.extensions.sound": "Звук",
     "amp.futureExtension.name": "Бъдеще",
-    "amp.gui.dark": "Тъмен"
+    "amp.gui.dark": "Тъмен",
+    "amp.extensions.fromScratch": "От Скрач",
+    "amp.extensions.fromTw": "От TurboWarp",
+    "amp.extensions.graphics": "Графика",
+    "amp.extensions.hardware": "Хардуер",
+    "amp.extensions.heading.categories": "Категории",
+    "amp.extensions.internet": "Интърнет",
+    "amp.menuBar.erase.subtitle": "Мислете по два пъти преди да правите това!",
+    "amp.menuBar.moreSettings": "Настройки на Програмата",
+    "amp.opcodeLabels.lastkeypressed": "последен ключ натиснат",
+    "amp.opcodeLabels.offline": "онлайн?",
+    "amp.openSettings": "Отворете настройки на програмата",
+    "amp.penExtensionMoved": "Търсите за добавката молив? Тази добавка е преместена в главните категории.",
+    "amp.searchSprites": "Търсене на спрайта..."
 }
