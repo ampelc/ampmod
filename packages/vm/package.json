@@ -46,7 +46,7 @@
         "decode-html": "2.0.0",
         "diff-match-patch": "1.0.5",
         "format-message": "6.2.1",
-        "htmlparser2": "3.10.0",
+        "htmlparser2": "3.10.1",
         "immutable": "3.8.2",
         "pify": "4.0.1",
         "scratch-sb1-converter": "0.2.7",
