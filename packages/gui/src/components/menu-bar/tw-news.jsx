@@ -7,7 +7,7 @@ import icon from './tw-advanced.svg';
 import SmartLink from '../../website/components/smart-link/smart-link';
 
 const LOCAL_STORAGE_KEY = `${process.env.ampmod_mode === 'canary' ? 'canary' : 'amp'}:closedNews`;
-const NEWS_ID = '0.4';
+const NEWS_ID = 'aw3-release';
 
 const getIsClosedInLocalStorage = () => {
     try {
@@ -54,10 +54,10 @@ class TWNews extends React.Component {
                 <div className={styles.textContainer}>
                     <img src={icon} draggable={false} height={28} />
                     <div className={styles.text}>
-                        {APP_NAME} 0.4 has been released! For more information, view the patch notes in the editor.
+                        AmpMod.org has been released, so you can share your projects now! This site will stay up to serve those who cannot access it.
                     </div>
-                    <SmartLink to="/editor" className={styles.button} target="_blank" rel="noopener">
-                        Try it now
+                    <a href="https://ampmod.org" className={styles.button} target="_blank" rel="noopener">
+                        Visit ampmod.org
                     </SmartLink>
                 </div>
                 <CloseButton className={styles.close} onClick={this.handleClose} />
