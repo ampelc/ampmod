@@ -58,7 +58,7 @@ class TWNews extends React.Component {
                     </div>
                     <a href="https://ampmod.org" className={styles.button} target="_blank" rel="noopener">
                         Visit ampmod.org
-                    </SmartLink>
+                    </a>
                 </div>
                 <CloseButton className={styles.close} onClick={this.handleClose} />
             </div>
