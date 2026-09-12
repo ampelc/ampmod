@@ -313,7 +313,7 @@ importers:
         version: link:../paint
       scratch-render:
         specifier: github:TurboWarp/scratch-render#develop
-        version: https://codeload.github.com/TurboWarp/scratch-render/tar.gz/4a711106c0ca82a0f52e99f084764833637d76e8(webpack@5.106.2(@swc/core@1.15.33)(esbuild@0.27.7)(webpack-cli@6.0.1(webpack-dev-server@5.2.3)(webpack@5.106.2)))
+        version: https://codeload.github.com/TurboWarp/scratch-render/tar.gz/a67f7c9c07d459582c227d4fd3fae8f59d8fc9ce(webpack@5.106.2(@swc/core@1.15.33)(esbuild@0.27.7)(webpack-cli@6.0.1(webpack-dev-server@5.2.3)(webpack@5.106.2)))
       scratch-vm:
         specifier: workspace:^
         version: link:../vm
@@ -797,7 +797,7 @@ importers:
     dependencies:
       '@turbowarp/types':
         specifier: github:TurboWarp/types-tw#tw
-        version: https://codeload.github.com/TurboWarp/types-tw/tar.gz/938c3ab84e4dd859f6f0646cdf7ed5dd1a94f622
+        version: https://codeload.github.com/TurboWarp/types-tw/tar.gz/7c09a0f37d6e08a3f5b09f172d5c017009999441
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -906,8 +906,8 @@ importers:
         specifier: 7.28.5
         version: 7.28.5(@babel/core@7.28.5)
       adm-zip:
-        specifier: 0.4.11
-        version: 0.4.11
+        specifier: 0.6.1
+        version: 0.6.1
       babel-loader:
         specifier: 10.0.0
         version: 10.0.0(@babel/core@7.28.5)(webpack@5.106.2(@swc/core@1.15.33)(webpack-cli@6.0.1))
@@ -3930,8 +3930,8 @@ packages:
   '@turbowarp/startaudiocontext@1.0.0':
     resolution: {integrity: sha512-BJ7EVYVwuTH/Tr6tEaLaXA5TCi8qKxNWsxohNqxIEDzykN+FscgOALhEMUlNc6vgcmOi7yQFJ82Prx9bnY5DgA==}
 
-  '@turbowarp/types@https://codeload.github.com/TurboWarp/types-tw/tar.gz/938c3ab84e4dd859f6f0646cdf7ed5dd1a94f622':
-    resolution: {tarball: https://codeload.github.com/TurboWarp/types-tw/tar.gz/938c3ab84e4dd859f6f0646cdf7ed5dd1a94f622}
+  '@turbowarp/types@https://codeload.github.com/TurboWarp/types-tw/tar.gz/7c09a0f37d6e08a3f5b09f172d5c017009999441':
+    resolution: {tarball: https://codeload.github.com/TurboWarp/types-tw/tar.gz/7c09a0f37d6e08a3f5b09f172d5c017009999441}
     version: 0.0.14
 
   '@types/babel__core@7.20.5':
@@ -4207,6 +4207,7 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@vernier/godirect@1.5.0':
     resolution: {integrity: sha512-vMS0fQubI3WSSLg1Ry3aey/qWCl9XoCsFzgwOWYkeJs45YxjPel+42pLh5pO7uP6oF47sjZUKx8kGOoTiiiirA==}
@@ -4327,10 +4328,12 @@ packages:
   '@xmldom/xmldom@0.8.13':
     resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xmldom/xmldom@0.9.10':
     resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -4398,9 +4401,9 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  adm-zip@0.4.11:
-    resolution: {integrity: sha512-L8vcjDTCOIJk7wFvmlEUN7AsSb8T+2JrdP7KINBjzr24TJ5Mwj590sLu3BC7zNZowvJWa/JtPmD8eJCzdtDWjA==}
-    engines: {node: '>=0.3.0'}
+  adm-zip@0.6.1:
+    resolution: {integrity: sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==}
+    engines: {node: '>=14.0'}
 
   agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
@@ -6749,6 +6752,7 @@ packages:
   eslint@9.39.2:
     resolution: {integrity: sha512-LEyamqS7W5HB3ujJyvi0HQK/dtVINZvd5mAAp9eT5S/ujByGjiZLCzPcHVzuXbpJDJF/cxwHlfceVUDZ2lnSTw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -11337,8 +11341,8 @@ packages:
     peerDependencies:
       scratch-render-fonts: ^1.0.0-prerelease
 
-  scratch-render@https://codeload.github.com/TurboWarp/scratch-render/tar.gz/4a711106c0ca82a0f52e99f084764833637d76e8:
-    resolution: {tarball: https://codeload.github.com/TurboWarp/scratch-render/tar.gz/4a711106c0ca82a0f52e99f084764833637d76e8}
+  scratch-render@https://codeload.github.com/TurboWarp/scratch-render/tar.gz/a67f7c9c07d459582c227d4fd3fae8f59d8fc9ce:
+    resolution: {tarball: https://codeload.github.com/TurboWarp/scratch-render/tar.gz/a67f7c9c07d459582c227d4fd3fae8f59d8fc9ce}
     version: 0.1.0
 
   scratch-sb1-converter@0.2.7:
@@ -16719,7 +16723,7 @@ snapshots:
 
   '@turbowarp/startaudiocontext@1.0.0': {}
 
-  '@turbowarp/types@https://codeload.github.com/TurboWarp/types-tw/tar.gz/938c3ab84e4dd859f6f0646cdf7ed5dd1a94f622': {}
+  '@turbowarp/types@https://codeload.github.com/TurboWarp/types-tw/tar.gz/7c09a0f37d6e08a3f5b09f172d5c017009999441': {}
 
   '@types/babel__core@7.20.5':
     dependencies:
@@ -17346,7 +17350,7 @@ snapshots:
 
   acorn@8.16.0: {}
 
-  adm-zip@0.4.11: {}
+  adm-zip@0.6.1: {}
 
   agent-base@6.0.2:
     dependencies:
@@ -26381,7 +26385,7 @@ snapshots:
     transitivePeerDependencies:
       - webpack
 
-  scratch-render@https://codeload.github.com/TurboWarp/scratch-render/tar.gz/4a711106c0ca82a0f52e99f084764833637d76e8(webpack@5.106.2(@swc/core@1.15.33)(esbuild@0.27.7)(webpack-cli@6.0.1(webpack-dev-server@5.2.3)(webpack@5.106.2))):
+  scratch-render@https://codeload.github.com/TurboWarp/scratch-render/tar.gz/a67f7c9c07d459582c227d4fd3fae8f59d8fc9ce(webpack@5.106.2(@swc/core@1.15.33)(esbuild@0.27.7)(webpack-cli@6.0.1(webpack-dev-server@5.2.3)(webpack@5.106.2))):
     dependencies:
       '@turbowarp/ancient-hull.js': 0.2.13
       '@turbowarp/nanolog': 0.2.0
